@@ -28,7 +28,7 @@ formAvaliacao.addEventListener("submit", async (e) => {
 
   try {
     // Envia o POST para o backend
-    const response = await fetch(monster-reviews-api.onrender.com/api/avaliacoes, {
+    const response = await fetch("monster-reviews-api.onrender.com/api/avaliacoes", {
       method: "POST",
       body: formData,
     });
