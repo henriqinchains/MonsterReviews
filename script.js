@@ -2,6 +2,7 @@
 const formAvaliacao = document.getElementById("formAvaliacao");
 const saborSelect = document.querySelector('select[name="sabor"]');
 const root = document.documentElement;
+const btnSubmit = document.getElementById('btnSubmit');
 
 // Função para mudar tema por sabor
 function mudarTemaPorSabor(sabor) {
@@ -26,12 +27,15 @@ formAvaliacao.addEventListener("submit", async (e) => {
   // Cria um FormData com os dados do formulário
   const formData = new FormData(formAvaliacao);
 
-  try {
+ try {
     // Envia o POST para o backend
+
+
     const response = await fetch('https://monster-reviews-api.onrender.com/api/avaliacoes', {
       method: "POST",
       body: formData,
     });
+    btnSubmit.disabled=true;
 
 //xereca
     
@@ -49,4 +53,9 @@ formAvaliacao.addEventListener("submit", async (e) => {
     console.error("Erro:", error);
     alert("Erro ao enviar avaliação. Tente novamente.");
   }
+ finally {
+  // SEMPRE reabilita o botão
+  btnSubmit.disabled = false;
+ }
 });
+
