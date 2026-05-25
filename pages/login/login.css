@@ -24,7 +24,7 @@
 
 @font-face {
   font-family: "Green Energy";
-  src: url("fonts/Green_Energy.ttf") format("truetype");
+  src: url("../../src/fonts/Green_Energy.ttf") format("truetype");
 }
 
 @keyframes fall-rotate {
