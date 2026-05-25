@@ -4,20 +4,21 @@ const saborSelect = document.querySelector('select[name="sabor"]');
 const root = document.documentElement;
 const btnSubmit = document.getElementById("btnSubmit");
 
-document.addEventListener("DOMContentLoaded", () => {
-  const token = localStorage.getItem("authToken");
+const token = localStorage.getItem("authToken");
 
-  if (!token) {
-    // Se não houver token, redireciona para login
-    window.location.href = "pages/login/login.html";
-    return;
-  }
-else {
-    window.location.href = "pages/feed/feed.html";
-// Se houver token, pode carregar o restante da página normalmente
-  console.log("Usuário autenticado:", localStorage.getItem("loggedUser"));
-});
+if (!token) {
+  // Se não houver token, redireciona para login
+  window.location.href = "pages/login/login.html";
+  return;
 }
+else {
+  window.location.href = "pages/feed/feed.html";
+// Se houver token, pode carregar o restante da página normalmente
+console.log("Usuário autenticado:", localStorage.getItem("loggedUser"));
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+
 
   
 
@@ -81,4 +82,4 @@ formAvaliacao.addEventListener("submit", async (e) => {
     enviando = false;
     btnSubmit.disabled = false;
   }
-});
+});});
