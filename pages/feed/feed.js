@@ -6,6 +6,7 @@ function toggleDropdown() {
     if (!nu.contains(e.target)) nu.classList.remove('open');
   });
 
+const token = localStorage.getItem("authToken");
 document.addEventListener("DOMContentLoaded", () => {
   if (!token) window.location.href = "../login/login.html";
 });
