@@ -6,6 +6,12 @@ function toggleDropdown() {
     if (!nu.contains(e.target)) nu.classList.remove('open');
   });
 
+if (!token) {
+  // Se não houver token, redireciona para login
+  window.location.href = "../login/login.html";
+  return;
+}
+
   function toggleTag(el) {
     document.querySelectorAll('#tagGroup .tag').forEach(t => t.classList.remove('active'));
     el.classList.add('active');
