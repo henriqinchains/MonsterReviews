@@ -238,15 +238,16 @@ return res.status(201).json({
 // ROTA DE LOGIN
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { login, password } = req.body;
+        const { login, password, email } = req.body;
 
         // Agora o 'Usuario' existe aqui em cima e o Node vai achar!
+        const emailEncontrado = await Usuario.findOne({ email: email })
         const usuarioEncontrado = await Usuario.findOne({ nome: login });
-        if (!usuarioEncontrado) {
+        if (!usuarioEncontrado || !emailEncontrado) {
             return res.status(400).json({ erro: 'Usuário ou senha incorretos.' });
         }
 
-        const senhaValida = await bcrypt.compare(password, usuarioEncontrado.senha);
+        const senhaValida = await bcrypt.compare(password, usuarioEncontrado.senha || password, emailEncontrado.senha);
         if (!senhaValida) {
             return res.status(400).json({ erro: 'Usuário ou senha incorretos.' });
         }
@@ -260,7 +261,8 @@ app.post('/api/auth/login', async (req, res) => {
         return res.status(200).json({
             mensagem: 'Login realizado com sucesso!',
             token: token,
-            login: usuarioEncontrado.nome
+            login: usuarioEncontrado.nome,
+            email: emailEncontrado.email
         });
 
     } catch (erro) {
