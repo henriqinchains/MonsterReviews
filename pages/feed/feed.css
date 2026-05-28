@@ -1,14 +1,14 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:        #0b0f0e;
-      --surface:   #111916;
+      --bg:        #000000;
+      --surface:   rgba(3, 26, 3, 0.45);
       --surface2:  #182320;
       --border:    #243330;
-      --accent:    #2ecc71;
-      --accent2:   #00b894;
+      --accent:    #00a537c5;
+      --accent2:   #00dd4ac5;
       --text:      #e0ede8;
-      --muted:     #5e7a6e;
+      --muted:     #2f3f38;
       --radius:    14px;
       --nav-h:     64px;
     }
@@ -37,14 +37,19 @@
     }
 
     .nav-logo {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.35rem;
+      
+      font-family: 'Green Energy';
+      font-size: 3rem;
       font-weight: 800;
       letter-spacing: -.5px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-text-fill-color: rgba(0, 0, 0, 0.5);
       white-space: nowrap;
+      text-shadow:
+    0 0 2px #00ff55,
+    0 0 20px #00ff55,
+    0 0 10px #00ff55;
     }
 
     .nav-links {
@@ -64,6 +69,11 @@
     }
     .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--surface2); }
     .nav-links a.active { color: var(--accent); }
+
+    @font-face {
+  font-family: "Green Energy";
+  src: url("../../src/fonts/Green_Energy.ttf") format("truetype");
+}
 
     /* ── REGISTRAR LATINHA BUTTON ── */
     .btn-registrar {
