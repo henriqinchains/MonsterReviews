@@ -8,9 +8,12 @@ const token = localStorage.getItem("authToken");
 
 document.addEventListener("DOMContentLoaded", () => {
   if (!token) window.location.href = "pages/login/login.html";
-  else window.location.href = "pages/feed/feed.html";
-  console.log("Usuário autenticado:", localStorage.getItem("loggedUser"));
-});
+  else if (localStorage.getItem('autorizacao') == 0)
+    window.location.href = "pages/feed/feed.html";
+  
+  }
+  
+)
 // Se houver token, pode carregar o restante da página normalmente
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -73,6 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
       // reabilita o botão
       enviando = false;
       btnSubmit.disabled = false;
+      window.location.href = "pages/feed/feed.html"
+      localStorage.removeItem("authToken");
     }
   });
 });
