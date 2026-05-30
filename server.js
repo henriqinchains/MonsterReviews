@@ -243,7 +243,7 @@ app.post('/api/auth/login', async (req, res) => {
         const usuarioEncontradoLogin = await Usuario.findOne({nome:login});
         const usuarioEncontradoEmail = await Usuario.findOne({email:email});
         
-        if (!usuarioEncontradoLogin && !usuarioEncontradoEmail) {
+        if (!usuarioEncontradoLogin || !usuarioEncontradoEmail) {
             return res.status(400).json({ erro: 'Usuário ou senha incorretos.' });
         }
 
