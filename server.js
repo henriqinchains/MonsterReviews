@@ -238,10 +238,9 @@ return res.status(201).json({
 // ROTA DE LOGIN
 app.post('/api/auth/login', async (req, res) => {
     try {
-        const { login, password} = req.body;
-
+        const {login, password} = req.body;
         // Agora o 'Usuario' existe aqui em cima e o Node vai achar!
-        const usuarioEncontrado = await Usuario.findOne({ nome: login });
+        const usuarioEncontrado = await Usuario.findOne({nome:login});
         if (!usuarioEncontrado) {
             return res.status(400).json({ erro: 'Usuário ou senha incorretos.' });
         }
@@ -251,7 +250,7 @@ app.post('/api/auth/login', async (req, res) => {
         if (!senhaValidaLogin) {
             return res.status(400).json({ erro: 'Usuário ou senha incorretos.' });
         }
-        
+    
         const token = jwt.sign(
             { id: usuarioEncontrado._id, nome: usuarioEncontrado.nome }, 
             process.env.JWT_SECRET, 
@@ -262,7 +261,7 @@ app.post('/api/auth/login', async (req, res) => {
             mensagem: 'Login realizado com sucesso!',
             token: token,
             login: usuarioEncontrado.nome,
-            email: emailEncontrado.email
+            email: usuarioEncontrado.email
         });
 
     } catch (erro) {
