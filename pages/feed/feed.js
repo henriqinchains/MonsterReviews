@@ -1,6 +1,5 @@
 const token = localStorage.getItem("authToken");
 const loggedUser = localStorage.getItem("loggedUser");
-const cargo = usuarioLogado.cargo || 'user';
 
 if (!token) {
   window.location.href = "../login/login.html";
