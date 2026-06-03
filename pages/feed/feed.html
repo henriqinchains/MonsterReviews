@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contador de Monster</title>
- 
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,7 +15,6 @@
     <link rel="icon" href="../../src/img/monster.png" />
   </head>
   <body>
-    <!-- ═══════════════ NAV ═══════════════ -->
     <nav>
       <span class="nav-logo">MONSTER REVIEWS</span>
 
@@ -24,17 +23,21 @@
         <a href="#">Estatísticas</a>
       </div>
 
-      <!-- Registrar Latinha button -->
-
-      <!-- User dropdown -->
       <div class="nav-user" id="navUser">
         <div class="user-trigger" onclick="toggleDropdown()">
           <div class="user-avatar"></div>
-          <span id="loggedUser"></span>
+          <span id="loggedUser">Meira</span>
           <svg class="chevron" viewBox="0 0 24 24">
             <polyline points="6 9 12 15 18 9" />
           </svg>
         </div>
+
+        <input
+          type="file"
+          id="fileInput"
+          accept="image/*"
+          style="display: none"
+        />
 
         <div class="user-dropdown">
           <div class="dropdown-header">
@@ -108,22 +111,25 @@
       </div>
     </nav>
 
-    <!-- ═══════════════ PAGE ═══════════════ -->
     <div class="page">
-      <!-- ── TIMELINE (left) ── -->
       <section class="timeline">
         <div class="timeline-header">
           <h2>Timeline</h2>
-          <button class="btn-registrar" onclick="window.location.href = '../../index.html'; localStorage.setItem('autorizacao', 1)";>Registrar latinha</button>
+          <button
+            class="btn-registrar"
+            onclick="
+              window.location.href = '../../index.html';
+              localStorage.setItem('autorizacao', 1);
+            "
+          >
+            Registrar latinha
+          </button>
         </div>
 
         <div class="feed-container" id="feed-container"></div>
-        <!-- /feed-container -->
       </section>
 
-      <!-- ── RIGHT COLUMN ── -->
       <div class="right-col">
-        <!-- Panel -->
         <div class="panel">
           <div class="panel-header">
             <h3>Liderança</h3>
@@ -136,7 +142,6 @@
           </div>
         </div>
 
-        <!-- Filter Form -->
         <div class="filter-form">
           <div class="filter-header">
             <svg
@@ -203,25 +208,19 @@
           </div>
         </div>
       </div>
-      <!-- /right-col -->
     </div>
-    <!-- /page -->
+    <script src="feed.js" defer></script>
     <script>
+      // O evento de Sair fica aqui de forma limpa e isolada
       document
         .getElementById("btnSairFeed")
         .addEventListener("click", (event) => {
-          event.preventDefault(); // impede qualquer submit acidental
+          event.preventDefault();
           localStorage.removeItem("authToken");
           localStorage.removeItem("loggedUser");
+          localStorage.removeItem("loggedEmail");
           window.location.href = "../login/login.html";
         });
-    </script>
-    <script src="feed.js" defer></script>
-    <script>
-      document.getElementById("loggedUser").textContent =
-        localStorage.getItem("loggedUser");
-        
-        document.getElementById("loggedUserEmail").textContent = localStorage.getItem("loggedEmail")
     </script>
   </body>
 </html>

@@ -1,15 +1,12 @@
-/* ==========================================================================
-   1. RESET, VARIÁVEIS E CONFIGURAÇÕES GERAIS
-   ========================================================================== */
 :root {
-  --bg-main: #0b0c10; /* Fundo quase preto industrial */
-  --bg-card: #1f2833; /* Cinza azulado escuro para cards e nav */
-  --bg-darker: #11161d; /* Detalhes de inputs e fundos de filtros */
-  --monster-green: #00ff66; /* Verde Neon Assinatura Monster */
-  --monster-hover: #33ff88; /* Verde mais claro para hovers */
-  --text-main: #c5c6c7; /* Texto claro padrão */
-  --text-muted: #8b9bb4; /* Textos secundários e datas */
-  --border-color: #45a29e; /* Bordas esverdeadas metálicas */
+  --bg-main: #0b0c10;
+  --bg-card: #1f2833;
+  --bg-darker: #11161d;
+  --monster-green: #00ff66;
+  --monster-hover: #33ff88;
+  --text-main: #c5c6c7;
+  --text-muted: #8b9bb4;
+  --border-color: #45a29e;
 }
 
 * {
@@ -19,7 +16,6 @@
   font-family: "Segoe UI", Roboto, sans-serif;
 }
 
-/* Títulos, marcas e botões importantes ganham a fonte agressiva importada */
 h1,
 h2,
 h3,
@@ -39,9 +35,6 @@ body {
   overflow-x: hidden;
 }
 
-/* ==========================================================================
-   2. NAVBAR (Navegação Superior)
-   ========================================================================== */
 nav {
   background-color: var(--bg-card);
   border-bottom: 2px solid var(--monster-green);
@@ -87,7 +80,6 @@ nav {
   border-bottom: 3px solid var(--monster-green);
 }
 
-/* Container do Menu Dropdown do Usuário */
 .nav-user {
   position: relative;
 }
@@ -97,39 +89,41 @@ nav {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: background 0.2s;
-  user-select: none;
-}
-
-.user-trigger:hover {
-  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .user-avatar {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--monster-green), #00a344);
-  box-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+
+  background-color: #00ff66;
+  box-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.user-avatar:hover {
+  opacity: 0.9;
 }
 
 #loggedUser {
-  font-weight: 600;
   color: #fff;
+  font-weight: 600;
 }
 
 .chevron {
   width: 16px;
   height: 16px;
-  stroke: var(--text-muted);
+  stroke: #8b9bb4;
   stroke-width: 2;
   fill: none;
-  transition: transform 0.2s;
 }
 
-/* Exibição condicional do menu com a classe .open (ativada pelo seu JS) */
 .user-dropdown {
   display: none;
   position: absolute;
@@ -199,9 +193,6 @@ nav {
   color: #ff6666;
 }
 
-/* ==========================================================================
-   3. LAYOUT E SEÇÕES (Estrutura de 2 Colunas)
-   ========================================================================== */
 .page {
   max-width: 1200px;
   margin: 40px auto;
@@ -258,7 +249,6 @@ nav {
   gap: 24px;
 }
 
-/* Feedback de carregamento ou vazio no feed */
 .feed-container > p {
   text-align: center;
   color: var(--text-muted);
@@ -266,9 +256,6 @@ nav {
   font-size: 1.1rem;
 }
 
-/* ==========================================================================
-   4. CARDS DE REVIEW (Injetados via Javascript)
-   ========================================================================== */
 .post-card {
   background-color: var(--bg-card);
   border: 1px solid rgba(69, 162, 158, 0.2);
@@ -340,7 +327,6 @@ nav {
   color: #fff;
 }
 
-/* Imagem do Monster Postado */
 .post-image {
   background-color: var(--bg-darker);
   border-radius: 6px;
@@ -356,7 +342,6 @@ nav {
   transition: transform 0.3s ease;
 }
 
-/* Grade de Especificações da Bebida (Sabor, Preço, Nota...) */
 .post-info {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -391,14 +376,12 @@ nav {
   font-size: 0.95rem;
 }
 
-/* Estrelas da Nota */
 .nota-stars {
   color: #ffb800;
   margin-left: 4px;
   letter-spacing: 1px;
 }
 
-/* Tag dinâmica: Valeu a pena? */
 .valeu-sim {
   color: var(--monster-green);
   font-weight: bold;
@@ -409,16 +392,14 @@ nav {
   font-weight: bold;
 }
 
-/* Texto de Descrição/Review */
 .post-desc {
   font-size: 0.95rem;
   line-height: 1.6;
   color: #e2e8f0;
   margin-bottom: 20px;
-  white-space: pre-wrap; /* Preserva quebras de linha que o usuário digitou */
+  white-space: pre-wrap;
 }
 
-/* Rodapé com Ações (Curtidas) */
 .post-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 12px;
@@ -449,16 +430,12 @@ nav {
   background-color: rgba(255, 77, 90, 0.08);
 }
 
-/* ==========================================================================
-   5. SIDEBAR (Ranking de Liderança e Filtros)
-   ========================================================================== */
 .right-col {
   display: flex;
   flex-direction: column;
   gap: 25px;
 }
 
-/* Painel Geral */
 .panel {
   background-color: var(--bg-card);
   border: 1px solid rgba(69, 162, 158, 0.2);
@@ -482,7 +459,6 @@ nav {
   text-transform: uppercase;
 }
 
-/* Badge Pulsante "Ao Vivo" */
 .badge {
   background-color: rgba(255, 77, 77, 0.15);
   color: #ff4d4d;
@@ -507,7 +483,6 @@ nav {
   }
 }
 
-/* Estilização das Linhas do Ranking */
 .panel-body {
   display: flex;
   flex-direction: column;
@@ -555,9 +530,8 @@ nav {
   font-size: 0.9rem;
 }
 
-/* Efeitos Especiais de Cores para o Top 3 do Pódio */
 .ranking-item.rank-1 {
-  border-left-color: #ffd700; /* Ouro */
+  border-left-color: #ffd700;
   background: linear-gradient(
     90deg,
     rgba(255, 215, 0, 0.05) 0%,
@@ -569,7 +543,7 @@ nav {
 }
 
 .ranking-item.rank-2 {
-  border-left-color: #c0c0c0; /* Prata */
+  border-left-color: #c0c0c0;
   background: linear-gradient(
     90deg,
     rgba(192, 192, 192, 0.05) 0%,
@@ -581,7 +555,7 @@ nav {
 }
 
 .ranking-item.rank-3 {
-  border-left-color: #cd7f32; /* Bronze */
+  border-left-color: #cd7f32;
   background: linear-gradient(
     90deg,
     rgba(205, 127, 50, 0.05) 0%,
@@ -592,9 +566,6 @@ nav {
   color: #cd7f32;
 }
 
-/* ==========================================================================
-   6. COMPONENTE DE FILTROS DO COMPORTAMENTO LATERAL
-   ========================================================================== */
 .filter-form {
   background-color: var(--bg-darker);
   border: 1px solid var(--bg-card);
@@ -641,7 +612,6 @@ nav {
   letter-spacing: 0.5px;
 }
 
-/* Customização de Elementos de Formulário */
 input[type="text"],
 select,
 input[type="date"] {
@@ -670,7 +640,6 @@ input[type="date"]:focus {
   gap: 10px;
 }
 
-/* Alinhamento dos botões de Tag (Sim / Não) */
 .tag-group {
   display: flex;
   gap: 8px;
@@ -701,7 +670,6 @@ input[type="date"]:focus {
   box-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
 }
 
-/* Grupo de botões do rodapé de filtros */
 .btn-group {
   display: flex;
   gap: 10px;

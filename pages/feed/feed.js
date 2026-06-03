@@ -1,16 +1,90 @@
 const token = localStorage.getItem("authToken");
 const loggedUser = localStorage.getItem("loggedUser");
 
+if (!token) {
+  window.location.href = "../login/login.html";
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  if (!token) window.location.href = "../login/login.html";
+  const loggedUserEl = document.getElementById("loggedUser");
+  const loggedUserEmailEl = document.getElementById("loggedUserEmail");
+
+  if (loggedUserEl) loggedUserEl.textContent = loggedUser;
+  if (loggedUserEmailEl)
+    loggedUserEmailEl.textContent = localStorage.getItem("loggedEmail");
+
+  carregarFeed();
+  carregarRanking();
+
+  const userAvatar = document.querySelector("#navUser .user-avatar");
+  const fileInput = document.getElementById("fileInput");
+
+  if (userAvatar && fileInput) {
+    userAvatar.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+  }
+
+  if (fileInput) {
+    fileInput.addEventListener("change", (event) => {
+      const input = event.target;
+
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const base64Image = e.target.result;
+
+          if (userAvatar) {
+            userAvatar.style.background = "none";
+            userAvatar.style.backgroundImage = `url(${base64Image})`;
+            userAvatar.style.backgroundColor = "transparent";
+            userAvatar.style.backgroundSize = "cover";
+            userAvatar.style.backgroundPosition = "center";
+          }
+
+          const emailLogado =
+            localStorage.getItem("loggedEmail") || "avatar_generico";
+          localStorage.setItem(`avatar_${emailLogado}`, base64Image);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    });
+  }
+
+  const emailLogado = localStorage.getItem("loggedEmail") || "avatar_generico";
+  const avatarSalvo = localStorage.getItem(`avatar_${emailLogado}`);
+
+  if (avatarSalvo && userAvatar) {
+    userAvatar.style.background = "none";
+    userAvatar.style.backgroundImage = `url(${avatarSalvo})`;
+    userAvatar.style.backgroundColor = "transparent";
+    userAvatar.style.backgroundSize = "cover";
+    userAvatar.style.backgroundPosition = "center";
+  }
+
+  document.querySelectorAll(".tl-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      document
+        .querySelectorAll(".tl-tab")
+        .forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+    });
+  });
 });
 
 function toggleDropdown() {
-  document.getElementById("navUser").classList.toggle("open");
+  const nu = document.getElementById("navUser");
+  if (nu) nu.classList.toggle("open");
 }
+
 document.addEventListener("click", (e) => {
   const nu = document.getElementById("navUser");
-  if (!nu.contains(e.target)) nu.classList.remove("open");
+  if (nu && !nu.contains(e.target)) {
+    nu.classList.remove("open");
+  }
 });
 
 function toggleTag(el) {
@@ -20,35 +94,17 @@ function toggleTag(el) {
   el.classList.add("active");
 }
 
-document.querySelectorAll(".tl-tab").forEach((tab) => {
-  tab.addEventListener("click", () => {
-    document
-      .querySelectorAll(".tl-tab")
-      .forEach((t) => t.classList.remove("active"));
-    tab.classList.add("active");
-  });
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-  carregarFeed();
-  carregarRanking();
-});
-
 async function carregarFeed() {
   const feedContainer = document.getElementById("feed-container");
-  if (!feedContainer) {
-    return;
-  }
+  if (!feedContainer) return;
 
   feedContainer.innerHTML = "<p>Carregando avaliações monstruosas...</p>";
   try {
-    // 1. Puxa os dados reais da sua API no Render
     const resposta = await fetch(
       "https://monster-reviews-api.onrender.com/api/avaliacoes",
     );
     const avaliacoes = await resposta.json();
 
-    // Limpa a mensagem de carregando
     feedContainer.innerHTML = "";
 
     if (avaliacoes.length === 0) {
@@ -57,12 +113,10 @@ async function carregarFeed() {
       return;
     }
 
-    // 2. Loop para varrer cada avaliação do MongoDB e montar o HTML
     avaliacoes.forEach((post) => {
       const estrelas =
         "★".repeat(Math.round(post.nota / 2)) +
         "☆".repeat(5 - Math.round(post.nota / 2));
-
       const valeuClasse = post.valeu_a_pena ? "valeu-sim" : "valeu-nao";
       const valeuTexto = post.valeu_a_pena ? "✓ Sim" : "✕ Não";
 
@@ -103,8 +157,6 @@ async function carregarFeed() {
                   </button>
                 </div>
             `;
-
-      // Coloca o card renderizado dentro do container do feed
       feedContainer.appendChild(postArticle);
     });
   } catch (erro) {
@@ -116,15 +168,15 @@ async function carregarFeed() {
 
 async function carregarRanking() {
   const container = document.getElementById("ranking-container");
-  if (!container) return; // Barreira de proteção clássica!
+  if (!container) return;
 
   try {
-    const resposta = await fetch(
+    const respuesta = await fetch(
       "https://monster-reviews-api.onrender.com/api/ranking",
     );
-    const ranking = await resposta.json();
+    const ranking = await respuesta.json();
 
-    container.innerHTML = ""; // Limpa a mensagem de carregando
+    container.innerHTML = "";
 
     if (ranking.length === 0) {
       container.innerHTML =
@@ -133,21 +185,14 @@ async function carregarRanking() {
     }
 
     ranking.forEach((usuario, index) => {
-      // Define o ícone de posição baseado no index (0 = 1º lugar)
       let iconePosicao = `#${index + 1}`;
       let classePodio = "";
 
-      if (index === 0) {
-        classePodio = "rank-1";
-      } else if (index === 1) {
-        classePodio = "rank-2";
-      } else if (index === 2) {
-        classePodio = "rank-3";
-      }
+      if (index === 0) classePodio = "rank-1";
+      else if (index === 1) classePodio = "rank-2";
+      else if (index === 2) classePodio = "rank-3";
 
-      // Cria a linha do usuário
       const linha = document.createElement("div");
-      // Se for do top 3, adiciona a classe do pódio, senão fica normal
       linha.className = `ranking-item ${classePodio}`;
 
       linha.innerHTML = `
@@ -159,7 +204,6 @@ async function carregarRanking() {
                     ${usuario.totalLatinhas} 🥫
                 </div>
             `;
-
       container.appendChild(linha);
     });
   } catch (erro) {
