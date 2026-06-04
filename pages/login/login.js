@@ -110,7 +110,7 @@ function initLogin() {
         form.reset();
 
         window.setTimeout(() => {
-          window.location.href = "../feed/feed.html";
+          window.location.href = "../../index.html";
         }, 2000);
       }
     } catch (error) {
@@ -181,7 +181,7 @@ function initCadastro() {
           document.getElementById("formCadastro").reset();
 
           window.setTimeout(() => {
-            window.location.href = "../feed/feed.html";
+            window.location.href = "../../index.html";
           }, 2000);
         } else {
           message.textContent = `❌ ${dados.erro}`;
