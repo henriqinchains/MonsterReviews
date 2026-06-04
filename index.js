@@ -3,7 +3,7 @@ const loggedUser = localStorage.getItem("loggedUser");
 const userRole = localStorage.getItem("userRole");
 
 if (!token) {
-  window.location.href = "/login/login.html";
+  window.location.href = "./pages/login.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
