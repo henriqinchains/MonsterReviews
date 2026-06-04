@@ -213,7 +213,7 @@ async function carregarRanking() {
     }
 
     ranking.forEach((usuario, index) => {
-      let iconePosicao = `#${index + 1}`;
+      let iconePosicao = `${index + 1}`;
       let classePodio = "";
 
       if (index === 0) classePodio = "rank-1";
