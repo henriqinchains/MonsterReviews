@@ -99,11 +99,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnAbrirModal = document.getElementById("btn-abrir-registro");
   const modalContainer = document.getElementById("modal-container");
   const formAvaliacao = document.getElementById("formAvaliacao");
-  const btnSair = document.getElementById("btnSair");
+  const btnFecharModal = document.getElementById("btn-fechar-modal");
   const btnSubmit = document.getElementById("btnSubmit");
   const inputSujeito = document.getElementById("sujeito");
   const selectSabor = document.querySelector('select[name="sabor"]');
   const usuarioLogado = localStorage.getItem("loggedUser") || "Desconhecido";
+
   if (inputSujeito) {
     inputSujeito.value = usuarioLogado;
   }
@@ -114,11 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
       selectSabor.focus();
     });
   }
-  if (btnSair) {
-    btnSair.addEventListener("click", () => {
-      modalContainer.style.display = "none";
-      formAvaliacao.reset(); // Limpa a sujeira do form
-      inputSujeito.value = usuarioLogado; // Devolve o nome que o reset apagou
+  if (btnFecharModal) {
+    btnFecharModal.addEventListener("click", () => {
+      modalContainer.style.display = "none"; // Esconde o modal
+      formAvaliacao.reset(); // Limpa os campos pra próxima vez
+      if (inputSujeito) {
+        inputSujeito.value = localStorage.getItem("loggedUser") || "Desconhecido"; 
+      }
     });
   }
   window.addEventListener("click", (e) => {
