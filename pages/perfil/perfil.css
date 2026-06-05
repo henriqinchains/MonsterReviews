@@ -66,18 +66,6 @@
   font-size: 1rem;
 }
 
-.profile-badge {
-  background-color: rgba(0, 255, 102, 0.1);
-  color: var(--monster-green);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: bold;
-  border: 1px solid var(--monster-green);
-  font-family: "Nova Square", sans-serif;
-  text-transform: uppercase;
-}
-
 /* Split Screen (Dashboard) */
 .dashboard-split {
   display: flex;
