@@ -11,9 +11,30 @@ if (!token) {
 document.addEventListener("DOMContentLoaded", () => {
   const loggedUserEl = document.getElementById("loggedUser");
   const loggedUserEmailEl = document.getElementById("loggedUserEmail");
+  const emailLogado = localStorage.getItem("loggedEmail");
 
   if (loggedUserEl) loggedUserEl.textContent = loggedUser;
-  if (loggedUserEmailEl) loggedUserEmailEl.textContent = localStorage.getItem("loggedEmail");
+  if (loggedUserEmailEl) loggedUserEmailEl.textContent = emailLogado;
+
+  // ==========================================
+  // INJETANDO O AVATAR NA NAVBAR
+  // ==========================================
+  const avatarNav = document.querySelector("#navUser .user-avatar");
+  const avatarSalvo = localStorage.getItem(`avatar_${emailLogado}`);
+
+  if (avatarNav) {
+    if (avatarSalvo) {
+      // Se tem foto no cache, coloca de fundo e limpa as letras
+      avatarNav.style.backgroundImage = `url(${avatarSalvo})`;
+      avatarNav.style.backgroundSize = "cover";
+      avatarNav.style.backgroundPosition = "center";
+      avatarNav.textContent = ""; 
+    } else {
+      // Se não tem, mantém as iniciais
+      avatarNav.style.backgroundImage = "none";
+      avatarNav.textContent = loggedUser ? loggedUser.substring(0, 2).toUpperCase() : "US";
+    }
+  }
 
   carregarFeed();
   carregarRanking();
@@ -32,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalContainer = document.getElementById("modal-container");
   const formAvaliacao = document.getElementById("formAvaliacao");
   const btnSubmit = document.getElementById("btnSubmit");
-  const btnFecharModal = document.getElementById("btn-fechar-modal"); // <-- O FILHO DA PUTA AQUI
+  const btnFecharModal = document.getElementById("btn-fechar-modal"); 
   const inputSujeito = document.getElementById("sujeito");
   const selectSabor = document.querySelector('select[name="sabor"]');
 
@@ -61,7 +82,6 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // 5. ATRIBUINDO A FUNÇÃO DE FECHAR
-  
   if (btnFecharModal) {
     btnFecharModal.addEventListener("click", fecharModal);
   }
@@ -235,13 +255,21 @@ function renderizarPosts(arrayAvaliacoes){
       const postArticle = document.createElement("article");
       postArticle.className = "post-card";
 
+      // Adicionei a tag <a> ao redor do nome do sujeito para abrir o perfil!
       postArticle.innerHTML = `
     <div class="post-head">
       <div class="post-avatar" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">
         ${post.sujeito.substring(0, 2).toUpperCase()}
       </div>
       <div class="post-meta">
-        <strong>${post.sujeito}</strong>
+        <strong>
+          <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(post.sujeito)}" 
+             style="color: inherit; text-decoration: none;" 
+             onmouseover="this.style.textDecoration='underline'" 
+             onmouseout="this.style.textDecoration='none'">
+            ${post.sujeito}
+          </a>
+        </strong>
         <span>${new Date(post.createdAt).toLocaleDateString("pt-BR")} · Público</span>
       </div>
     </div>
