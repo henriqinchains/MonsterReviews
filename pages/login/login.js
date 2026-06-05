@@ -1,8 +1,29 @@
-// Variável global para segurar o token que o back-end vai mandar
 let tokenTemporario = "";
 
+// ==========================================
+// FUNÇÃO AUXILIAR DE CHECAGEM DE SESSÃO
+// ==========================================
+async function checarLogin() {
+  try {
+    const response = await fetch(
+      "https://monster-reviews-api.onrender.com/api/auth/me",
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    );
+
+    if (response.ok) {
+      window.location.href = "../../index.html";
+    }
+  } catch (error) {
+    console.error("Erro ao verificar sessão inicial:", error);
+  }
+}
+
+// Inicializadores do DOM
 document.addEventListener("DOMContentLoaded", () => {
-  // Inicializa todas as lógicas da tela de uma vez só
+  checarLogin();
   initLogin();
   initCadastro();
   initRecuperacao();
@@ -12,7 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 // FUNÇÕES DE TRANSIÇÃO DE TELA (SPA)
 // ==========================================
-
 function Switch() {
   document.getElementById("login-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
@@ -35,7 +55,6 @@ function SwitchToRecovery() {
 }
 
 function SwitchToReset() {
-  // Esconde a tela de pedir email e mostra a do PIN
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "block";
 }
@@ -53,13 +72,6 @@ function initLogin() {
   const form = document.getElementById("login-form");
   const button = document.getElementById("login-button");
   const message = document.getElementById("login-message");
-
-  // Verifica se já existe token
-  const token = localStorage.getItem("authToken");
-  if (token) {
-    window.location.href = "../../index.html";
-    return;
-  }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -91,30 +103,23 @@ function initLogin() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ login: usuario, password: senha}),
+          body: JSON.stringify({ login: usuario, password: senha }),
+          credentials: "include",
         },
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Falha no login");
+        throw new Error(data.erro || "Falha no login");
       } else {
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("loggedUser", data.login);
-        localStorage.setItem("loggedEmail", data.email);
-        localStorage.setItem("userRole", data.cargo);
-        if (data.avatarUrl) {
-          localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
-        }
-
         message.style.color = "#00ff66";
-        message.textContent = `Login realizado com sucesso, ${data.login}!`;
+        message.textContent = `Login realizado com sucesso! Redirecionando...`;
         form.reset();
 
         window.setTimeout(() => {
           window.location.href = "../../index.html";
-        }, 2000);
+        }, 1500);
       }
     } catch (error) {
       message.textContent = error.message || "Não foi possível fazer login.";
@@ -127,80 +132,80 @@ function initLogin() {
 }
 
 // ==========================================
-// LÓGICA DE CADASTRO
+// LÓGICA DE CADASTRO (ATUALIZADA)
 // ==========================================
 function initCadastro() {
-  document
-    .getElementById("formCadastro")
-    .addEventListener("submit", async (e) => {
-      e.preventDefault();
+  const formCadastro = document.getElementById("formCadastro");
+  if (!formCadastro) return;
 
-      const usuario = document.getElementById("usuario-cadastro").value;
-      const email = document.getElementById("email-cadastro").value;
-      const senha = document.getElementById("senha-cadastro").value;
-      const confirmacaoSenha = document.getElementById(
-        "confirm-senha-cadastro",
-      ).value;
-      const message = document.getElementById("cadastro-message");
+  formCadastro.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-      if (senha !== confirmacaoSenha) {
-        message.style.display = "block";
-        message.textContent =
-          "As senhas não coincidem. Por favor, tente novamente.";
-        message.style.color = "#aa0000";
-        document.getElementById("confirm-senha-cadastro").value = "";
-        setTimeout(() => {
-          message.style.display = "none";
-        }, 3000);
-        return;
-      }
+    const usuario = document.getElementById("usuario-cadastro").value;
+    const email = document.getElementById("email-cadastro").value;
+    const senha = document.getElementById("senha-cadastro").value;
+    const confirmacaoSenha = document.getElementById(
+      "confirm-senha-cadastro",
+    ).value;
+    const message = document.getElementById("cadastro-message");
 
-      message.textContent = "Enviando...";
-      message.style.color = "#adadad";
+    if (senha !== confirmacaoSenha) {
       message.style.display = "block";
+      message.textContent =
+        "As senhas não coincidem. Por favor, tente novamente.";
+      message.style.color = "#aa0000";
+      document.getElementById("confirm-senha-cadastro").value = "";
+      setTimeout(() => {
+        message.style.display = "none";
+      }, 3000);
+      return;
+    }
 
-      try {
-        const resposta = await fetch(
-          "https://monster-reviews-api.onrender.com/api/auth/cadastro",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              login: usuario,
-              email: email,
-              password: senha,
-            }),
-          },
-        );
+    message.textContent = "Enviando...";
+    message.style.color = "#adadad";
+    message.style.display = "block";
 
-        const dados = await resposta.json();
+    try {
+      const resposta = await fetch(
+        "https://monster-reviews-api.onrender.com/api/auth/cadastro",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            login: usuario,
+            email: email,
+            password: senha,
+          }),
+          credentials: "include",
+        },
+      );
 
-        if (resposta.ok) {
-          message.textContent = `✅ ${dados.mensagem}`;
-          message.style.color = "#00ff66";
+      const dados = await resposta.json();
 
-          localStorage.setItem("authToken", dados.token);
-          localStorage.setItem("loggedUser", dados.login);
-          document.getElementById("formCadastro").reset();
+      if (resposta.ok) {
+        message.textContent = `✅ ${dados.mensagem}`;
+        message.style.color = "#00ff66";
 
-          window.setTimeout(() => {
-            window.location.href = "../../index.html";
-          }, 2000);
-        } else {
-          message.textContent = `❌ ${dados.erro}`;
-          message.style.color = "#aa0000";
-          setTimeout(() => {
-            message.style.display = "none";
-          }, 3000);
-        }
-      } catch (error) {
-        message.textContent = "❌ Erro ao conectar com o servidor.";
+        formCadastro.reset();
+
+        window.setTimeout(() => {
+          window.location.href = "../../index.html";
+        }, 2000);
+      } else {
+        message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
         message.style.color = "#aa0000";
         setTimeout(() => {
           message.style.display = "none";
         }, 3000);
       }
-    });
+    } catch (error) {
+      message.textContent = "❌ Erro ao conectar com o servidor.";
+      message.style.color = "#aa0000";
+      setTimeout(() => {
+        message.style.display = "none";
+      }, 3000);
+    }
+  });
 }
 
 // ==========================================
@@ -242,7 +247,6 @@ function initRecuperacao() {
         msgRecuperacao.innerText = "Código enviado! Cheque seu email.";
         emailInput.value = "";
 
-        // Salva o token temporário e muda pra tela do PIN
         tokenTemporario = dados.tokenAuth;
 
         setTimeout(() => {
@@ -317,7 +321,6 @@ function initReset() {
         msgReset.style.color = "#00ff66";
         msgReset.innerText = "Senha atualizada! Voltando pro login...";
 
-        // Limpa tudo e volta pro login original
         formReset.reset();
         tokenTemporario = "";
         setTimeout(() => {

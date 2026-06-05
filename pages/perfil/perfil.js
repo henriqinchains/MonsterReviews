@@ -1,44 +1,71 @@
-const loggedUser = localStorage.getItem("loggedUser");
-const userRole = localStorage.getItem("userRole");
-const token = localStorage.getItem("authToken");
-const loggedEmail = localStorage.getItem("loggedEmail")
+// VARIÁVEIS GLOBAIS SEGURAS (Alimentadas dinamicamente pelo back-end)
+let usuarioLogado = "";
+let emailLogado = "";
+let targetUser = "";
+let isMeuPerfil = false;
 
-document.addEventListener("DOMContentLoaded", () => {
-  // 1. VERIFICAÇÃO DE SEGURANÇA
-  if (!token) {
+// ==========================================
+// AUTENTICAÇÃO E CHECAGEM DE SESSÃO SECURE
+// ==========================================
+async function verificarSessaoPerfil() {
+  try {
+    const resposta = await fetch(
+      "https://monster-reviews-api.onrender.com/api/auth/me",
+      {
+        method: "GET",
+        credentials: "include",
+      },
+    );
+
+    if (!resposta.ok) {
+      window.location.href = "../login/login.html";
+      return;
+    }
+
+    const dadosUsuario = await resposta.json();
+
+    // Define quem está navegando baseado no verificado da API
+    usuarioLogado = dadosUsuario.login;
+    emailLogado = dadosUsuario.email || "";
+
+    // Descobre de quem é o perfil que estamos visitando na URL (perfil.html?user=Joao)
+    const urlParams = new URLSearchParams(window.location.search);
+    targetUser = urlParams.get("user") || usuarioLogado;
+    isMeuPerfil = targetUser === usuarioLogado;
+
+    // Inicializa os componentes visuais com os dados confirmados
+    inicializarEstruturaPerfil();
+  } catch (erro) {
+    console.error("Erro ao verificar sessão no perfil:", erro);
     window.location.href = "../login/login.html";
-    return;
   }
+}
 
-  // 2. DESCOBRINDO DE QUEM É O PERFIL (Lógica do Split Screen)
-  const usuarioLogado = localStorage.getItem("loggedUser");
-  const emailLogado = localStorage.getItem("loggedEmail");
-  
-  // Lê a URL (ex: perfil.html?user=Joao)
-  const urlParams = new URLSearchParams(window.location.search);
-  const targetUser = urlParams.get("user") || usuarioLogado; // Se não tiver nada na URL, é o seu perfil
-  
-  const isMeuPerfil = (targetUser === usuarioLogado);
+// Roda a validação de segurança imediatamente
+verificarSessaoPerfil();
 
-  // 3. PREENCHENDO A IDENTIDADE VISUAL
+// ==========================================
+// MONTAGEM DA INTERFACE E EVENTOS DO DOM
+// ==========================================
+function inicializarEstruturaPerfil() {
+  // 1. Identidade Visual Básica
   document.getElementById("profileNameDisplay").textContent = targetUser;
-  document.getElementById("loggedUser").textContent = usuarioLogado; // Nome lá em cima na Navbar
-  
-  // Ajustes de Perfil Visitante vs Meu Perfil
+  document.getElementById("loggedUser").textContent = usuarioLogado; // Nome na Navbar
+
   const btnTrocarFoto = document.getElementById("btnTrocarFotoPerfil");
   const emailDisplay = document.getElementById("profileEmailDisplay");
-  
+
+  // 2. Lógica de Perfil Visitante vs Meu Perfil
   if (!isMeuPerfil) {
-    // Se for perfil de outro cara, esconde o botão de foto e o e-mail (privacidade)
     if (btnTrocarFoto) btnTrocarFoto.style.display = "none";
     if (emailDisplay) emailDisplay.textContent = "Avaliador da Comunidade";
-    document.getElementById("tituloStatsUsuario").textContent = `Desempenho de ${targetUser}`;
+    document.getElementById("tituloStatsUsuario").textContent =
+      `Desempenho de ${targetUser}`;
 
-    // --- NOVIDADE: BOTÃO VOLTAR PARA O MEU PERFIL ---
+    // Criação dinâmica do botão voltar
     const btnVoltar = document.createElement("button");
     btnVoltar.innerHTML = "Ver meu perfil";
-    
-    // CSS injetado direto via JS pra ficar bonitão sem mexer em outro arquivo
+
     btnVoltar.style.padding = "8px 16px";
     btnVoltar.style.marginBottom = "15px";
     btnVoltar.style.backgroundColor = "#2c3e50";
@@ -49,26 +76,22 @@ document.addEventListener("DOMContentLoaded", () => {
     btnVoltar.style.fontWeight = "bold";
     btnVoltar.style.transition = "0.2s";
 
-    // O truque: redirecionar para a página sem a tag "?user=..."
-    btnVoltar.onclick = () => window.location.href = "perfil.html";
+    btnVoltar.onclick = () => (window.location.href = "perfil.html");
 
-    // Adiciona o botão logo acima do nome do usuário na tela
     const areaNome = document.getElementById("profileNameDisplay");
     if (areaNome && areaNome.parentNode) {
       areaNome.parentNode.insertBefore(btnVoltar, areaNome);
     }
-
   } else {
-    // Se for o meu perfil, mostra meu e-mail
     if (emailDisplay) emailDisplay.textContent = emailLogado || "Sem e-mail";
   }
 
-  // 4. LÓGICA DO AVATAR (Foto de Perfil)
+  // 3. Gerenciamento do Avatar Visual
   const avatarBig = document.getElementById("profileAvatarBig");
   const avatarNav = document.querySelector("#navUser .user-avatar");
-  
-  // Tenta achar a foto salva. Se for perfil de visitante, por enquanto fica com as iniciais.
-  const avatarSalvo = isMeuPerfil ? localStorage.getItem(`avatar_${emailLogado}`) : null;
+  const avatarSalvo = isMeuPerfil
+    ? localStorage.getItem(`avatar_${emailLogado}`)
+    : null;
 
   function atualizarAvatares(source) {
     if (source) {
@@ -80,51 +103,51 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       const iniciais = targetUser.substring(0, 2).toUpperCase();
       if (avatarBig) avatarBig.textContent = iniciais;
-      if (avatarNav) avatarNav.textContent = usuarioLogado.substring(0, 2).toUpperCase();
+      if (avatarNav)
+        avatarNav.textContent = usuarioLogado.substring(0, 2).toUpperCase();
     }
   }
 
   atualizarAvatares(avatarSalvo);
 
-  // Função de Trocar Foto (Só funciona no próprio perfil)
+  // 4. Lógica de Upload da Imagem (Apenas se for o meu perfil)
   const fileInput = document.getElementById("profileFileInput");
   if (isMeuPerfil && btnTrocarFoto && fileInput) {
     btnTrocarFoto.addEventListener("click", () => fileInput.click());
-    
+
     fileInput.addEventListener("change", async (e) => {
       const input = e.target;
       if (input.files && input.files[0]) {
-        
-        // Troca o texto do botão para dar um feedback visual
         const textoOriginal = btnTrocarFoto.textContent;
         btnTrocarFoto.textContent = "⏳ Enviando...";
         btnTrocarFoto.disabled = true;
 
-        // Monta a caixa (FormData) com a foto e o e-mail do dono
         const formData = new FormData();
         formData.append("nome", usuarioLogado);
         formData.append("fotoPerfil", input.files[0]);
-        
+
         try {
-          const resposta = await fetch("https://monster-reviews-api.onrender.com/api/usuarios/avatar", {
-            method: "POST",
-            body: formData // Manda a caixa pesada pro servidor
-          });
-          
+          const resposta = await fetch(
+            "https://monster-reviews-api.onrender.com/api/usuarios/avatar",
+            {
+              method: "POST",
+              body: formData,
+              credentials: "include",
+            },
+          );
+
           const dados = await resposta.json();
 
           if (resposta.ok) {
-            // Salva o link OFICIAL no cache só pra recuperar rápido na próxima vez
             localStorage.setItem(`avatar_${emailLogado}`, dados.avatarUrl);
-            atualizarAvatares(dados.avatarUrl); // Atualiza a tela instantaneamente
+            atualizarAvatares(dados.avatarUrl);
           } else {
             alert("Erro do servidor: " + dados.erro);
           }
         } catch (erro) {
-          console.error("Erro no envio do formulário:", erro);
+          console.error("Erro no envio do avatar:", erro);
           alert("Erro de conexão ao tentar subir a foto.");
         } finally {
-          // Devolve o botão ao normal
           btnTrocarFoto.textContent = textoOriginal;
           btnTrocarFoto.disabled = false;
         }
@@ -132,36 +155,49 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 5. O MOTOR DE ESTATÍSTICAS (O Dashboard)
   carregarEstatisticas(targetUser);
-});
+}
 
-// O Fetch que busca as estatísticas pelo servidor
-async function carregarEstatisticas(targetUser) {
+// ==========================================
+// BUSCA DE ESTATÍSTICAS (DASHBOARD)
+// ==========================================
+async function carregarEstatisticas(target) {
   try {
-    // Chama a rota passando o nome do cara na URL
-    const url = `https://monster-reviews-api.onrender.com/api/estatisticas?user=${targetUser}`;
-    const resposta = await fetch(url);
+    const url = `https://monster-reviews-api.onrender.com/api/estatisticas?user=${encodeURIComponent(target)}`;
+    const resposta = await fetch(url, {
+      method: "GET",
+      credentials: "include",
+    });
+
     const dados = await resposta.json();
-    
-    // --- ATUALIZA A TELA: ESTATÍSTICAS GLOBAIS ---
-    document.getElementById("globalTotalLatas").textContent = dados.global.totalLatas;
-    document.getElementById("globalGasto").textContent = `R$ ${dados.global.totalGasto.toFixed(2).replace(".", ",")}`;
-    document.getElementById("globalMedia").textContent = dados.global.mediaNotas.toFixed(1);
-    document.getElementById("globalSaborFav").textContent = dados.global.saborFavorito;
 
-    // --- ATUALIZA A TELA: ESTATÍSTICAS DO USUÁRIO ---
-    document.getElementById("userTotalLatas").textContent = dados.usuario.totalLatas;
-    document.getElementById("userGasto").textContent = `R$ ${dados.usuario.totalGasto.toFixed(2).replace(".", ",")}`;
-    document.getElementById("userMedia").textContent = dados.usuario.mediaNotas.toFixed(1);
-    document.getElementById("userSaborFav").textContent = dados.usuario.saborFavorito;
+    // Injeção de dados globais
+    document.getElementById("globalTotalLatas").textContent =
+      dados.global.totalLatas;
+    document.getElementById("globalGasto").textContent =
+      `R$ ${dados.global.totalGasto.toFixed(2).replace(".", ",")}`;
+    document.getElementById("globalMedia").textContent =
+      dados.global.mediaNotas.toFixed(1);
+    document.getElementById("globalSaborFav").textContent =
+      dados.global.saborFavorito;
 
+    // Injeção de dados específicos do usuário/visitante
+    document.getElementById("userTotalLatas").textContent =
+      dados.usuario.totalLatas;
+    document.getElementById("userGasto").textContent =
+      `R$ ${dados.usuario.totalGasto.toFixed(2).replace(".", ",")}`;
+    document.getElementById("userMedia").textContent =
+      dados.usuario.mediaNotas.toFixed(1);
+    document.getElementById("userSaborFav").textContent =
+      dados.usuario.saborFavorito;
   } catch (erro) {
     console.error("Erro ao carregar estatísticas do backend:", erro);
   }
 }
 
-// Mantém o Dropdown funcionando na navbar
+// ==========================================
+// COMPONENTES DE INTERAÇÃO DA NAVBAR
+// ==========================================
 function toggleDropdown() {
   const nu = document.getElementById("navUser");
   if (nu) nu.classList.toggle("open");
