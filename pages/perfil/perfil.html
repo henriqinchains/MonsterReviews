@@ -70,6 +70,112 @@
         </div>
       </div>
     </nav>
+
+    <main>
+      <div class="profile-container">
+  
+  <section class="profile-header glass-panel">
+    <div class="avatar-wrapper">
+      <div class="profile-avatar-big" id="profileAvatarBig">
+        </div>
+      <button id="btnTrocarFotoPerfil" class="btn btn-ghost btn-sm">📷 Atualizar Foto</button>
+      <input type="file" id="profileFileInput" accept="image/*" style="display: none;" />
+    </div>
+    
+    <div class="profile-info">
+      <h2 id="profileNameDisplay">Carregando...</h2>
+      <p id="profileEmailDisplay">carregando...</p>
+      <span class="profile-badge">Membro Monster</span>
+    </div>
+  </section>
+
+  <div class="dashboard-split">
+    
+    <section class="stats-column user-stats">
+      <h3 class="column-title">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <span id="tituloStatsUsuario">Seu Desempenho</span>
+      </h3>
+      
+      <div class="stats-grid-2x2">
+        <div class="stat-card glass-panel user-card">
+          <div class="stat-icon">🥫</div>
+          <div class="stat-data">
+            <span class="stat-value" id="userTotalLatas">0</span>
+            <span class="stat-label">Latas Registradas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel user-card">
+          <div class="stat-icon">💸</div>
+          <div class="stat-data">
+            <span class="stat-value" id="userGasto">R$ 0,00</span>
+            <span class="stat-label">Investimento</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel user-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-data">
+            <span class="stat-value" id="userMedia">0.0</span>
+            <span class="stat-label">Média das Notas</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel user-card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-data">
+            <span class="stat-value text-small" id="userSaborFav">-</span>
+            <span class="stat-label">Sabor Favorito</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats-column global-stats">
+      <h3 class="column-title global-title">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        Comunidade
+      </h3>
+      
+      <div class="stats-grid-2x2">
+        <div class="stat-card glass-panel global-card">
+          <div class="stat-icon">🥫</div>
+          <div class="stat-data">
+            <span class="stat-value" id="globalTotalLatas">0</span>
+            <span class="stat-label">Total do Sistema</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel global-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-data">
+            <span class="stat-value" id="globalGasto">R$ 0,00</span>
+            <span class="stat-label">Giro Financeiro</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel global-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-data">
+            <span class="stat-value" id="globalMedia">0.0</span>
+            <span class="stat-label">Média Geral</span>
+          </div>
+        </div>
+        
+        <div class="stat-card glass-panel global-card">
+          <div class="stat-icon">👑</div>
+          <div class="stat-data">
+            <span class="stat-value text-small" id="globalSaborFav">-</span>
+            <span class="stat-label">Queridinho da Galera</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+    </main>
     <script src="index.js" defer></script>
     <script>
       // O evento de Sair fica aqui de forma limpa e isolada
