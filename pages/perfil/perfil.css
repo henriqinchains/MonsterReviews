@@ -1,0 +1,184 @@
+.profile-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* Painéis com o mesmo estilo do Feed (.panel / .post-card) */
+.glass-panel {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(69, 162, 158, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Identidade (Cabeçalho) */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 30px;
+}
+
+.avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.profile-avatar-big {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: var(--monster-green);
+  box-shadow: 0 0 15px rgba(0, 255, 102, 0.4);
+  color: var(--bg-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3.5rem;
+  font-family: "Nova Square", sans-serif;
+  font-weight: bold;
+  border: 3px solid var(--monster-green);
+  background-size: cover;
+  background-position: center;
+}
+
+#btnTrocarFotoPerfil {
+  font-size: 0.8rem;
+  padding: 8px 16px;
+}
+
+.profile-info h2 {
+  font-size: 2.2rem;
+  margin: 0 0 5px 0;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.profile-info p {
+  color: var(--text-muted);
+  margin: 0 0 15px 0;
+  font-size: 1rem;
+}
+
+.profile-badge {
+  background-color: rgba(0, 255, 102, 0.1);
+  color: var(--monster-green);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  border: 1px solid var(--monster-green);
+  font-family: "Nova Square", sans-serif;
+  text-transform: uppercase;
+}
+
+/* Split Screen (Dashboard) */
+.dashboard-split {
+  display: flex;
+  gap: 30px;
+}
+
+.stats-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.column-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  color: var(--monster-green);
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  text-transform: uppercase;
+}
+
+.global-title {
+  color: #00d2ff; /* Azul neon para diferenciar do usuário */
+}
+
+/* Grid 2x2 interno */
+.stats-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.stat-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+/* Diferenciação de Hover: Verde pro Usuário, Azul pro Global */
+.user-card:hover {
+  border-color: var(--monster-green);
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0, 255, 102, 0.1);
+}
+
+.global-card:hover {
+  border-color: #00d2ff;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(0, 210, 255, 0.1);
+}
+
+.stat-icon {
+  font-size: 2rem;
+  background-color: var(--bg-darker);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  line-height: 1;
+}
+
+.stat-data {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.text-small {
+  font-size: 1.2rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: "Nova Square", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Responsividade: Quebra para 1 coluna no celular */
+@media (max-width: 850px) {
+  .dashboard-split { flex-direction: column; }
+  .profile-header { flex-direction: column; text-align: center; }
+  .avatar-wrapper { align-items: center; }
+}
+
+@media (max-width: 500px) {
+  .stats-grid-2x2 { grid-template-columns: 1fr; }
+}
