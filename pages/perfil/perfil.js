@@ -1,6 +1,10 @@
+const loggedUser = localStorage.getItem("loggedUser");
+const userRole = localStorage.getItem("userRole");
+const token = localStorage.getItem("authToken");
+const loggedEmail = localStorage.getItem("loggedEmail")
+
 document.addEventListener("DOMContentLoaded", () => {
   // 1. VERIFICAÇÃO DE SEGURANÇA
-  const token = localStorage.getItem("authToken");
   if (!token) {
     window.location.href = "../login/login.html";
     return;
