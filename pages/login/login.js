@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://monster-reviews-api.onrender.com/api";
 let tokenTemporario = "";
 // ==========================================
 // FUNÇÃO AUXILIAR DE CHECAGEM DE SESSÃO
