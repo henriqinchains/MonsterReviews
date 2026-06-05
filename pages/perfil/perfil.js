@@ -29,6 +29,31 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnTrocarFoto) btnTrocarFoto.style.display = "none";
     if (emailDisplay) emailDisplay.textContent = "Avaliador da Comunidade";
     document.getElementById("tituloStatsUsuario").textContent = `Desempenho de ${targetUser}`;
+
+    // --- NOVIDADE: BOTÃO VOLTAR PARA O MEU PERFIL ---
+    const btnVoltar = document.createElement("button");
+    btnVoltar.innerHTML = "Ver meu perfil";
+    
+    // CSS injetado direto via JS pra ficar bonitão sem mexer em outro arquivo
+    btnVoltar.style.padding = "8px 16px";
+    btnVoltar.style.marginBottom = "15px";
+    btnVoltar.style.backgroundColor = "#2c3e50";
+    btnVoltar.style.color = "white";
+    btnVoltar.style.border = "none";
+    btnVoltar.style.borderRadius = "6px";
+    btnVoltar.style.cursor = "pointer";
+    btnVoltar.style.fontWeight = "bold";
+    btnVoltar.style.transition = "0.2s";
+
+    // O truque: redirecionar para a página sem a tag "?user=..."
+    btnVoltar.onclick = () => window.location.href = "perfil.html";
+
+    // Adiciona o botão logo acima do nome do usuário na tela
+    const areaNome = document.getElementById("profileNameDisplay");
+    if (areaNome && areaNome.parentNode) {
+      areaNome.parentNode.insertBefore(btnVoltar, areaNome);
+    }
+
   } else {
     // Se for o meu perfil, mostra meu e-mail
     if (emailDisplay) emailDisplay.textContent = emailLogado || "Sem e-mail";
