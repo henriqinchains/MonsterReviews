@@ -12,7 +12,7 @@ async function checarLogin() {
 
     if (response.ok) {
       // Ajustado para garantir o redirecionamento correto na raiz do GitHub Pages
-      window.location.href = "/";
+      window.location.href = "/ContadordeMonster/";
     }
   } catch (error) {
     console.error("Erro ao verificar sessão inicial:", error);
@@ -116,7 +116,7 @@ function initLogin() {
         form.reset();
 
         window.setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/ContadordeMonster/";
         }, 1500);
       }
     } catch (error) {
@@ -184,7 +184,7 @@ function initCadastro() {
         formCadastro.reset();
 
         window.setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/ContadordeMonster/";
         }, 2000);
       } else {
         message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
@@ -297,7 +297,7 @@ function initReset() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          token: tokenTemporario,
+          tok en: tokenTemporario,
           codigoDigitado: codigoDigitado,
           novaSenha: senha1,
         }),
