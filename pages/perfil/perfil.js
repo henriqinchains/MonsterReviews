@@ -76,9 +76,8 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("fotoPerfil", input.files[0]);
         formData.append("email", emailLogado);
 
-        console.log("Tentando enviar para: https://monster-reviews-api.onrender.com/api/usuarios/avatar");
         try {
-          const resposta = await fetch("https://monster-reviews-api.onrender.com/api/usuarios/avatar", {
+          const resposta = await fetch("https://monster-reviews-api.onrender.com/avatar", {
             method: "POST",
             body: formData // Manda a caixa pesada pro servidor
           });
