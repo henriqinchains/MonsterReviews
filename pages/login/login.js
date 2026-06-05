@@ -199,7 +199,7 @@ function initCadastro() {
 
         window.setTimeout(() => {
           // Caminho corrigido!
-          window.location.href = "/index.html";
+          window.location.href = "../../index.html";
         }, 2000);
       } else {
         message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
