@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. VERIFICAÇÃO DE SEGURANÇA
   const token = localStorage.getItem("authToken");
   if (!token) {
-    window.location.href = "./pages/login/login.html";
+    window.location.href = "../login/login.html";
     return;
   }
 
