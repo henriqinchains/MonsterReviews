@@ -62,16 +62,43 @@ document.addEventListener("DOMContentLoaded", () => {
   if (isMeuPerfil && btnTrocarFoto && fileInput) {
     btnTrocarFoto.addEventListener("click", () => fileInput.click());
     
-    fileInput.addEventListener("change", (e) => {
+    fileInput.addEventListener("change", async (e) => {
       const input = e.target;
       if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function(evento) {
-          const base64Image = evento.target.result;
-          localStorage.setItem(`avatar_${emailLogado}`, base64Image); // Salva no cache
-          atualizarAvatares(base64Image); // Atualiza na hora na tela
-        };
-        reader.readAsDataURL(input.files[0]);
+        
+        // Troca o texto do botão para dar um feedback visual
+        const textoOriginal = btnTrocarFoto.textContent;
+        btnTrocarFoto.textContent = "⏳ Enviando...";
+        btnTrocarFoto.disabled = true;
+
+        // Monta a caixa (FormData) com a foto e o e-mail do dono
+        const formData = new FormData();
+        formData.append("fotoPerfil", input.files[0]);
+        formData.append("email", emailLogado);
+
+        try {
+          const resposta = await fetch("https://monster-reviews-api.onrender.com/api/usuarios/avatar", {
+            method: "POST",
+            body: formData // Manda a caixa pesada pro servidor
+          });
+          
+          const dados = await resposta.json();
+
+          if (resposta.ok) {
+            // Salva o link OFICIAL no cache só pra recuperar rápido na próxima vez
+            localStorage.setItem(`avatar_${emailLogado}`, dados.avatarUrl);
+            atualizarAvatares(dados.avatarUrl); // Atualiza a tela instantaneamente
+          } else {
+            alert("Erro do servidor: " + dados.erro);
+          }
+        } catch (erro) {
+          console.error("Erro no envio do formulário:", erro);
+          alert("Erro de conexão ao tentar subir a foto.");
+        } finally {
+          // Devolve o botão ao normal
+          btnTrocarFoto.textContent = textoOriginal;
+          btnTrocarFoto.disabled = false;
+        }
       }
     });
   }
