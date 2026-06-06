@@ -1,117 +1,99 @@
 <!doctype html>
 <html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contador de Monster</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nova+Square&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="index.css" />
-    <link rel="icon" href="src/img/monster.png" />
-  </head>
-  <body>
-    <nav>
-      <span class="nav-logo">MONSTER REVIEWS</span>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contador de Monster</title>
 
-      <div class="nav-links">
-        <a href="#" class="active">Feed</a>
-        <a href="./pages/perfil/perfil.html">Perfil e Estatísticas</a>
-        <a href="#">Torneio (em breve)</a>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nova+Square&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="icon" href="src/img/monster.png" />
+</head>
+
+<body>
+  <nav>
+    <span class="nav-logo">MONSTER REVIEWS</span>
+
+    <div class="nav-links">
+      <a href="#" class="active">Feed</a>
+      <a href="./pages/perfil/perfil.html">Perfil e Estatísticas</a>
+      <a href="#">Torneio (em breve)</a>
+    </div>
+
+    <div class="nav-user" id="navUser">
+      <div class="user-trigger" onclick="toggleDropdown()">
+        <div class="user-avatar"></div>
+        <span id="loggedUser">Carregando...</span>
+        <svg class="chevron" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
       </div>
-
-      <div class="nav-user" id="navUser">
-        <div class="user-trigger" onclick="toggleDropdown()">
-          <div class="user-avatar"></div>
-          <span id="loggedUser">Carregando...</span>
-          <svg class="chevron" viewBox="0 0 24 24">
-            <polyline points="6 9 12 15 18 9" />
+      <div class="user-dropdown">
+        <div class="dropdown-header">
+          <strong id="loggedUserEmail"></strong>
+          <span></span>
+        </div>
+        <div class="dropdown-sep"></div>
+        <div id="btnSair" class="dropdown-item danger">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
           </svg>
-        </div>
-        <div class="user-dropdown">
-          <div class="dropdown-header">
-            <strong id="loggedUserEmail"></strong>
-            <span></span>
-          </div>
-          <div class="dropdown-sep"></div>
-          <div id="btnSair" class="dropdown-item danger">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            Sair
-          </div>
+          Sair
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <div class="page">
-      <section class="timeline">
-        <div class="timeline-header">
-          <h2>Timeline</h2>
-          <button id="btn-abrir-registro" class="btn-registrar">
-            Registrar latinha
-          </button>
+  <div class="page">
+    <section class="timeline">
+      <div class="timeline-header">
+        <h2>Timeline</h2>
+        <button id="btn-abrir-registro" class="btn-registrar">
+          Registrar latinha
+        </button>
+      </div>
+
+      <div class="feed-container" id="feed-container"></div>
+    </section>
+
+    <div class="right-col">
+      <div class="panel">
+        <div class="panel-header">
+          <h3>Liderança</h3>
+          <span class="badge">Ao vivo</span>
         </div>
-
-        <div class="feed-container" id="feed-container"></div>
-      </section>
-
-      <div class="right-col">
-        <div class="panel">
-          <div class="panel-header">
-            <h3>Liderança</h3>
-            <span class="badge">Ao vivo</span>
-          </div>
-          <div class="panel-body" id="ranking-container">
-            <p style="text-align: center; color: #888">
-              Calculando latinhas...
-            </p>
-          </div>
+        <div class="panel-body" id="ranking-container">
+          <p style="text-align: center; color: #888">
+            Calculando latinhas...
+          </p>
         </div>
+      </div>
 
-        <div class="filter-form">
-          <div class="filter-header">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-            </svg>
-            <h3>Filtros</h3>
-          </div>
-          <div class="filter-body">
-            <div class="field">
-              <div
-                class="label-row"
-                style="
+      <div class="filter-form">
+        <div class="filter-header">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+          </svg>
+          <h3>Filtros</h3>
+        </div>
+        <div class="filter-body">
+          <div class="field">
+            <div class="label-row" style="
                   display: flex;
                   justify-content: space-between;
                   align-items: center;
                   margin-bottom: 10px;
-                "
-              >
-                <label for="filtroBusca" style="margin-bottom: 0">Buscar</label>
+                ">
+              <label for="filtroBusca" style="margin-bottom: 0">Buscar</label>
 
-                <label
-                  for="checkMeusPosts"
-                  style="
+              <label for="checkMeusPosts" style="
                     display: flex;
                     align-items: center;
                     gap: 8px;
@@ -120,237 +102,164 @@
                     font-size: 0.85rem;
                     margin-bottom: 0;
                     font-weight: 600;
-                  "
-                >
-                  <input
-                    type="checkbox"
-                    id="checkMeusPosts"
-                    style="
+                  ">
+                <input type="checkbox" id="checkMeusPosts" style="
                       width: 16px;
                       height: 16px;
                       margin: 0;
                       cursor: pointer;
                       accent-color: var(--accent-strong);
-                    "
-                  />
-                  Só as minhas latas
-                </label>
-              </div>
-
-              <input
-                type="text"
-                id="filtroBusca"
-                list="listaUsuarios"
-                placeholder="Avaliador, palavra-chave..."
-              />
-              <datalist id="listaUsuarios"></datalist>
+                    " />
+                Só as minhas latas
+              </label>
             </div>
 
-            <div class="field">
-              <label for="filtroSabor">Sabor</label>
-              <div class="select-wrap">
-                <select id="filtroSabor">
-                  <option value="">Todos os sabores</option>
-                  <option value="branco">Branco</option>
-                  <option value="mangoLoco">Mango Loco</option>
-                  <option value="pacificPunch">Pacific Punch</option>
-                  <option value="peachyKeen">Peachy Keen</option>
-                  <option value="rioPunch">Rio Punch</option>
-                  <option value="ultraFiestaMango">Ultra Fiesta Mango</option>
-                  <option value="ultraStrawberry">
-                    Ultra Strawberry Dreams
-                  </option>
-                  <option value="ultraViolet">Ultra Violet</option>
-                  <option value="watermelon">Watermelon</option>
-                  <option value="outro">Outro</option>
-                </select>
-              </div>
-            </div>
+            <input type="text" id="filtroBusca" list="listaUsuarios" placeholder="Avaliador, palavra-chave..." />
+            <datalist id="listaUsuarios"></datalist>
+          </div>
 
-            <div class="field">
-              <label for="filtroNota">Nota Mínima</label>
-              <input
-                type="number"
-                id="filtroNota"
-                min="0"
-                max="10"
-                step="0.5"
-                placeholder="Ex: 8.0"
-              />
-            </div>
-
-            <div class="field">
-              <label>Valeu a pena?</label>
-              <div class="tag-group" id="tagGroupValeu">
-                <span
-                  class="tag active"
-                  data-value="todos"
-                  onclick="toggleTag(this)"
-                  >Todos</span
-                >
-                <span class="tag" data-value="true" onclick="toggleTag(this)"
-                  >✓ Sim</span
-                >
-                <span class="tag" data-value="false" onclick="toggleTag(this)"
-                  >✗ Não</span
-                >
-              </div>
-            </div>
-
-            <div class="field">
-              <label for="filtroOrdem">Ordenar por</label>
-              <div class="select-wrap">
-                <select id="filtroOrdem">
-                  <option value="recentes">Mais recentes</option>
-                  <option value="antigos">Mais antigos</option>
-                  <option value="maior_nota">Maior nota</option>
-                  <option value="menor_nota">Menor nota</option>
-                  <option value="menor_preco">Menor preço</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="btn-group">
-              <button type="button" class="btn btn-ghost" id="btnLimparFiltros">
-                Limpar
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                id="btnAplicarFiltros"
-              >
-                Aplicar
-              </button>
+          <div class="field">
+            <label for="filtroSabor">Sabor</label>
+            <div class="select-wrap">
+              <select id="filtroSabor">
+                <option value="">Todos os sabores</option>
+                <option value="branco">Branco</option>
+                <option value="mangoLoco">Mango Loco</option>
+                <option value="pacificPunch">Pacific Punch</option>
+                <option value="peachyKeen">Peachy Keen</option>
+                <option value="rioPunch">Rio Punch</option>
+                <option value="ultraFiestaMango">Ultra Fiesta Mango</option>
+                <option value="ultraStrawberry">
+                  Ultra Strawberry Dreams
+                </option>
+                <option value="ultraViolet">Ultra Violet</option>
+                <option value="watermelon">Watermelon</option>
+                <option value="outro">Outro</option>
+              </select>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div id="modal-container" class="modal-overlay" style="display: none">
-        <div class="modal-card">
-          <button id="btn-fechar-modal" class="close-button">&times;</button>
-          <h2>Registrar Nova <span>Latinha</span></h2>
-          <p class="modal-subtitle">
-            Adicione sua avaliação sobre o Monster da vez.
-          </p>
-          <form id="formAvaliacao">
-            <div class="grid grid-two">
-              <label
-                >Monstro<input type="text" id="sujeito" name="sujeito" readonly
-              /></label>
-              <label
-                >Sabor do Monster<select
-                  name="sabor"
-                  placeholder="Ex: Ultra Paradise"
-                  required
-                >
-                  <option value="">Selecione um sabor</option>
-                  <option value="branco">Branco</option>
-                  <option value="mangoLoco">Mango Loco</option>
-                  <option value="pacificPunch">Pacific Punch</option>
-                  <option value="peachyKeen">Peachy Keen</option>
-                  <option value="rioPunch">Rio Punch</option>
-                  <option value="ultraFiestaMango">Ultra Fiesta Mango</option>
-                  <option value="ultraStrawberry">
-                    Ultra Strawberry Dreams
-                  </option>
-                  <option value="ultraViolet">Ultra Violet</option>
-                  <option value="watermelon">Watermelon</option>
-                  <option value="outro">Outro (anotar no grupo)</option>
-                </select>
-              </label>
+          <div class="field">
+            <label for="filtroNota">Nota Mínima</label>
+            <input type="number" id="filtroNota" min="0" max="10" step="0.5" placeholder="Ex: 8.0" />
+          </div>
+
+          <div class="field">
+            <label>Valeu a pena?</label>
+            <div class="tag-group" id="tagGroupValeu">
+              <span class="tag active" data-value="todos" onclick="toggleTag(this)">Todos</span>
+              <span class="tag" data-value="true" onclick="toggleTag(this)">✓ Sim</span>
+              <span class="tag" data-value="false" onclick="toggleTag(this)">✗ Não</span>
             </div>
-            <div class="grid grid-two">
-              <label
-                >Valor<input
-                  type="number"
-                  name="valor"
-                  step="0.01"
-                  placeholder="R$12,99"
-                  required
-                />
-              </label>
-              <label
-                >Nota (0 a 10)<input
-                  type="number"
-                  name="nota"
-                  min="0"
-                  max="10"
-                  step="0.01"
-                  placeholder="8.5"
-                  required
-                />
-              </label>
+          </div>
+
+          <div class="field">
+            <label for="filtroOrdem">Ordenar por</label>
+            <div class="select-wrap">
+              <select id="filtroOrdem">
+                <option value="recentes">Mais recentes</option>
+                <option value="antigos">Mais antigos</option>
+                <option value="maior_nota">Maior nota</option>
+                <option value="menor_nota">Menor nota</option>
+                <option value="menor_preco">Menor preço</option>
+              </select>
             </div>
-            <div class="grid grid-two">
-              <fieldset class="radio-group">
-                <legend>Valeu a pena?</legend>
-                <label
-                  ><input
-                    type="radio"
-                    name="valeu_a_pena"
-                    value="true"
-                    required
-                  />Sim</label
-                >
-                <label
-                  ><input
-                    type="radio"
-                    name="valeu_a_pena"
-                    value="false"
-                    required
-                  />Não</label
-                >
-              </fieldset>
-              <label
-                >Foto do Monster<input
-                  type="file"
-                  name="foto"
-                  accept="image/*"
-                  required
-              /></label>
-            </div>
-            <label>
-              Review (opcional)
-              <textarea
-                name="review"
-                placeholder="Conte o que achou do sabor, energia e sensação geral..."
-              ></textarea>
-            </label>
-            <div class="footer">
-              <div class="hint">Rumo a 1k gastos em monsters!</div>
-              <button class="button" type="submit" id="btnSubmit">
-                Enviar avaliação
-              </button>
-            </div>
-          </form>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="btn btn-ghost" id="btnLimparFiltros">
+              Limpar
+            </button>
+            <button type="button" class="btn btn-primary" id="btnAplicarFiltros">
+              Aplicar
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <script src="index.js" defer></script>
-    <script>
-      document
-        .getElementById("btnSair")
-        .addEventListener("click", async (event) => {
-          event.preventDefault();
+    <div id="modal-container" class="modal-overlay" style="display: none">
+      <div class="modal-card">
+        <button id="btn-fechar-modal" class="close-button">&times;</button>
+        <h2>Registrar Nova <span>Latinha</span></h2>
+        <p class="modal-subtitle">
+          Adicione sua avaliação sobre o Monster da vez.
+        </p>
+        <form id="formAvaliacao">
+          <div class="grid grid-two">
+            <label>Monstro<input type="text" id="sujeito" name="sujeito" readonly /></label>
+            <label>Sabor do Monster<select name="sabor" placeholder="Ex: Ultra Paradise" required>
+                <option value="">Selecione um sabor</option>
+                <option value="branco">Branco</option>
+                <option value="mangoLoco">Mango Loco</option>
+                <option value="pacificPunch">Pacific Punch</option>
+                <option value="peachyKeen">Peachy Keen</option>
+                <option value="rioPunch">Rio Punch</option>
+                <option value="ultraFiestaMango">Ultra Fiesta Mango</option>
+                <option value="ultraStrawberry">
+                  Ultra Strawberry Dreams
+                </option>
+                <option value="ultraViolet">Ultra Violet</option>
+                <option value="watermelon">Watermelon</option>
+                <option value="outro">Outro (anotar no grupo)</option>
+              </select>
+            </label>
+          </div>
+          <div class="grid grid-two">
+            <label>Valor<input type="number" name="valor" step="0.01" placeholder="R$12,99" required />
+            </label>
+            <label>Nota (0 a 10)<input type="number" name="nota" min="0" max="10" step="0.01" placeholder="8.5"
+                required />
+            </label>
+          </div>
+          <div class="grid grid-two">
+            <fieldset class="radio-group">
+              <legend>Valeu a pena?</legend>
+              <label><input type="radio" name="valeu_a_pena" value="true" required />Sim</label>
+              <label><input type="radio" name="valeu_a_pena" value="false" required />Não</label>
+            </fieldset>
+            <label>Foto do Monster<input type="file" name="foto" accept="image/*" required /></label>
+          </div>
+          <label>
+            Review (opcional)
+            <textarea name="review" placeholder="Conte o que achou do sabor, energia e sensação geral..."></textarea>
+          </label>
+          <div class="footer">
+            <div class="hint">Rumo a 1k gastos em monsters!</div>
+            <button class="button" type="submit" id="btnSubmit">
+              Enviar avaliação
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-          try {
-            await fetch(
-              "https://monster-reviews-api.onrender.com/api/auth/logout",
-              {
-                method: "POST",
-                credentials: "include",
-              },
-            );
+  <script src="index.js" defer></script>
+  <script>
+    document
+      .getElementById("btnSair")
+      .addEventListener("click", async (event) => {
+        event.preventDefault();
 
-            localStorage.removeItem("userRole");
-            window.location.href = "./pages/login/login.html";
-          } catch (erro) {
-            console.error("Erro ao fazer logout na API:", erro);
-            window.location.href = "./pages/login/login.html";
-          }
-        });
-    </script>
-  </body>
+        try {
+          await fetch(
+            "https://monster-reviews-api.onrender.com/api/auth/logout",
+            {
+              method: "POST",
+              credentials: "include",
+            },
+          );
+
+          sessionStorage.clear();
+          localStorage.removeItem("userRole");
+          window.location.href = "./pages/login/login.html";
+        } catch (erro) {
+          console.error("Erro ao fazer logout na API:", erro);
+          window.location.href = "./pages/login/login.html";
+        }
+      });
+  </script>
+</body>
+
 </html>

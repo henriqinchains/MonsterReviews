@@ -9,7 +9,7 @@ async function checarLogin() {
     // Agora ele bate na rota /me mandando os cookies de forma segura
     const response = await fetch(`${API_URL}/auth/me`, {
       method: "GET",
-      credentials: "include", 
+      credentials: "include",
     });
 
     if (response.ok) {
@@ -112,15 +112,8 @@ function initLogin() {
       if (!response.ok) {
         throw new Error(data.erro || "Falha no login");
       } else {
-        // --- O NOSSO TOQUE DE MESTRE PARA A INTERFACE ---
-        // O token agora tá seguro no Cookie, então não salvamos ele aqui.
-        // Mas a gente salva os dados visuais pro feed e pro perfil usarem:
-        localStorage.setItem("loggedUser", data.login);
-        localStorage.setItem("loggedEmail", data.email);
-        localStorage.setItem("userRole", data.cargo);
-        
         if (data.avatarUrl) {
-            localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
+          localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
         }
 
         message.style.color = "#00ff66";
@@ -155,12 +148,15 @@ function initCadastro() {
     const usuario = document.getElementById("usuario-cadastro").value;
     const email = document.getElementById("email-cadastro").value;
     const senha = document.getElementById("senha-cadastro").value;
-    const confirmacaoSenha = document.getElementById("confirm-senha-cadastro").value;
+    const confirmacaoSenha = document.getElementById(
+      "confirm-senha-cadastro",
+    ).value;
     const message = document.getElementById("cadastro-message");
 
     if (senha !== confirmacaoSenha) {
       message.style.display = "block";
-      message.textContent = "As senhas não coincidem. Por favor, tente novamente.";
+      message.textContent =
+        "As senhas não coincidem. Por favor, tente novamente.";
       message.style.color = "#aa0000";
       document.getElementById("confirm-senha-cadastro").value = "";
       setTimeout(() => {
@@ -258,7 +254,7 @@ function initRecuperacao() {
 
         setTimeout(() => {
           msgRecuperacao.style.display = "none";
-          SwitchToReset(); 
+          SwitchToReset();
         }, 1500);
       } else {
         msgRecuperacao.style.color = "#ff3333";
