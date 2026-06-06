@@ -11,6 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Nova+Square&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="index.css" />
   <link rel="icon" href="src/img/monster.png" />
+  <script>
+        // Roda IMEDIATAMENTE antes do site ser desenhado
+        if (sessionStorage.getItem('jaViuLoading')) {
+            document.documentElement.classList.add('esconder-loading-instantaneo');
+        }
+  </script>
 </head>
 
 <body>
