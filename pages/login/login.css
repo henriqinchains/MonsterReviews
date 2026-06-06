@@ -183,11 +183,30 @@ button:disabled {
   text-align: center;
 }
 
-.disclaimer-legal {
+.footer-login {
+  text-align: center;
+  margin-top: 40px;
+  padding: 20px;
+  border-top: 1px solid #333333;
+}
+
+.footer-login .disclaimer {
   font-size: 0.75rem;
   color: #888888;
-  text-align: center;
-  padding: 15px 20px;
-  margin-top: 30px;
-  border-top: 1px solid #333333;
+  margin-bottom: 8px;
+}
+
+.footer-login .creditos {
+  font-size: 0.85rem;
+  color: #aaaaaa;
+}
+
+.footer-login .creditos a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.footer-login .creditos a:hover {
+  text-decoration: underline;
 }
