@@ -188,6 +188,9 @@ button:disabled {
   margin-top: 40px;
   padding: 20px;
   border-top: 1px solid #333333;
+  position: relative;
+  z-index: 999;
+  background-color: #121212;
 }
 
 .footer-login .disclaimer {
