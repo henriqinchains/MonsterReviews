@@ -362,7 +362,12 @@ async function resolverAvatarDoCardFeed(usuario, elementId) {
   const cacheSessao = sessionStorage.getItem(`cache_avatar_${usuario}`);
   if (cacheSessao) {
     if (cacheSessao !== "none_found") {
-      el.style.background = "none"; // Remove o gradiente vermelho padrão
+      // ⚡ CORREÇÃO: Limpa o fundo sem matar as propriedades de tamanho e posição
+      el.style.background = "none";
+      el.style.backgroundColor = "#11161d";
+      el.style.backgroundSize = "cover";       // 👈 REPLICA A NAVBAR
+      el.style.backgroundPosition = "center";   // 👈 REPLICA A NAVBAR
+      el.style.backgroundRepeat = "no-repeat"; // 👈 REPLICA A NAVBAR
       el.style.backgroundImage = `url(${cacheSessao})`;
       el.textContent = "";
     } else {
@@ -375,7 +380,12 @@ async function resolverAvatarDoCardFeed(usuario, elementId) {
   // 2. Tenta pegar do cache em memória
   if (cacheMemoriaAvatares[usuario]) {
     if (cacheMemoriaAvatares[usuario] !== "none" && cacheMemoriaAvatares[usuario] !== "none_found") {
+      // ⚡ CORREÇÃO: Limpa o fundo sem matar as propriedades de tamanho e posição
       el.style.background = "none";
+      el.style.backgroundColor = "#11161d";
+      el.style.backgroundSize = "cover";       // 👈 REPLICA A NAVBAR
+      el.style.backgroundPosition = "center";   // 👈 REPLICA A NAVBAR
+      el.style.backgroundRepeat = "no-repeat"; // 👈 REPLICA A NAVBAR
       el.style.backgroundImage = `url(${cacheMemoriaAvatares[usuario]})`;
       el.textContent = "";
     } else {
@@ -399,6 +409,10 @@ async function resolverAvatarDoCardFeed(usuario, elementId) {
       cacheMemoriaAvatares[usuario] = urlFoto;
 
       el.style.background = "none";
+      el.style.backgroundColor = "#11161d";
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+      el.style.backgroundRepeat = "no-repeat";
       el.style.backgroundImage = `url(${urlFoto})`;
       el.textContent = "";
     } else {
