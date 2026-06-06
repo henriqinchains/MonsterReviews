@@ -162,15 +162,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const logadoComSucesso = await verificarSessao();
   if (!logadoComSucesso) return;
 
-  // Verifica se o usuário já passou pelo loading nessa sessão
-  if (sessionStorage.getItem('jaViuLoading')) {
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) {
-        // Usa display none para sumir instantaneamente, sem efeito de transição
-        overlay.style.display = 'none'; 
-      }
-  }
-
   document.querySelectorAll(".tl-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tl-tab").forEach((t) => t.classList.remove("active"));
