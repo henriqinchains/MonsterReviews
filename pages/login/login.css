@@ -198,18 +198,13 @@ button:disabled {
   margin-bottom: 8px;
 }
 
-.footer-login .creditos {
-  font-size: 0.85rem;
-  color: #aaaaaa;
-}
-
-.footer-login .creditos a {
+.footer-login .disclaimer a {
   color: #4CAF50;
   text-decoration: none;
   font-weight: bold;
 }
 
-.footer-login .creditos a:hover {
+.footer-login .disclaimer a:hover {
   text-decoration: underline;
 }
 
