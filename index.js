@@ -362,6 +362,12 @@ function renderizarPosts(arrayAvaliacoes) {
     return;
   }
   arrayAvaliacoes.forEach((post) => {
+    const dataObjeto = new Date(post.createdAt);
+    const dataFormatada = dataObjeto.toLocaleDateString("pt-BR");
+    // O config garante que exiba sempre com dois dígitos (ex: 09:05 em vez de 9:5)
+    const horaFormatada = dataObjeto.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+
+    const dataEHoraFinal = `${dataFormatada} · ${horaFormatada}`;
     const estrelas = "★".repeat(Math.round(post.nota / 2)) + "☆".repeat(5 - Math.round(post.nota / 2));
     const valeuClasse = post.valeu_a_pena ? "valeu-sim" : "valeu-nao";
     const valeuTexto = post.valeu_a_pena ? "Sim" : "Não";
@@ -392,7 +398,7 @@ function renderizarPosts(arrayAvaliacoes) {
               ${post.sujeito}
             </a>
           </strong>
-          <span>${new Date(post.createdAt).toLocaleDateString("pt-BR")} · Público</span>
+          <span>${dataEHoraFinal}</span>
         </div>
       </div>
       <div class="post-image">
