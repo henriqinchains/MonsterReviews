@@ -88,6 +88,16 @@
     transition: opacity 0.3s ease; /* Animação suave */
 }
 
+/* A classe que o JS vai colocar só no perfil do dono */
+.avatar-editavel {
+    cursor: pointer;
+}
+
+/* Quando passar o mouse no avatar editável, mostra o overlay */
+.avatar-editavel:hover .overlay-editar {
+    opacity: 1;
+}
+
 .profile-info h2 {
   font-size: 2.2rem;
   margin: 0 0 5px 0;
