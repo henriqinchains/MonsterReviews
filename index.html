@@ -135,9 +135,8 @@
           <div class="field">
             <label for="filtroSabor">Sabor</label>
             <div class="select-wrap">
-              <select id="filtroSabor">
-                <option value="">Todos os sabores</option>
-              </select>
+              <input type="text" id="filtroSabor" list="listaSaboresFiltro" placeholder="Filtrar por sabor..." autocomplete="off">
+              <datalist id="listaSaboresFiltro"></datalist>
             </div>
           </div>
 
@@ -190,9 +189,8 @@
         <form id="formAvaliacao">
           <div class="grid grid-two">
             <label>Monstro<input type="text" id="sujeito" name="sujeito" readonly /></label>
-            <label>Sabor do Monster<select name="sabor" placeholder="Todos os sabores" required>
-                <option value="">Selecione o sabor</option>
-              </select>
+            <label>Sabor do Monster<input type="text" name="sabor" id="modalSabor" list="listaSaboresModal" placeholder="Digite ou selecione o sabor..." autocomplete="off">
+            <datalist id="listaSaboresModal"></datalist>
             </label>
           </div>
           <div class="grid grid-two">
