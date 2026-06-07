@@ -1,4 +1,5 @@
 const API_URL = "https://monster-reviews-api.onrender.com/api";
+const footerLogin = document.querySelector('.footer-login');
 let tokenTemporario = "";
 
 // ==========================================
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // FUNÇÕES DE TRANSIÇÃO DE TELA (SPA)
 // ==========================================
 function Switch() {
+  if (footerLogin) footerLogin.style.display = 'none';
   document.getElementById("login-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
@@ -41,6 +43,7 @@ function Switch() {
 }
 
 function SwitchBack() {
+  if (footerLogin) footerLogin.style.display = 'block';
   document.getElementById("register-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
@@ -48,6 +51,7 @@ function SwitchBack() {
 }
 
 function SwitchToRecovery() {
+  if (footerLogin) footerLogin.style.display = 'none';
   document.getElementById("login-section").style.display = "none";
   document.getElementById("register-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
@@ -55,6 +59,7 @@ function SwitchToRecovery() {
 }
 
 function SwitchToReset() {
+  if (footerLogin) footerLogin.style.display = 'none';
   document.getElementById("login-section").style.display = "none";
   document.getElementById("register-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
@@ -62,6 +67,7 @@ function SwitchToReset() {
 }
 
 function SwitchBackFromRecovery() {
+  if (footerLogin) footerLogin.style.display = 'block';
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
   document.getElementById("login-section").style.display = "block";
