@@ -1,3 +1,13 @@
+// Lógica do Menu Hambúrguer Mobile
+const btnHamburguer = document.getElementById('btnHamburguer');
+const navLinks = document.querySelector('.nav-links');
+
+if (btnHamburguer && navLinks) {
+  btnHamburguer.addEventListener('click', () => {
+    navLinks.classList.toggle('open');
+  });
+}
+
 // ==========================================================================
 // CONFIGURAÇÕES INICIAIS E CACHE IMEDIATO (ANTI-PISCADA)
 // ==========================================================================
