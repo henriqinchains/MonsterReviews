@@ -208,6 +208,48 @@ button:disabled {
   text-decoration: underline;
 }
 
+/* ==========================================================================
+   AJUSTE DESKTOP: TELA DE CADASTRO MAIS LARGA E EM DUPLAS
+   ========================================================================== */
+@media (min-width: 769px) {
+  /* 1. Deixa APENAS o card de cadastro mais largo para caber as duplas */
+  #register-section {
+    width: min(100%, 650px); 
+  }
+
+  /* 2. Transforma o formulário de cadastro num Grid de 2 colunas */
+  #formCadastro {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    row-gap: 6px; /* Reduz o espaço pra label e input ficarem coladinhos */
+  }
+
+  /* 3. Posiciona os Labels usando o tabuleiro do Grid */
+  #formCadastro label:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+  #formCadastro label:nth-of-type(2) { grid-column: 2; grid-row: 1; }
+  #formCadastro label:nth-of-type(3) { grid-column: 1; grid-row: 3; margin-top: 10px; }
+  #formCadastro label:nth-of-type(4) { grid-column: 2; grid-row: 3; margin-top: 10px; }
+
+  /* 4. Posiciona os Inputs logo abaixo dos seus Labels */
+  #formCadastro input:nth-of-type(1) { grid-column: 1; grid-row: 2; }
+  #formCadastro input:nth-of-type(2) { grid-column: 2; grid-row: 2; }
+  #formCadastro input:nth-of-type(3) { grid-column: 1; grid-row: 4; }
+  #formCadastro input:nth-of-type(4) { grid-column: 2; grid-row: 4; }
+
+  /* 5. Faz o Botão e as Mensagens de erro/link ocuparem a tela toda na base */
+  #register-button,
+  #formCadastro > p {
+    grid-column: 1 / -1; /* Ocupa de ponta a ponta nas colunas */
+  }
+  
+  #register-button {
+    margin-top: 15px; /* Dá um respiro antes do botão */
+  }
+}
+
+/* ==========================================================================
+   AJUSTE MOBILE
+   ========================================================================== */
 @media (max-width: 768px) {
   /* 1. A Mágica do 100dvh e do Grid */
   body {
