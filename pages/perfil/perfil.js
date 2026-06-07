@@ -246,8 +246,6 @@ function inicializarStructurePerfil() {
   if (isMeuPerfil) {
     if (emailDisplay) emailDisplay.textContent = emailLogado || "Sem e-mail";
   }
-}
-
   carregarEstatisticas(targetUser);
 }
 
