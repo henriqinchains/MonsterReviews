@@ -1129,3 +1129,83 @@ textarea {
   .footer { flex-direction: column; }
   .button, .hint { width: 100%; text-align: center; }
 }
+
+@media (max-width: 768px) {
+  /* 1. Ajuste Geral da Página */
+  .page {
+    margin: 20px auto; /* Reduz o espaço vazio no topo */
+    padding: 0 15px;
+    gap: 20px;
+  }
+
+  /* 2. Navbar: Joga os links para a linha de baixo e esconde o botão Sobre */
+  nav {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 15px;
+    justify-content: space-between;
+  }
+  .nav-logo {
+    font-size: 1.3rem;
+  }
+  .nav-links {
+    order: 3; /* Força os links a caírem para a segunda linha */
+    width: 100%;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(0, 255, 102, 0.2);
+  }
+  .nav-links a {
+    font-size: 0.9rem;
+  }
+  #btnSobre {
+    display: none; /* Esconde o botão no mobile para limpar a tela */
+  }
+
+  /* 3. Header da Timeline: Empilha o título e o botão de registrar */
+  .timeline-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  .btn-registrar {
+    width: 100%; /* Botão grandão, fácil de clicar com o dedão */
+    padding: 15px;
+  }
+
+  /* 4. Timeline e Post Cards */
+  .post-card {
+    padding: 15px;
+  }
+  .post-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .post-footer button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* 5. Ajustes Internos do Modal de Vidro */
+  .modal-card h2 {
+    font-size: 1.6rem;
+    margin-top: 20px; /* Evita que o título cole no botão de fechar */
+  }
+  .close-button {
+    top: 15px;
+    right: 20px;
+    background-color: var(--bg-darker);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+  }
+  .radio-group label {
+    flex: 1 1 100%; /* Força os botões de Sim/Não a ficarem um embaixo do outro no celular */
+  }
+}
