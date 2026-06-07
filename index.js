@@ -202,7 +202,9 @@ async function buscarAvatarEmSegundoPlano(usuario) {
 document.addEventListener("DOMContentLoaded", async () => {
   const logadoComSucesso = await verificarSessao();
   if (!logadoComSucesso) return;
-
+  
+  popularSelectsDeSabor();
+  
   document.querySelectorAll(".tl-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tl-tab").forEach((t) => t.classList.remove("active"));
@@ -215,7 +217,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const formAvaliacao = document.getElementById("formAvaliacao");
   const btnSubmit = document.getElementById("btnSubmit");
   const btnFecharModal = document.getElementById("btn-fechar-modal");
-  const selectSabor = document.querySelector('select[name="sabor"]');
+  const selectSabor = document.querySelector('input[name="sabor"]');
 
   if (btnAbrirModal) {
     btnAbrirModal.addEventListener("click", (e) => {
@@ -223,7 +225,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       modalContainer.style.display = "flex";
       document.body.style.overflow = "hidden";
       if (selectSabor){
-        popularSelectsDeSabor();
         selectSabor.focus();
       }
     });
