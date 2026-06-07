@@ -348,7 +348,6 @@ async function carregarFeed() {
     const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes");
     const avaliacoes = await resposta.json();
     todasAvaliacoes = avaliacoes;
-    preencherComboboxUsuarios(todasAvaliacoes);
   } catch (erro) {
     feedContainer.innerHTML = "<p>❌ Erro ao conectar com o servidor do Render.</p>";
     console.error(erro);
@@ -553,25 +552,6 @@ async function carregarRanking() {
     });
   } catch (erro) { container.innerHTML = "<p style='text-align: center; color: #ff3333;'>Erro ao carregar o ranking.</p>"; console.error(erro); }
 }
-
-function preencherComboboxUsuarios(posts) {
-  const datalist = document.getElementById("listaUsuarios");
-  if (!datalist) return;
-  const usuariosUnicos = [...new Set(posts.map((post) => post.sujeito))];
-  datalist.innerHTML = "";
-  usuariosUnicos.forEach((nome) => {
-    if (nome) {
-      const option = document.createElement("option");
-      option.value = nome;
-      datalist.appendChild(option);
-    }
-  });
-}
-
-window.toggleTag = function (elemento) {
-  document.querySelectorAll("#tagGroupValeu .tag").forEach((t) => t.classList.remove("active"));
-  elemento.classList.add("active");
-};
 
 const modal = document.getElementById("modalSobre");
 const btn = document.getElementById("btnSobre");
