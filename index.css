@@ -1146,12 +1146,23 @@ textarea {
    PACOTE MOBILE UNIFICADO (ATÉ 768PX)
    ========================================================================== */
 @media (max-width: 768px) {
-  /* 1. Ajuste Geral da Página */
+  /* 1. Ajuste da Página (O segredo da Reordenação) */
   .page {
+    display: flex;
+    flex-direction: column;
     margin: 20px auto; 
     padding: 0 15px;
     gap: 20px;
   }
+
+  /* ⚡ A MÁGICA: Permite reordenar a Liderança e o Feed independentemente */
+  .right-col {
+    display: contents;
+  }
+
+  .panel { order: 1; }       /* Liderança no TOPO absoluto! */
+  .timeline { order: 2; }    /* Feed de latas no meio */
+  .filter-form { order: 3; } /* Filtros lá embaixo pra não atrapalhar a visão */
 
   /* 2. Navbar e Menu Hambúrguer */
   nav {
@@ -1160,36 +1171,48 @@ textarea {
   
   .nav-logo {
     font-size: 1.2rem;
-    flex-grow: 1; /* Empurra a bolinha de perfil pro canto */
+    flex-grow: 1;
     text-align: center;
   }
 
-  /* Mostra o ícone do hambúrguer na esquerda */
   .hamburguer-btn {
     display: block;
     order: -1; 
   }
 
-  /* Transforma os links numa gaveta escondida */
+  /* 3. A Gaveta do Hambúrguer Blindada */
   .nav-links {
-    display: none; /* Escondido por padrão */
+    display: none;
     position: absolute;
-    top: 70px;
+    top: 100%; /* Gruda exatamente no rodapé da Navbar, sem sobrepor nada */
     left: 0;
     width: 100%;
-    background-color: var(--bg-card);
+    background-color: var(--bg-darker); /* Fundo super escuro e sólido */
     flex-direction: column;
-    padding: 20px 0;
-    gap: 20px;
+    padding: 0; /* Removemos o padding pra usar nos botões */
+    gap: 0;
     border-bottom: 2px solid var(--monster-green);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    z-index: 999;
+    box-shadow: 0 20px 30px rgba(0,0,0,0.9); /* Sombra pesada pra destacar */
+    z-index: 9999; /* Fica acima de tudo, até do modal se bobear */
   }
 
-  /* Classe que o JS vai injetar pra abrir a gaveta */
   .nav-links.open {
     display: flex;
     animation: descerGaveta 0.2s ease-out;
+  }
+
+  /* Botões da gaveta formatados para toque de dedo */
+  .nav-links a {
+    width: 100%;
+    padding: 18px 20px;
+    justify-content: center; /* Centraliza o texto */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; /* Linha separadora */
+    margin: 0;
+    background-color: var(--bg-card); /* Leve contraste com o fundo */
+  }
+
+  .nav-links a:last-child {
+    border-bottom: none !important;
   }
 
   @keyframes descerGaveta {
