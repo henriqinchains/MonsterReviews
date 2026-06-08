@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
             location.reload();
-          }, 1000);
+          }, 500);
         } else {
           alert(`Erro: ${dados.erro || "Falha ao postar"}`);
         }
