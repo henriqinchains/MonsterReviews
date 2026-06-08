@@ -564,7 +564,7 @@ window.toggleCurtida = async function(btn, postId) {
       if (btn.classList.contains('curtido')) {
         btn.style.backgroundColor = 'transparent';
       }
-    }, 1000);
+    }, 200);
 
   } else {
     btn.classList.remove('curtido'); // Destrava o botão
