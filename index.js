@@ -8,10 +8,6 @@ if (btnHamburguer && navLinks) {
   });
 }
 
-function abrirModal() {
-  const modal = document.getElementById("modalSobre");
-
-}
 // ==========================================================================
 // CONFIGURAÇÕES INICIAIS E CACHE IMEDIATO (ANTI-PISCADA)
 // ==========================================================================
@@ -647,11 +643,10 @@ async function carregarRanking() {
 }
 
 const modal = document.getElementById("modalSobre");
-const btn = document.getElementById("btnSobre");
 const span = document.getElementById("fecharModal");
 const btnHamSobre = document.getElementById("sobreProjetoBtnHam");
 // Quando clica no botão do Nav, abre
-btn.onclick = function () {
+btnHamSobre.onclick = function () {
   modal.style.display = "block";
 }
 
@@ -665,8 +660,4 @@ window.onclick = function (event) {
   if (event.target == modal) {
     modal.style.display = "none";
   }
-}
-
-function abrirModal() {
-  modal.style.display = "block";
 }
