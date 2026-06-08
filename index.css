@@ -354,6 +354,9 @@ nav {
   padding: 24px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   transition: border-color 0.2s, transform 0.2s;
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto 25px auto;
 }
 
 .post-card:hover {
