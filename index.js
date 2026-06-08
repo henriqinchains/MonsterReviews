@@ -394,7 +394,7 @@ function renderizarPosts(arrayAvaliacoes) {
     const corIcone = jaCurtiu ? '#ff4d5a' : 'currentColor';
     const fillIcone = jaCurtiu ? '#ff4d5a' : 'none';
     const corTexto = jaCurtiu ? '#ff4d5a' : 'var(--text-muted)';
-    const bgBotao = jaCurtiu ? 'rgba(255, 77, 90, 0.08)' : 'transparent';
+    const bgBotao = 'transparent';
     const numLikes = arrayLikes.length;
 
     const postArticle = document.createElement("article");
