@@ -259,6 +259,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (formAvaliacao) {
     formAvaliacao.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const inputSabor = document.getElementById("modalSabor").value;
+      if (!listaSabores.includes(inputSabor)) {
+        alert("Selecione um sabor válido da lista de Monsters.");
+        document.getElementById("modalSabor").focus();
+        return;
+      }
       const textoOriginal = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
