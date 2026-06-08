@@ -563,7 +563,7 @@ window.toggleCurtida = async function(btn, postId) {
 
   // Dispara a rota do servidor
   try {
-    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/curtir`, {
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/curtidas`, {
       method: "POST",
       credentials: "include" // Manda o authToken pro backend saber quem está curtindo
     });
