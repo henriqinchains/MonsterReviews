@@ -13,7 +13,7 @@ html.esconder-loading-instantaneo #loading-overlay {
   --monster-hover: #33ff88;
   --text-main: #c5c6c7;
   --text-muted: #8b9bb4;
-  --border-color: #45a29e;
+  --border-color: #45a245;
   
   /* Variáveis exclusivas do Modal de Vidro */
   --bg: #0a0e27;
@@ -78,7 +78,6 @@ nav {
   display: flex;
   align-items: center;
   color: var(--text-muted);
-  cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
   height: 100%;
@@ -349,14 +348,11 @@ nav {
 
 .post-card {
   background-color: var(--bg-card);
-  border: 1px solid rgba(69, 162, 158, 0.2);
+  border: 1px solid rgba(0, 255, 13, 0.2);
   border-radius: 8px;
   padding: 24px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   transition: border-color 0.2s, transform 0.2s;
-  width: 100%;
-  max-width: 550px;
-  margin: 0 auto 25px auto;
 }
 
 .post-card:hover {
@@ -414,8 +410,33 @@ nav {
 }
 
 .post-options:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(31, 134, 0, 0.05);
   color: #fff;
+}
+
+.post-image {
+  background-color: var(--bg-darker);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  display: flex;
+  justify-content: center;
+}
+
+.post-image img {
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.post-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  background-color: var(--bg-darker);
+  padding: 14px;
+  border-radius: 6px;
+  margin-bottom: 16px;
 }
 
 @media (max-width: 500px) {
@@ -984,6 +1005,24 @@ textarea {
 }
 
 /* MODAL INFO */
+#btnSobre {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid #4CAF50;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+#btnSobre:hover {
+  background-color: #4CAF50;
+  color: #121212;
+  box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+}
 
 .modal-oculto {
   display: none; 
@@ -995,6 +1034,7 @@ textarea {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(3px);
+  justify-content: center;
 }
 
 .modal-conteudo {
@@ -1006,7 +1046,7 @@ textarea {
   width: 90%;
   max-width: 450px;
   text-align: center;
-  position: relative;
+  position: relative;;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
