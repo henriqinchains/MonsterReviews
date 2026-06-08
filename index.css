@@ -426,8 +426,11 @@ nav {
 }
 
 .post-image img {
-  display: block;
-  transition: transform 0.3s ease;
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  object-position: center; /* Garante que o corte foca sempre no meio da foto */
+  border-radius: 8px; /* Acabamento arredondado premium */
 }
 
 .post-info {
