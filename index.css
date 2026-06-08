@@ -415,31 +415,6 @@ nav {
   color: #fff;
 }
 
-.post-image {
-  width: 100%;
-  overflow: hidden;
-  background-color: #121212;
-}
-
-.post-image img {
-  width: 100%;
-  aspect-ratio: 9 / 16;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  border-radius: 8px; 
-}
-
-.post-info {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  background-color: var(--bg-darker);
-  padding: 14px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-
 @media (max-width: 500px) {
   .post-info { grid-template-columns: 1fr; }
 }
