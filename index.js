@@ -283,6 +283,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const dados = await resposta.json();
         if (resposta.ok) {
+          const audioLatinha = new Audio('./src/audio/latinha.mp3');
+          audioLatinha.play();
           alert("Review postada com sucesso! 🔋");
           fecharModal();
           location.reload();
