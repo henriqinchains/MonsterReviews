@@ -133,10 +133,10 @@ app.post("/api/auth/cadastro", async (req, res) => {
     const token = jwt.sign(
       { id: novoUsuario._id, nome: novoUsuario.nome, email: novoUsuario.email, cargo: novoUsuario.cargo },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
-    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 60 * 60 * 1000 });
+    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.status(201).json({
       mensagem: "Usuário cadastrado com sucesso!",
@@ -163,10 +163,10 @@ app.post("/api/auth/login", async (req, res) => {
     const token = jwt.sign(
       { id: usuarioEncontrado._id, nome: usuarioEncontrado.nome, email: usuarioEncontrado.email, cargo: usuarioEncontrado.cargo },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
-    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 60 * 60 * 1000 });
+    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.status(200).json({
       mensagem: "Login realizado com sucesso!",
