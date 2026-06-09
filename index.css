@@ -418,17 +418,22 @@ nav {
 .valeu-nao { color: #ff4d4d; font-weight: bold; }
 
 .post-desc {
-  font-size: 0.95rem;
-  line-height: 1.6;
-  color: #e2e8f0;
-  margin-bottom: 20px;
-  white-space: pre-wrap;
+  text-align: left !important;
+  align-self: flex-start !important;
+  justify-self: start !important;
+  width: 100% !important;
+  margin-left: 0 !important;
 
-  text-align: left !important; 
-  align-self: flex-start !important; 
-  justify-self: start !important; 
-  width: 100% !important;           
-  margin-left: 0 !important;        
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+  color: #e2e8f0 !important; 
+  margin-bottom: 20px !important;
+  white-space: pre-wrap !important;
+
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  padding: 12px 15px !important;
+  border-radius: 6px !important;
+  border-left: 3px solid var(--monster-green) !important;
 }
 
 .post-footer {
