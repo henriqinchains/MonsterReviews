@@ -194,7 +194,7 @@ nav {
 }
 
 /* ==========================================================================
-   3. MESH DE LAYOUT EM 3 COLUNAS (ESTILO X / TWITTER DINÂMICO)
+   3. ESTRUTURA GERAL DE LAYOUT (ESTILO X / TWITTER DINÂMICO)
    ========================================================================== */
 .layout-principal {
   display: grid;
@@ -215,6 +215,8 @@ nav {
 
 .timeline-actions {
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 .timeline-actions .btn-registrar {
@@ -229,7 +231,7 @@ nav {
   font-size: 0.9rem;
   font-weight: bold;
   text-transform: uppercase;
-  border-radius: 50px;
+  border-radius: 50px; 
   cursor: pointer;
   box-shadow: 0 0 12px rgba(0, 255, 102, 0.3);
   transition: all 0.2s ease;
@@ -273,13 +275,15 @@ nav {
   width: 100%;
 }
 
-.panel, 
-.filtro-accordion,
-.filter-body input[type="text"],
-.filter-body select,
-.btn-filtro {
-  width: 100% !important; 
+.panel {
+  width: 100% !important;
   box-sizing: border-box;
+}
+
+/* COMPONENTES DO FILTRO ACOORDION */
+.filtro-accordion {
+  position: relative;
+  width: 100% !important;
 }
 
 .btn-filtro {
@@ -287,7 +291,7 @@ nav {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: 100%;
+  width: 100% !important;
   padding: 10px 15px;
   background-color: transparent;
   border: 2px solid var(--monster-green);
@@ -300,6 +304,7 @@ nav {
   list-style: none;
   transition: all 0.2s ease;
   height: 42.5px;
+  box-sizing: border-box;
 }
 
 .btn-filtro::-webkit-details-marker { display: none; }
@@ -309,7 +314,7 @@ nav {
   position: absolute;
   top: 100%;
   right: 0;
-  width: 100%; 
+  width: 100% !important; 
   max-width: 350px;
   background-color: var(--bg-darker);
   border: 1px solid rgba(69, 162, 158, 0.4);
@@ -318,6 +323,85 @@ nav {
   margin-top: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
   z-index: 100;
+  box-sizing: border-box;
+}
+
+.filter-body { display: flex; flex-direction: column; gap: 16px; }
+.field { display: flex; flex-direction: column; gap: 8px; }
+
+.field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.filter-body input[type="text"],
+.filter-body select {
+  background-color: var(--bg-card);
+  border: 1px solid rgba(69, 162, 158, 0.4);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  outline: none;
+  width: 100% !important;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.filter-body input[type="text"]:focus,
+.filter-body select:focus {
+  border-color: var(--monster-green);
+  box-shadow: 0 0 8px rgba(0, 255, 102, 0.2);
+}
+
+.select-wrap { position: relative; width: 100%; }
+
+/* RESTAURAÇÃO COMPLETA DOS BOTÕES DO FILTRO */
+.btn-group {
+  display: flex !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+  width: 100% !important;
+}
+
+.btn-group .btn {
+  flex: 1 !important;
+  padding: 12px !important;
+  font-size: 0.85rem !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  display: inline-block !important;
+}
+
+.btn-group .btn-primary {
+  background-color: var(--monster-green) !important;
+  color: var(--bg-main) !important;
+  border: none !important;
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.2) !important;
+}
+
+.btn-group .btn-primary:hover {
+  background-color: var(--monster-hover) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+.btn-group .btn-ghost {
+  background-color: transparent !important;
+  color: var(--text-muted) !important;
+  border: 1px solid rgba(69, 162, 158, 0.4) !important;
+}
+
+.btn-group .btn-ghost:hover {
+  border-color: #ff4d4d !important;
+  color: #ff4d4d !important;
+  background-color: rgba(255, 77, 77, 0.05) !important;
+  transform: translateY(-2px) !important;
 }
 
 @keyframes deslizarFiltro {
@@ -326,7 +410,7 @@ nav {
 }
 
 /* ==========================================================================
-   4. FEED E CARDS DE AVALIAÇÃO (POSTS) - CORRIGIDO SEM CORTE
+   4. FEED E CARDS DE AVALIAÇÃO (POSTS) - TOTALMENTE ENQUADRADO
    ========================================================================== */
 .feed-container {
   display: flex;
@@ -393,9 +477,9 @@ nav {
 
 .post-image img {
   width: 100%;
-  height: auto !important;   
-  max-height: none !important;    
-  object-fit: contain !important;
+  height: auto !important;       /* Libera a altura fluida para não fatiar a foto */
+  max-height: none !important;    /* Garante exibição total das fotos verticais */
+  object-fit: contain !important; /* Preserva a foto 100% íntegra */
   display: block;
 }
 
@@ -418,22 +502,24 @@ nav {
 .valeu-nao { color: #ff4d4d; font-weight: bold; }
 
 .post-desc {
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+  color: #e2e8f0 !important;
+  margin-bottom: 20px !important;
+  white-space: pre-wrap !important;
+  
+  /* MARRETA ABSOLUTA PARA COLAR À ESQUERDA */
   text-align: left !important;
   align-self: flex-start !important;
   justify-self: start !important;
   width: 100% !important;
   margin-left: 0 !important;
-
-  font-size: 0.95rem !important;
-  line-height: 1.6 !important;
-  color: #e2e8f0 !important; 
-  margin-bottom: 20px !important;
-  white-space: pre-wrap !important;
-
+  
+  /* ESTILIZAÇÃO DA CAIXA ESCURA COM BORDA NEON */
   background-color: rgba(0, 0, 0, 0.2) !important;
   padding: 12px 15px !important;
   border-radius: 6px !important;
-  border-left: 3px solid var(--monster-green) !important;
+  border-left: 3px solid #00ff66 !important;
 }
 
 .post-footer {
@@ -463,16 +549,8 @@ nav {
 }
 
 /* ==========================================================================
-   5. COMPONENTES DE PLACAR DA DIREITA
+   5. COMPONENTES DE PLACAR DA LIDERANÇA
    ========================================================================== */
-.panel {
-  background-color: var(--bg-card);
-  border: 1px solid rgba(69, 162, 158, 0.2);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
 .panel-header {
   display: flex;
   justify-content: space-between;
@@ -540,8 +618,75 @@ nav {
 .ranking-item.rank-3 { border-left-color: #cd7f32; background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, var(--bg-darker) 100%); }
 .ranking-item.rank-3 .rank-posicao { color: #cd7f32; }
 
-/* REGRAS INTERNAS DOS FILTROS */
-.filter-body { display: flex; flex-direction: column; gap: 16px; }
+/* ==========================================================================
+   6. MODAL FLUTUANTE (DESIGN GLASSMORPHISM DO INDEX)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(10, 14, 39, 0.85); 
+  backdrop-filter: blur(15px); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.modal-card {
+  width: min(920px, 95%);
+  max-height: 90vh; 
+  overflow-y: auto;
+  background: var(--bg-glass);
+  backdrop-filter: blur(20px);
+  border: 2px solid var(--monster-green);
+  border-radius: 32px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 8px 32px var(--glow), inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 0 40px var(--glow);
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+.modal-card::-webkit-scrollbar { width: 8px; }
+.modal-card::-webkit-scrollbar-thumb { background: var(--monster-green); border-radius: 10px; }
+
+.close-button {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  background: transparent;
+  border: none;
+  color: var(--secondary);
+  font-size: 36px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  line-height: 1;
+  z-index: 10;
+}
+
+.close-button:hover { color: var(--monster-hover); transform: scale(1.2) rotate(90deg); }
+
+.modal-card h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  background: linear-gradient(135deg, var(--monster-green) 0%, var(--monster-hover) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+}
+
+.modal-card h2 span { color: var(--text-light); -webkit-text-fill-color: var(--text-light); }
+.modal-subtitle { color: var(--secondary); font-size: 1rem; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(0, 255, 42, 0.2); }
+
+#formAvaliacao { display: flex; flex-direction: column; gap: 24px; }
 .grid { display: grid; gap: 24px; }
 .grid-two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
@@ -640,9 +785,9 @@ textarea { min-height: 120px; resize: vertical; }
 
 .button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px var(--glow); filter: brightness(1.2); }
 
-/* ==========================================================================
+/* ==========================================
    7. MODAIS AUXILIARES E SPLASH SCREEN
-   ========================================================================== */
+   ========================================== */
 .modal-oculto {
   display: none; 
   position: fixed;
@@ -695,20 +840,23 @@ textarea { min-height: 120px; resize: vertical; }
 .hamburguer-btn { display: none; background: none; border: none; color: var(--monster-green); cursor: pointer; padding: 5px; }
 
 /* ==========================================================================
-   8. MEDIA QUERIES (A MÁGICA DE ENCOLHIMENTO DO X / TWITTER)
+   8. MEDIA QUERIES (A MÁGICA DE RESPONSIVIDADE COMPACTA)
    ========================================================================== */
 
+/* PONTO DE QUEBRA 1: Quando a tela aperta (Notebooks entre 1050px e 1200px) */
 @media (max-width: 1200px) {
   .layout-principal {
     grid-template-columns: max-content 1fr minmax(280px, 340px); 
     gap: 20px;
   }
 
+  /* Oculta as strings do botão de registrar latinha */
   .timeline-actions .btn-registrar span,
   .timeline-actions .btn-registrar p {
     display: none !important;
   }
   
+  /* Transforma a pílula em bolinha compacta estilo X apenas aqui */
   .timeline-actions .btn-registrar {
     width: 55px !important;   
     height: 55px !important;
@@ -722,11 +870,13 @@ textarea { min-height: 120px; resize: vertical; }
   }
 }
 
+/* PONTO DE QUEBRA 2: Quando falta espaço lateral (Tablets abaixo de 950px) */
 @media (max-width: 950px) {
   .layout-principal {
     grid-template-columns: max-content 1fr; 
   }
 
+  /* A liderança e o filtro quebram de linha e vão debaixo do feed */
   .coluna-direita {
     grid-column: 2;
     order: 2; 
@@ -753,11 +903,13 @@ textarea { min-height: 120px; resize: vertical; }
   }
 }
 
+/* PONTO DE QUEBRA 3: Mobile Puro (Celulares abaixo de 768px) */
 @media (max-width: 768px) {
   nav { padding: 0 15px; }
   .nav-logo { font-size: 1.2rem; flex-grow: 1; text-align: center; }
   .hamburguer-btn { display: block; order: -1; }
 
+  /* Gaveta do menu mobile */
   .nav-links {
     display: none;
     position: absolute;
@@ -774,7 +926,8 @@ textarea { min-height: 120px; resize: vertical; }
   .nav-links a { width: 100%; padding: 18px 20px; justify-content: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important; background-color: var(--bg-card); }
   .nav-links a:last-child { border-bottom: none !important; }
 
- .coluna-esquerda {
+  /* Transforma a bolinha no botão flutuante de aplicativo (FAB) */
+  .coluna-esquerda {
     position: fixed !important;
     bottom: 30px !important;   
     right: 30px !important;    
@@ -790,6 +943,7 @@ textarea { min-height: 120px; resize: vertical; }
   }
 }
 
+/* Celulares pequenos (Abaixo de 600px) */
 @media (max-width: 600px) {
   .layout-principal {
     display: flex;
