@@ -199,7 +199,7 @@ nav {
 .layout-principal {
   display: grid;
   /* No monitor grande, a esquerda reserva espaço para o botão comprido com texto */
-  grid-template-columns: minmax(180px, 240px) 1fr minmax(280px, 350px); 
+  grid-template-columns: minmax(180px, 240px) 1fr minmax(280px, auto); 
   gap: 30px;
   max-width: 1300px;
   margin: 30px auto;
