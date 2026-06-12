@@ -383,7 +383,7 @@ app.get("/api/ranking", async (req, res) => {
     const ranking = await Avaliacao.aggregate([
       { $group: { _id: "$sujeito", totalLatinhas: { $sum: 1 } } },
       { $sort: { totalLatinhas: -1 } },
-      { $limit: 3 },
+      { $limit: 10 },
     ]);
     return res.status(200).json(ranking);
   } catch (erro) {
