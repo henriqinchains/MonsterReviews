@@ -301,9 +301,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         const formData = new FormData(formAvaliacao);
-        convertWebp();
-        formData.set('foto', webpDataUrl);
-          
+        
+        const blobWebp = await convertWebp("foto");
+        
+        if (blobWebp) {
+          formData.set("foto", blobWebp, "imagem.webp");
+        }
+        
         const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes", {
           method: "POST",
           body: formData,
