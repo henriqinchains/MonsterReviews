@@ -289,13 +289,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const textoOriginal = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
-      convertWebp();
 
       try {
         const formData = new FormData(formAvaliacao);
-
+        convertWebp();
         formData.set('foto', webpDataUrl);
-
+          
         const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes", {
           method: "POST",
           body: formData,
