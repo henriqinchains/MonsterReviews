@@ -8,6 +8,34 @@ if (btnHamburguer && navLinks) {
   });
 }
 
+// Converter para webp
+function convertWebp(foto){
+  const arquivoInput = document.getElementById(foto)
+  if (!arquivoInput.files.length) return;
+
+  const arquivo = arquivoInput.file[0];
+  const reader = new FileReader();
+
+  reader.onload = function (event){
+    const img = new Image();  
+    img.onload = function(){
+      //Criar canvas
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      //Manter dimensoes originais
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      //Inserir a imagem no canvas
+      ctx.drawImage(img, 0, 0);
+
+      //Converter para WebP
+      const webpDataUrl = canvas.toDataURL('image/webp', 0.8);
+    }
+  }
+}
+
 // ==========================================================================
 // CONFIGURAÇÕES INICIAIS E CACHE IMEDIATO (ANTI-PISCADA)
 // ==========================================================================
@@ -261,9 +289,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       const textoOriginal = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
+      convertWebp();
 
       try {
         const formData = new FormData(formAvaliacao);
+
+        formData.set('foto', webpDataUrl);
+
         const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes", {
           method: "POST",
           body: formData,
