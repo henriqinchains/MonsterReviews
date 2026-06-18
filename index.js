@@ -9,31 +9,40 @@ if (btnHamburguer && navLinks) {
 }
 
 // Converter para webp
-function convertWebp(foto){
-  const arquivoInput = document.getElementById(foto)
-  if (!arquivoInput.files.length) return;
+async function convertWebp(inputId) {
+  const arquivoInput = document.getElementById(inputId);
 
-  const arquivo = arquivoInput.file[0];
-  const reader = new FileReader();
+  if (!arquivoInput.files.length) return null;
 
-  reader.onload = function (event){
-    const img = new Image();  
-    img.onload = function(){
-      //Criar canvas
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+  const arquivo = arquivoInput.files[0];
 
-      //Manter dimensoes originais
-      canvas.width = img.width;
-      canvas.height = img.height;
+  return new Promise((resolve) => {
+    const reader = new FileReader();
 
-      //Inserir a imagem no canvas
-      ctx.drawImage(img, 0, 0);
+    reader.onload = (e) => {
+      const img = new Image();
 
-      //Converter para WebP
-      const webpDataUrl = canvas.toDataURL('image/webp', 0.8);
-    }
-  }
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        ctx.drawImage(img, 0, 0);
+
+        canvas.toBlob(
+          (blob) => resolve(blob),
+          "image/webp",
+          0.8
+        );
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(arquivo);
+  });
 }
 
 // ==========================================================================
