@@ -64,6 +64,7 @@ nav {
   font-weight: bold;
   color: var(--monster-green);
   text-shadow: 0 0 10px rgba(0, 255, 102, 0.4);
+  cursor: pointer;
 }
 
 .nav-links {
