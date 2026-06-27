@@ -108,7 +108,8 @@ const Avaliacao = mongoose.model("Avaliacao", AvaliacaoSchema, "avaliacoes");
 const ComentarioSchema = new mongoose.Schema({
   avaliacaoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Avaliacao', required: true },
   sujeito: { type: String, required: true },
-  texto: { type: String, required: true }
+  texto: { type: String, required: true },
+  likes: { type: [String], default: [] }
 }, { timestamps: true });
 
 const Comentario = mongoose.model("Comentario", ComentarioSchema, "comentarios");
@@ -357,7 +358,7 @@ app.delete("/api/avaliacoes/:id", async (req, res) => {
   }
 });
 
-// Toggle Likes
+// Toggle likes de posts
 app.post("/api/avaliacoes/:id/curtidas", async (req, res) => {
   try {
     const token = req.cookies.authToken;
@@ -382,6 +383,36 @@ app.post("/api/avaliacoes/:id/curtidas", async (req, res) => {
     if (erro.name === "JsonWebTokenError" || erro.name === "TokenExpiredError") {
       return res.status(401).json({ erro: "Sessão expirada. Faça login novamente." });
     }
+    return res.status(500).json({ erro: "Erro interno ao processar a curtida." });
+  }
+});
+
+// Toggle likes de comentários
+app.post("/api/comentarios/:id/curtidas", async (req, res) => {
+  try {
+    const token = req.cookies.authToken;
+    if (!token) return res.status(401).json({ erro: "Você precisa estar logado para curtir, monstro!" });
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const comentario = await Comentario.findById(req.params.id);
+    
+    if (!comentario) return res.status(404).json({ erro: "Comentário não encontrado." });
+
+    // Se o nome do cara já está no array, tira (unlike). Se não tá, coloca (like).
+    const indexLike = comentario.likes.indexOf(decoded.nome);
+    if (indexLike === -1) {
+      comentario.likes.push(decoded.nome);
+    } else {
+      comentario.likes.splice(indexLike, 1);
+    }
+
+    await comentario.save();
+    return res.status(200).json({ 
+      mensagem: indexLike === -1 ? "Like adicionado!" : "Like removido!", 
+      likes: comentario.likes 
+    });
+  } catch (erro) {
+    console.error("❌ Erro ao curtir o comentário:", erro);
     return res.status(500).json({ erro: "Erro interno ao processar a curtida." });
   }
 });
