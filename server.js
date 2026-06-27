@@ -108,8 +108,7 @@ const Avaliacao = mongoose.model("Avaliacao", AvaliacaoSchema, "avaliacoes");
 const ComentarioSchema = new mongoose.Schema({
   avaliacaoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Avaliacao', required: true },
   sujeito: { type: String, required: true },
-  texto: { type: String, required: true },
-  likes: { type: [String], default: [] }
+  texto: { type: String, required: true }
 }, { timestamps: true });
 
 const Comentario = mongoose.model("Comentario", ComentarioSchema, "comentarios");
@@ -384,6 +383,40 @@ app.post("/api/avaliacoes/:id/curtidas", async (req, res) => {
       return res.status(401).json({ erro: "Sessão expirada. Faça login novamente." });
     }
     return res.status(500).json({ erro: "Erro interno ao processar a curtida." });
+  }
+});
+
+// Rota para buscar os comentários de uma avaliação específica
+app.get("/api/avaliacoes/:id/comentarios", async (req, res) => {
+  try {
+    const comentarios = await Comentario.find({ avaliacaoId: req.params.id }).sort({ createdAt: 1 }); // Ordem cronológica (mais antigos primeiro)
+    return res.status(200).json(comentarios);
+  } catch (erro) {
+    return res.status(500).json({ erro: "Erro ao buscar comentários." });
+  }
+});
+
+// Rota para salvar um novo comentário
+app.post("/api/avaliacoes/:id/comentarios", async (req, res) => {
+  try {
+    const token = req.cookies.authToken;
+    if (!token) return res.status(401).json({ erro: "Você precisa estar logado para comentar, monstro!" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { texto } = req.body;
+
+    if (!texto) return res.status(400).json({ erro: "O comentário não pode estar vazio." });
+
+    const novoComentario = new Comentario({
+      avaliacaoId: req.params.id,
+      sujeito: decoded.nome, // Puxa direto da sessão segura do token
+      texto: texto
+    });
+
+    await novoComentario.save();
+    return res.status(201).json(novoComentario);
+  } catch (erro) {
+    return res.status(401).json({ erro: "Sessão inválida ou erro ao comentar." });
   }
 });
 
