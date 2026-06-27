@@ -528,27 +528,46 @@ async function buscarComentariosDoPost(postId, containerId) {
       // Formata a data do comentário de um jeito simples
       const dataComentario = new Date(comentario.createdAt).toLocaleDateString("pt-BR", {hour: '2-digit', minute:'2-digit'});
       const iniciais = comentario.sujeito ? comentario.sujeito.substring(0, 2).toUpperCase() : "US";
+      const avatarComentarioId = `avatar-comment-${comentario._id}`;
+
+      const arrayLikes = comentario.likes || [];
+      const jaCurtiu = arrayLikes.includes(loggedUser);
+      const classeBotao = jaCurtiu ? 'btn-curtir-comentario curtido' : 'btn-curtir-comentario';
+      const corIcone = jaCurtiu ? '#ff4d5a' : 'rgba(255,255,255,0.4)';
+      const fillIcone = jaCurtiu ? '#ff4d5a' : 'none';
+      const numLikes = arrayLikes.length;
 
       const divComentario = document.createElement("div");
       divComentario.style = "display: flex; gap: 10px; align-items: flex-start; font-size: 14px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;";
       
       divComentario.innerHTML = `
-        <div class="comment-avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff;">
+        <div class="comment-avatar post-avatar" id="${avatarComentarioId}" data-usuario="${comentario.sujeito}" style="width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; flex-shrink: 0;">
           ${iniciais}
         </div>
-        <div style="flex: 1;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
-            <strong style="font-family: 'Nova Square';">
-              <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(comentario.sujeito)}" style="color: #00ff66; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                ${comentario.sujeito}
-              </a>
-            </strong>
-            <span style="color: #555; font-size: 11px;">${dataComentario}</span>
+        
+        <div style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+          <div style="flex: 1;">
+            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">
+              <strong style="font-family: 'Nova Square'; font-size: 13px;">
+                <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(comentario.sujeito)}" style="color: #00ff66; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                  ${comentario.sujeito}
+                </a>
+              </strong>
+              <span style="color: #444; font-size: 10px;">${dataComentario}</span>
+            </div>
+            <p style="color: #ddd; margin: 0; line-height: 1.4; font-size: 13px;">${comentario.texto}</p>
           </div>
-          <p style="color: #ddd; margin: 0; line-height: 1.4;">${comentario.texto}</p>
+
+          <button class="${classeBotao}" onclick="toggleCurtidaComentario(this, '${comentario._id}')" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; color: ${corIcone}; padding: 4px; transition: all 0.2s;">
+            <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="contador-likes-comentario">${numLikes}</span>
+          </button>
         </div>
       `;
       container.appendChild(divComentario);
+      resolverAvatarDoCardFeed(comentario.sujeito, avatarComentarioId);
     });
   } catch (erro) {
     container.innerHTML = `<p style="color: #ff4d4d; font-size: 12px;">Erro ao carregar comentários.</p>`;
@@ -728,6 +747,59 @@ window.toggleCurtida = async function(btn, postId) {
     }
     
     alert("Não foi possível registrar a curtida. Verifique sua conexão ou faça login novamente.");
+  }
+};
+
+// Função global para curtir/descurtir comentários (Interface Otimista)
+window.toggleCurtidaComentario = async function(btn, comentarioId) {
+  const svg = btn.querySelector('svg');
+  const span = btn.querySelector('.contador-likes-comentario');
+  let count = parseInt(span.textContent);
+
+  const isCurtido = btn.classList.contains('curtido');
+
+  // Atualização Visual Instantânea
+  if (!isCurtido) {
+    btn.classList.add('curtido'); 
+    svg.style.fill = '#ff4d5a';
+    svg.style.stroke = '#ff4d5a';
+    btn.style.color = '#ff4d5a';
+    span.textContent = count + 1;
+  } else {
+    btn.classList.remove('curtido'); 
+    svg.style.fill = 'none';
+    svg.style.stroke = 'rgba(255,255,255,0.4)';
+    btn.style.color = 'rgba(255,255,255,0.4)';
+    span.textContent = count - 1;
+  }
+
+  try {
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/comentarios/${comentarioId}/curtidas`, {
+      method: "POST",
+      credentials: "include" 
+    });
+
+    if (!resposta.ok) {
+      throw new Error("Falha ao sincronizar curtida do comentário");
+    }
+  } catch (erro) {
+    console.error("❌ Erro na sincronização da curtida do comentário:", erro);
+    
+    // Rollback (desfaz a alteração visual caso a API caia)
+    if (!isCurtido) {
+      btn.classList.remove('curtido');
+      svg.style.fill = 'none';
+      svg.style.stroke = 'rgba(255,255,255,0.4)';
+      btn.style.color = 'rgba(255,255,255,0.4)';
+      span.textContent = count;
+    } else {
+      btn.classList.add('curtido');
+      svg.style.fill = '#ff4d5a';
+      svg.style.stroke = '#ff4d5a';
+      btn.style.color = '#ff4d5a';
+      span.textContent = count;
+    }
+    alert("Não foi possível curtir o comentário. Verifique sua conexão.");
   }
 };
 
