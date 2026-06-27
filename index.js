@@ -537,6 +537,17 @@ async function buscarComentariosDoPost(postId, containerId) {
       const fillIcone = jaCurtiu ? '#ff4d5a' : 'none';
       const numLikes = arrayLikes.length;
 
+      // ⚙️ Lógica para renderizar o botão de excluir
+      const podeExcluir = (comentario.sujeito === loggedUser) || (userRole === "admin");
+      const btnExcluirHtml = podeExcluir ? `
+        <button onclick="excluirComentario('${comentario._id}', '${comentario.avaliacaoId}')" style="background: transparent; border: none; cursor: pointer; color: #ff4d4d; padding: 4px; display: flex; align-items: center; transition: 0.2s;" onmouseover="this.style.color='#ff1a1a'" onmouseout="this.style.color='#ff4d4d'" title="Excluir">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      ` : '';
+
       const divComentario = document.createElement("div");
       divComentario.style = "display: flex; gap: 10px; align-items: flex-start; font-size: 14px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;";
       
@@ -558,12 +569,15 @@ async function buscarComentariosDoPost(postId, containerId) {
             <p style="color: #ddd; margin: 0; line-height: 1.4; font-size: 13px;">${comentario.texto}</p>
           </div>
 
-          <button class="${classeBotao}" onclick="toggleCurtidaComentario(this, '${comentario._id}')" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; color: ${corIcone}; padding: 4px; transition: all 0.2s;">
-            <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            <span class="contador-likes-comentario">${numLikes}</span>
-          </button>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button class="${classeBotao}" onclick="toggleCurtidaComentario(this, '${comentario._id}')" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; color: ${corIcone}; padding: 4px; transition: all 0.2s;">
+              <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span class="contador-likes-comentario">${numLikes}</span>
+            </button>
+            ${btnExcluirHtml}
+          </div>
         </div>
       `;
       container.appendChild(divComentario);
@@ -814,6 +828,30 @@ async function deletarPost(id) {
     else { const dados = await resposta.json(); alert(dados.erro || "Erro ao deletar."); }
   } catch (erro) { console.error("Erro no fetch:", erro); }
 }
+
+// Função global para excluir um comentário
+window.excluirComentario = async function(comentarioId, postId) {
+  const confirmacao = confirm("Tem certeza que deseja apagar esse comentário?");
+  if (!confirmacao) return;
+
+  try {
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/comentarios/${comentarioId}`, {
+      method: "DELETE",
+      credentials: "include"
+    });
+
+    if (resposta.ok) {
+      // 🎉 Excluído com sucesso! Atualiza os comentários do post invisivelmente
+      buscarComentariosDoPost(postId, `container-comentarios-${postId}`);
+    } else {
+      const dados = await resposta.json();
+      alert(dados.erro || "Falha ao excluir o comentário.");
+    }
+  } catch (erro) {
+    console.error("❌ Erro ao excluir comentário:", erro);
+    alert("Erro de conexão com o servidor. Tente novamente.");
+  }
+};
 
 async function carregarRanking() {
   const container = document.getElementById("ranking-container");
