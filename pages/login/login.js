@@ -121,7 +121,7 @@ function initLogin() {
 
         window.setTimeout(() => {
           // Caminho corrigido!
-          window.location.href = "../../index.html";
+          window.location.href = "../../";
         }, 1500);
       }
     } catch (error) {
@@ -190,7 +190,7 @@ function initCadastro() {
         formCadastro.reset();
 
         window.setTimeout(() => {
-          window.location.href = "../../index.html";
+          window.location.href = "../../";
         }, 2000);
       } else {
         message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
