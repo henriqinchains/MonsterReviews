@@ -358,6 +358,31 @@ app.delete("/api/avaliacoes/:id", async (req, res) => {
   }
 });
 
+// Rota para excluir um comentário
+app.delete("/api/comentarios/:id", async (req, res) => {
+  try {
+    const token = req.cookies.authToken;
+    if (!token) return res.status(401).json({ erro: "Acesso negado." });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const comentario = await Comentario.findById(req.params.id);
+
+    if (!comentario) return res.status(404).json({ erro: "Comentário não encontrado." });
+
+    // 🔒 REGRA DE NEGÓCIO: Só exclui se for o dono do comentário ou um ADMIN
+    if (comentario.sujeito !== decoded.nome && !decoded.cargo !== "admin") {
+      return res.status(403).json({ erro: "Você não tem permissão para excluir este comentário." });
+    }
+
+    await Comentario.findByIdAndDelete(req.params.id);
+    return res.status(200).json({ mensagem: "Comentário excluído com sucesso!" });
+
+  } catch (erro) {
+    console.error("❌ Erro ao excluir comentário:", erro);
+    return res.status(500).json({ erro: "Erro interno do servidor." });
+  }
+});
+
 // Toggle likes de posts
 app.post("/api/avaliacoes/:id/curtidas", async (req, res) => {
   try {
