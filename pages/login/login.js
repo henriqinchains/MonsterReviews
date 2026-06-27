@@ -11,7 +11,7 @@ async function checarLogin() {
     });
 
     if (response.ok) {
-      window.location.href = "../../index.html";
+      window.location.href = "../../";
     }
   } catch (error) {
     console.error("Erro ao verificar sessão inicial:", error);
