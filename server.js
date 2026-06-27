@@ -370,7 +370,7 @@ app.delete("/api/comentarios/:id", async (req, res) => {
     if (!comentario) return res.status(404).json({ erro: "Comentário não encontrado." });
 
     // 🔒 REGRA DE NEGÓCIO: Só exclui se for o dono do comentário ou um ADMIN
-    if (comentario.sujeito !== decoded.nome && !decoded.cargo !== "admin") {
+    if (comentario.sujeito !== decoded.nome && decoded.cargo !== "admin") {
       return res.status(403).json({ erro: "Você não tem permissão para excluir este comentário." });
     }
 
