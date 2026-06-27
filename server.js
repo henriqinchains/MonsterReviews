@@ -104,6 +104,16 @@ const AvaliacaoSchema = new mongoose.Schema({
 
 const Avaliacao = mongoose.model("Avaliacao", AvaliacaoSchema, "avaliacoes");
 
+// Model: Comentários
+const ComentarioSchema = new mongoose.Schema({
+  avaliacaoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Avaliacao', required: true },
+  sujeito: { type: String, required: true },
+  texto: { type: String, required: true },
+  likes: { type: [String], default: [] }
+}, { timestamps: true });
+
+const Comentario = mongoose.model("Comentario", ComentarioSchema, "comentarios");
+
 // ============================================================================
 // 5. ROTAS DE AUTENTICAÇÃO E SESSÃO
 // ============================================================================
