@@ -428,6 +428,9 @@ function renderizarPosts(arrayAvaliacoes) {
     const bgBotao = 'transparent'; 
     const numLikes = arrayLikes.length;
 
+    const comentariosContainerId = `container-comentarios-${post._id}`;
+    const formComentarioId = `form-comentario-${post._id}`;
+
     const postArticle = document.createElement("article");
     postArticle.className = "post-card";
     postArticle.innerHTML = `
@@ -483,11 +486,104 @@ function renderizarPosts(arrayAvaliacoes) {
           </button>
         ` : ""}
       </div>
+      
+      <div class="post-comments-area" style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.1);">
+        
+        <div id="${comentariosContainerId}" class="comments-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+          <p style="color: #666; font-size: 13px;">Carregando comentários...</p>
+        </div>
+
+        <form id="${formComentarioId}" onsubmit="enviarComentario(event, '${post._id}')" style="display: flex; gap: 10px; align-items: center;">
+          <input type="text" placeholder="Escreva um comentário monstruoso..." required style="flex: 1; background: #1a1f26; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 6px; color: white; font-size: 14px;">
+          <button type="submit" style="background: #00ff66; color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Enviar</button>
+        </form>
+      </div>
     `;
+
+    
     feedContainer.appendChild(postArticle);
 
+    buscarComentariosDoPost(post._id, comentariosContainerId);
     resolverAvatarDoCardFeed(post.sujeito, avatarElementId);
   });
+}
+
+// Busca os comentários específicos de um post e renderiza na caixinha dele
+async function buscarComentariosDoPost(postId, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  try {
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/comentarios`);
+    const comentarios = await resposta.json();
+
+    if (comentarios.length === 0) {
+      container.innerHTML = `<p style="color: #555; font-size: 13px; font-style: italic; margin: 0;">Nenhum comentário ainda. Seja o primeiro a mandar a real!</p>`;
+      return;
+    }
+
+    container.innerHTML = ""; // Limpa o "Carregando..."
+    
+    comentarios.forEach(comentario => {
+      // Formata a data do comentário de um jeito simples
+      const dataComentario = new Date(comentario.createdAt).toLocaleDateString("pt-BR", {hour: '2-digit', minute:'2-digit'});
+      const iniciais = comentario.sujeito ? comentario.sujeito.substring(0, 2).toUpperCase() : "US";
+
+      const divComentario = document.createElement("div");
+      divComentario.style = "display: flex; gap: 10px; align-items: flex-start; font-size: 14px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;";
+      
+      divComentario.innerHTML = `
+        <div class="comment-avatar" style="width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff;">
+          ${iniciais}
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+            <strong style="font-family: 'Nova Square';">
+              <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(comentario.sujeito)}" style="color: #00ff66; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
+                ${comentario.sujeito}
+              </a>
+            </strong>
+            <span style="color: #555; font-size: 11px;">${dataComentario}</span>
+          </div>
+          <p style="color: #ddd; margin: 0; line-height: 1.4;">${comentario.texto}</p>
+        </div>
+      `;
+      container.appendChild(divComentario);
+    });
+  } catch (erro) {
+    container.innerHTML = `<p style="color: #ff4d4d; font-size: 12px;">Erro ao carregar comentários.</p>`;
+  }
+}
+
+// Envia o novo comentário para o backend
+async function enviarComentario(event, postId) {
+  event.preventDefault();
+  const form = event.target;
+  const input = form.querySelector('input');
+  const texto = input.value.trim();
+  
+  if (!texto) return;
+
+  try {
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/comentarios`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texto }),
+      credentials: "include"
+    });
+
+    if (resposta.ok) {
+      input.value = ""; // Limpa a caixa de texto
+      // Atualiza apenas a listinha daquele card específico, sem dar reload na página inteira!
+      buscarComentariosDoPost(postId, `container-comentarios-${postId}`);
+    } else {
+      const dados = await resposta.json();
+      alert(dados.erro || "Falha ao enviar comentário.");
+    }
+  } catch (erro) {
+    console.error("Erro ao comentar:", erro);
+    alert("Erro de conexão com o servidor.");
+  }
 }
 
 // ==========================================================================
