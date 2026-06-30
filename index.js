@@ -301,13 +301,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       try {
         const formData = new FormData(formAvaliacao);
-        
+
         const blobWebp = await convertWebp("foto");
-        
+
         if (blobWebp) {
           formData.set("foto", blobWebp, "imagem.webp");
         }
-        
+
         const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes", {
           method: "POST",
           body: formData,
@@ -418,14 +418,14 @@ function renderizarPosts(arrayAvaliacoes) {
     const iniciais = post.sujeito ? post.sujeito.substring(0, 2).toUpperCase() : "US";
 
     const arrayLikes = post.likes || [];
-    const jaCurtiu = arrayLikes.includes(loggedUser); 
-    
+    const jaCurtiu = arrayLikes.includes(loggedUser);
+
     const classeBotao = jaCurtiu ? 'post-action btn-curtir curtido' : 'post-action btn-curtir';
-    
+
     const corIcone = jaCurtiu ? '#ff4d5a' : 'currentColor';
     const fillIcone = jaCurtiu ? '#ff4d5a' : 'none';
     const corTexto = jaCurtiu ? '#ff4d5a' : 'var(--text-muted)';
-    const bgBotao = 'transparent'; 
+    const bgBotao = 'transparent';
     const numLikes = arrayLikes.length;
 
     const comentariosContainerId = `container-comentarios-${post._id}`;
@@ -487,20 +487,19 @@ function renderizarPosts(arrayAvaliacoes) {
         ` : ""}
       </div>
       
-      <div class="post-comments-area" style="padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.1);">
-        
-        <div id="${comentariosContainerId}" class="comments-list" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
-          <p style="color: #666; font-size: 13px;">Carregando comentários...</p>
+      <div class="post-comments-area">
+        <div id="${comentariosContainerId}" class="comments-list">
+          <p class="comments-loading">Carregando comentários...</p>
         </div>
 
-        <form id="${formComentarioId}" onsubmit="enviarComentario(event, '${post._id}')" style="display: flex; gap: 10px; align-items: center;">
-          <input type="text" placeholder="Escreva um comentário monstruoso..." required style="flex: 1; background: #1a1f26; border: 1px solid rgba(255,255,255,0.1); padding: 8px 12px; border-radius: 6px; color: white; font-size: 14px;">
-          <button type="submit" style="background: #00ff66; color: #000; border: none; padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px;">Enviar</button>
+        <form id="${formComentarioId}" class="comment-form" onsubmit="enviarComentario(event, '${post._id}')">
+          <input type="text" class="comment-input" placeholder="Escreva um comentário monstruoso..." required>
+          <button type="submit" class="comment-submit">Enviar</button>
         </form>
       </div>
     `;
 
-    
+
     feedContainer.appendChild(postArticle);
 
     buscarComentariosDoPost(post._id, comentariosContainerId);
@@ -523,10 +522,10 @@ async function buscarComentariosDoPost(postId, containerId) {
     }
 
     container.innerHTML = ""; // Limpa o "Carregando..."
-    
+
     comentarios.forEach(comentario => {
       // Formata a data do comentário de um jeito simples
-      const dataComentario = new Date(comentario.createdAt).toLocaleDateString("pt-BR", {hour: '2-digit', minute:'2-digit'});
+      const dataComentario = new Date(comentario.createdAt).toLocaleDateString("pt-BR", { hour: '2-digit', minute: '2-digit' });
       const iniciais = comentario.sujeito ? comentario.sujeito.substring(0, 2).toUpperCase() : "US";
       const avatarComentarioId = `avatar-comment-${comentario._id}`;
 
@@ -540,44 +539,43 @@ async function buscarComentariosDoPost(postId, containerId) {
       // ⚙️ Lógica para renderizar o botão de excluir
       const podeExcluir = (comentario.sujeito === loggedUser) || (userRole === "admin");
       const btnExcluirHtml = podeExcluir ? `
-        <button onclick="excluirComentario('${comentario._id}', '${comentario.avaliacaoId}')" style="background: transparent; border: none; cursor: pointer; color: #ff4d4d; padding: 4px; display: flex; align-items: center; transition: 0.2s;" onmouseover="this.style.color='#ff1a1a'" onmouseout="this.style.color='#ff4d4d'" title="Excluir">
+        <button class="comment-delete-button" onclick="excluirComentario('${comentario._id}', '${comentario.avaliacaoId}')" title="Excluir">
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"></polyline>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
+          Excluir
         </button>
       ` : '';
 
       const divComentario = document.createElement("div");
-      divComentario.style = "display: flex; gap: 10px; align-items: flex-start; font-size: 14px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px;";
-      
+      divComentario.className = "comment-card";
+
       divComentario.innerHTML = `
-        <div class="comment-avatar post-avatar" id="${avatarComentarioId}" data-usuario="${comentario.sujeito}" style="width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; color: #fff; flex-shrink: 0;">
+        <div class="comment-avatar post-avatar" id="${avatarComentarioId}" data-usuario="${comentario.sujeito}">
           ${iniciais}
         </div>
-        
-        <div style="flex: 1; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
-          <div style="flex: 1;">
-            <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 3px;">
-              <strong style="font-family: 'Nova Square'; font-size: 13px;">
-                <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(comentario.sujeito)}" style="color: #00ff66; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">
-                  ${comentario.sujeito}
-                </a>
-              </strong>
-              <span style="color: #444; font-size: 10px;">${dataComentario}</span>
-            </div>
-            <p style="color: #ddd; margin: 0; line-height: 1.4; font-size: 13px;">${comentario.texto}</p>
-          </div>
 
-          <div style="display: flex; gap: 6px; align-items: center;">
-            <button class="${classeBotao}" onclick="toggleCurtidaComentario(this, '${comentario._id}')" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 4px; font-size: 11px; color: ${corIcone}; padding: 4px; transition: all 0.2s;">
-              <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-              <span class="contador-likes-comentario">${numLikes}</span>
-            </button>
-            ${btnExcluirHtml}
+        <div class="comment-body">
+          <div class="comment-header">
+            <strong class="comment-author">
+              <a href="./pages/perfil/perfil.html?user=${encodeURIComponent(comentario.sujeito)}" class="comment-author-link">
+                ${comentario.sujeito}
+              </a>
+            </strong>
+            <span class="comment-date">${dataComentario}</span>
           </div>
+          <p class="comment-text">${comentario.texto}</p>
+        </div>
+
+        <div class="comment-actions">
+          <button class="${classeBotao} btn-curtir-comentario" onclick="toggleCurtidaComentario(this, '${comentario._id}')">
+            <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="contador-likes-comentario">${numLikes}</span>
+          </button>
+          ${btnExcluirHtml}
         </div>
       `;
       container.appendChild(divComentario);
@@ -594,7 +592,7 @@ async function enviarComentario(event, postId) {
   const form = event.target;
   const input = form.querySelector('input');
   const texto = input.value.trim();
-  
+
   if (!texto) return;
 
   try {
@@ -703,7 +701,7 @@ async function resolverAvatarDoCardFeed(usuario, elementId) {
   }
 }
 
-window.toggleCurtida = async function(btn, postId) {
+window.toggleCurtida = async function (btn, postId) {
   const svg = btn.querySelector('svg');
   const span = btn.querySelector('.contador-likes');
   let count = parseInt(span.textContent);
@@ -711,7 +709,7 @@ window.toggleCurtida = async function(btn, postId) {
   const isCurtido = btn.classList.contains('curtido');
 
   if (!isCurtido) {
-    btn.classList.add('curtido'); 
+    btn.classList.add('curtido');
     svg.style.fill = '#ff4d5a';
     svg.style.stroke = '#ff4d5a';
     btn.style.color = '#ff4d5a';
@@ -725,7 +723,7 @@ window.toggleCurtida = async function(btn, postId) {
     }, 200);
 
   } else {
-    btn.classList.remove('curtido'); 
+    btn.classList.remove('curtido');
     svg.style.fill = 'none';
     svg.style.stroke = 'currentColor';
     btn.style.color = 'var(--text-muted)';
@@ -736,7 +734,7 @@ window.toggleCurtida = async function(btn, postId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/curtidas`, {
       method: "POST",
-      credentials: "include" 
+      credentials: "include"
     });
 
     if (!resposta.ok) {
@@ -745,7 +743,7 @@ window.toggleCurtida = async function(btn, postId) {
     }
   } catch (erro) {
     console.error("❌ Erro na sincronização da curtida:", erro);
-    
+
     if (!isCurtido) {
       svg.style.fill = 'none';
       svg.style.stroke = 'currentColor';
@@ -759,13 +757,13 @@ window.toggleCurtida = async function(btn, postId) {
       btn.style.backgroundColor = 'rgba(255, 77, 90, 0.08)';
       span.textContent = count;
     }
-    
+
     alert("Não foi possível registrar a curtida. Verifique sua conexão ou faça login novamente.");
   }
 };
 
 // Função global para curtir/descurtir comentários (Interface Otimista)
-window.toggleCurtidaComentario = async function(btn, comentarioId) {
+window.toggleCurtidaComentario = async function (btn, comentarioId) {
   const svg = btn.querySelector('svg');
   const span = btn.querySelector('.contador-likes-comentario');
   let count = parseInt(span.textContent);
@@ -774,13 +772,13 @@ window.toggleCurtidaComentario = async function(btn, comentarioId) {
 
   // Atualização Visual Instantânea
   if (!isCurtido) {
-    btn.classList.add('curtido'); 
+    btn.classList.add('curtido');
     svg.style.fill = '#ff4d5a';
     svg.style.stroke = '#ff4d5a';
     btn.style.color = '#ff4d5a';
     span.textContent = count + 1;
   } else {
-    btn.classList.remove('curtido'); 
+    btn.classList.remove('curtido');
     svg.style.fill = 'none';
     svg.style.stroke = 'rgba(255,255,255,0.4)';
     btn.style.color = 'rgba(255,255,255,0.4)';
@@ -790,7 +788,7 @@ window.toggleCurtidaComentario = async function(btn, comentarioId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/comentarios/${comentarioId}/curtidas`, {
       method: "POST",
-      credentials: "include" 
+      credentials: "include"
     });
 
     if (!resposta.ok) {
@@ -798,7 +796,7 @@ window.toggleCurtidaComentario = async function(btn, comentarioId) {
     }
   } catch (erro) {
     console.error("❌ Erro na sincronização da curtida do comentário:", erro);
-    
+
     // Rollback (desfaz a alteração visual caso a API caia)
     if (!isCurtido) {
       btn.classList.remove('curtido');
@@ -830,7 +828,7 @@ async function deletarPost(id) {
 }
 
 // Função global para excluir um comentário
-window.excluirComentario = async function(comentarioId, postId) {
+window.excluirComentario = async function (comentarioId, postId) {
   const confirmacao = confirm("Tem certeza que deseja apagar esse comentário?");
   if (!confirmacao) return;
 
