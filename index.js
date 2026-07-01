@@ -189,11 +189,10 @@ async function inicializarInterface(usuario) {
   }
 
   await Promise.all([
-    carregarFeed(),
+    carregarFeed(true),
     carregarRanking()
   ]);
 
-  renderizarPosts(todasAvaliacoes);
   ocultarLoading();
 }
 
@@ -363,6 +362,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return 0;
       });
 
+      feedContainer.innerHTML = "";
       renderizarPosts(postsFiltrados);
     });
   }
@@ -373,6 +373,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("filtroSabor").value = "";
       document.getElementById("filtroOrdem").value = "recentes";
 
+      feedContainer.innerHTML = "";
       renderizarPosts(todasAvaliacoes);
     });
   }
