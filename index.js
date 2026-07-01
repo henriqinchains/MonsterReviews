@@ -52,6 +52,9 @@ let loggedUser = sessionStorage.getItem("cache_usuario") || "";
 let userRole = sessionStorage.getItem("cache_cargo") || "user";
 let userEmail = sessionStorage.getItem("cache_email") || "";
 let todasAvaliacoes = [];
+let paginaAtual = 1;
+let carregandoPosts = false;
+let temMaisPosts = true;
 const feedContainer = document.getElementById("feed-container");
 const cacheMemoriaAvatares = {};
 const listaSabores = [
@@ -385,20 +388,45 @@ document.addEventListener("click", (e) => {
   if (nu && !nu.contains(e.target)) nu.classList.remove("open");
 });
 
-async function carregarFeed() {
+async function carregarFeed(recarregarTudo = false) {
   if (!feedContainer) return;
-  feedContainer.innerHTML = "<p>Carregando avaliações monstruosas...</p>";
+
+  if (recarregarTudo) {
+    paginaAtual = 1;
+    temMaisPosts = true;
+    feedContainer.innerHTML = ""; 
+  }
+
+  if (carregandoPosts || !temMaisPosts) return;
+
+  carregandoPosts = true;
+
   try {
-    const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes");
-    const avaliacoes = await resposta.json();
-    todasAvaliacoes = avaliacoes;
+    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes?page=${paginaAtual}&limit=10`);
+    const dados = await resposta.json();
+
+    temMaisPosts = dados.hasMore;
+    
+    // Atualiza a variável global que o filtro usa
+    if (recarregarTudo) {
+      todasAvaliacoes = dados.avaliacoes;
+    } else {
+      todasAvaliacoes = [...todasAvaliacoes, ...dados.avaliacoes];
+    }
+
+    renderizarPosts(dados);
+    paginaAtual++;
+
   } catch (erro) {
     feedContainer.innerHTML = "<p>❌ Erro ao conectar com o servidor do Render.</p>";
     console.error(erro);
+  } finally {
+    carregandoPosts = false;
+    ocultarLoading(); // Garante que a tela preta vai sumir!
   }
 }
 
-function renderizarPosts(arrayAvaliacoes) {
+function renderizarPosts(dadosRecebidos) {
 
   // 🛡️ O PORTEIRO INTELIGENTE: Normaliza os dados para sempre ser um array
   let arrayAvaliacoes = [];
