@@ -400,13 +400,21 @@ async function carregarFeed() {
 
 function renderizarPosts(arrayAvaliacoes) {
 
-  // 2. Trava de segurança: se a API mandar o objeto em vez do array, ele avisa e não quebra a tela
-  if (!Array.isArray(arrayAvaliacoes)) {
-    console.error("Erro: renderizarPosts esperava um array, mas recebeu:", arrayAvaliacoes);
+  // 🛡️ O PORTEIRO INTELIGENTE: Normaliza os dados para sempre ser um array
+  let arrayAvaliacoes = [];
+
+  if (Array.isArray(dadosRecebidos)) {
+    // Se veio de uma rota antiga que ainda manda o Array direto
+    arrayAvaliacoes = dadosRecebidos; 
+  } else if (dadosRecebidos && Array.isArray(dadosRecebidos.avaliacoes)) {
+    // Se veio da nossa rota nova de paginação { avaliacoes: [...], hasMore: true }
+    arrayAvaliacoes = dadosRecebidos.avaliacoes; 
+  } else {
+    console.error("renderizarPosts não conseguiu entender os dados:", dadosRecebidos);
     return;
   }
 
-  // 3. Mensagem de vazio: só mostra se não veio nenhuma latinha E o feed já estiver vazio
+  // Só mostra a mensagem de vazio se o array estiver zerado e o feed também
   if (arrayAvaliacoes.length === 0 && feedContainer.innerHTML.trim() === "") {
     feedContainer.innerHTML = "<p style='text-align: center; color: #8b9bb4; padding: 20px;'>Nenhuma avaliação postada ainda. Seja o primeiro!</p>";
     return;
