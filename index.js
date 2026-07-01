@@ -399,11 +399,19 @@ async function carregarFeed() {
 }
 
 function renderizarPosts(arrayAvaliacoes) {
-  feedContainer.innerHTML = "";
-  if (arrayAvaliacoes.length === 0) {
-    feedContainer.innerHTML = "<p>Nenhuma avaliação postada ainda. Seja o primeiro!</p>";
+
+  // 2. Trava de segurança: se a API mandar o objeto em vez do array, ele avisa e não quebra a tela
+  if (!Array.isArray(arrayAvaliacoes)) {
+    console.error("Erro: renderizarPosts esperava um array, mas recebeu:", arrayAvaliacoes);
     return;
   }
+
+  // 3. Mensagem de vazio: só mostra se não veio nenhuma latinha E o feed já estiver vazio
+  if (arrayAvaliacoes.length === 0 && feedContainer.innerHTML.trim() === "") {
+    feedContainer.innerHTML = "<p style='text-align: center; color: #8b9bb4; padding: 20px;'>Nenhuma avaliação postada ainda. Seja o primeiro!</p>";
+    return;
+  }
+  
   arrayAvaliacoes.forEach((post) => {
     const dataObjeto = new Date(post.createdAt);
     const dataFormatada = dataObjeto.toLocaleDateString("pt-BR");
