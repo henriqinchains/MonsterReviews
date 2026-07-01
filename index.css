@@ -463,11 +463,13 @@ nav>a {
 /* ==========================================================================
    4. FEED E CARDS DE AVALIAÇÃO (POSTS) - TOTALMENTE ENQUADRADO
    ========================================================================== */
+
 .feed-container {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 1300px;
+  width: 100%;
+  align-items: center;
 }
 
 .post-card {
