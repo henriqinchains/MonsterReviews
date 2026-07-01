@@ -274,13 +274,36 @@ app.post("/api/resetar-senha", async (req, res) => {
 // 7. ROTAS DO CORE (AVALIAÇÕES, FEED E ESTATÍSTICAS)
 // ============================================================================
 
-// Feed Geral
+// Rota para buscar as avaliações com Paginação
 app.get("/api/avaliacoes", async (req, res) => {
   try {
-    const avaliacoes = await Avaliacao.find().sort({ createdAt: -1 });
-    return res.status(200).json(avaliacoes);
+    // Pega a página da URL (se não mandar, assume página 1)
+    const page = parseInt(req.query.page) || 1;
+    // Define o limite de latinhas por vez
+    const limit = parseInt(req.query.limit) || 10; 
+    
+    // Calcula quantas latinhas pular
+    const skip = (page - 1) * limit;
+
+    // Busca no banco aplicando a ordenação, o pulo e o limite
+    const avaliacoes = await Avaliacao.find()
+      .sort({ createdAt: -1 }) // Mais novas primeiro
+      .skip(skip)
+      .limit(limit);
+
+    // Conta o total de latinhas no banco para sabermos quando parar de pedir
+    const totalPosts = await Avaliacao.countDocuments();
+    const hasMore = (page * limit) < totalPosts;
+
+    // 🚨 ATENÇÃO: Agora não devolvemos mais só o array puro!
+    // Devolvemos um objeto com as avaliações e a informação se tem mais.
+    return res.status(200).json({
+      avaliacoes: avaliacoes,
+      hasMore: hasMore
+    });
+
   } catch (erro) {
-    console.error("❌ Erro ao buscar avaliações:", erro);
+    console.error("Erro ao buscar avaliações:", erro);
     return res.status(500).json({ erro: "Erro ao carregar o feed." });
   }
 });
