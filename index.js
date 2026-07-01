@@ -943,3 +943,36 @@ window.onclick = function (event) {
     modal.style.display = "none";
   }
 }
+
+// ==========================================================================
+// SCROLL INFINITO (INTERSECTION OBSERVER)
+// ==========================================================================
+document.addEventListener("DOMContentLoaded", () => {
+  const sentinela = document.getElementById("sentinela-scroll");
+  const msgFimFeed = document.getElementById("msg-fim-feed");
+
+  if (!sentinela) return;
+
+  // Cria o "olheiro"
+  const observer = new IntersectionObserver((entries) => {
+    // Se a sentinela apareceu na tela e não estamos no meio de um carregamento
+    if (entries[0].isIntersecting && !carregandoPosts) {
+      
+      // Se a API disse que ainda tem post, busca mais!
+      if (temMaisPosts) {
+        carregarFeed(false);
+      } else {
+        // Se acabaram as latinhas, mostra a mensagem final e desliga o olheiro
+        if (msgFimFeed) msgFimFeed.style.display = "block";
+        observer.unobserve(sentinela);
+      }
+    }
+  }, {
+    root: null,
+    rootMargin: "100px", // Pede pra carregar 100px antes do usuário chegar no final da tela (fica mais fluido)
+    threshold: 0.1
+  });
+
+  // Manda o olheiro começar a vigiar a sentinela
+  observer.observe(sentinela);
+});
