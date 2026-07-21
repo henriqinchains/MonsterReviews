@@ -296,6 +296,96 @@ async function carregarEstatisticas(target) {
   }
 }
 
+async function carregarRanking() {
+  const containerDesktop = document.getElementById("ranking-container");
+  const containerMobile = document.getElementById("ranking-container-mobile");
+  
+  try {
+    const respuesta = await fetch("https://monster-reviews-api.onrender.com/api/ranking");
+    const ranking = await respuesta.json();
+    
+    if (containerDesktop) containerDesktop.innerHTML = "";
+    if (containerMobile) containerMobile.innerHTML = "";
+    
+    if (ranking.length === 0) {
+      const msgVazio = "<p style='text-align: center; color: #888;'>Nenhuma latinha registrada ainda.</p>";
+      if (containerDesktop) containerDesktop.innerHTML = msgVazio;
+      if (containerMobile) containerMobile.innerHTML = msgVazio;
+      return;
+    }
+    
+    ranking.forEach((usuario, index) => {
+      let iconePosicao = `${index + 1}`;
+      let classePodio = "";
+      if (index === 0) classePodio = "rank-1";
+      else if (index === 1) classePodio = "rank-2";
+      else if (index === 2) classePodio = "rank-3";
+
+      const htmlLinha = `
+        <div class="rank-info">
+          <span class="rank-posicao">${iconePosicao}</span>
+          <span class="rank-nome" style="font-family: 'Nova Square';">${usuario._id}</span>
+        </div>
+        <div class="rank-latinhas">${usuario.totalLatinhas} 🥫</div>
+      `;
+
+      if (containerDesktop) {
+        const linhaDesk = document.createElement("div");
+        linhaDesk.className = `ranking-item ${classePodio}`;
+        linhaDesk.innerHTML = htmlLinha;
+        containerDesktop.appendChild(linhaDesk);
+      }
+
+      if (containerMobile) {
+        const linhaMob = document.createElement("div");
+        linhaMob.className = `ranking-item ${classePodio}`;
+        linhaMob.innerHTML = htmlLinha;
+        containerMobile.appendChild(linhaMob);
+      }
+    });
+  } catch (erro) { 
+    const msgErro = "<p style='text-align: center; color: #ff3333;'>Erro ao carregar o ranking.</p>";
+    if (containerDesktop) containerDesktop.innerHTML = msgErro;
+    if (containerMobile) containerMobile.innerHTML = msgErro;
+    console.error(erro); 
+  }
+}
+
+// ==========================================
+// CONTROLE DO MODAL DE RANKING NO MOBILE
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const modalRankingMob = document.getElementById("modalRankingMobile");
+  const btnRankingMob = document.getElementById("btn-ranking-mobile");
+  const fecharRankingMob = document.getElementById("fecharModalRanking");
+  const navLinks = document.querySelector('.nav-links');
+
+  if (btnRankingMob && modalRankingMob) {
+    btnRankingMob.addEventListener("click", () => {
+      modalRankingMob.style.display = "flex";
+      document.body.style.overflow = "hidden"; // 🔒 Trava a tela de fundo
+      
+      if (navLinks && navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+      }
+    });
+  }
+
+  if (fecharRankingMob && modalRankingMob) {
+    fecharRankingMob.addEventListener("click", () => {
+      modalRankingMob.style.display = "none";
+      document.body.style.overflow = ""; // 🔓 Destrava a tela
+    });
+  }
+
+  window.addEventListener("click", (event) => {
+    if (modalRankingMob && event.target === modalRankingMob) {
+      modalRankingMob.style.display = "none";
+      document.body.style.overflow = ""; // 🔓 Destrava a tela
+    }
+  });
+});
+
 // ==========================================================================
 // CONTROLE DO DROPDOWN DO PERFIL (MENU SUPERIOR)
 // ==========================================================================
