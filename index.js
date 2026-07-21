@@ -961,18 +961,21 @@ const btnHamSobre = document.getElementById("sobreProjetoBtnHam");
 if (btnHamSobre && modal) {
   btnHamSobre.onclick = function () {
     modal.style.display = "block";
+    document.body.style.overflow = "hidden";
   }
 }
 
 if (span && modal) {
   span.onclick = function () {
     modal.style.display = "none";
+    document.body.style.overflow = "";
   }
 }
 
 window.onclick = function (event) {
   if (modal && event.target == modal) {
     modal.style.display = "none";
+    document.body.style.overflow = "";
   }
 }
 
@@ -1022,6 +1025,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (btnRankingMob && modalRankingMob) {
     btnRankingMob.addEventListener("click", () => {
       modalRankingMob.style.display = "flex";
+      document.body.style.overflow = "hidden";
       
       if (navLinks && navLinks.classList.contains('open')) {
         navLinks.classList.remove('open');
@@ -1033,6 +1037,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (fecharRankingMob && modalRankingMob) {
     fecharRankingMob.addEventListener("click", () => {
       modalRankingMob.style.display = "none";
+      document.body.style.overflow = "";
     });
   }
 
@@ -1040,6 +1045,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("click", (event) => {
     if (modalRankingMob && event.target === modalRankingMob) {
       modalRankingMob.style.display = "none";
+      document.body.style.overflow = "";
     }
   });
 });
