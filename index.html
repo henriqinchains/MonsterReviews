@@ -41,6 +41,16 @@
     <div class="nav-links">
       <a class="active">Feed</a>
       <a href="./pages/perfil/perfil.html">Perfil e Estatísticas</a>
+      <a id="btn-ranking-mobile" class="mobile-only-link" style="cursor: pointer;">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+        <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+        <path d="M4 22h16"></path>
+        <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+        <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+        <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+        </svg>Ranking
+      </a>
       <a href="#">Torneio (em breve)</a>
       <a id="sobreProjetoBtnHam">Sobre o Projeto</a>
     </div>
@@ -92,7 +102,7 @@
     <aside class="coluna-direita">
       <div id="right-col">
 
-        <div class="panel">
+        <div class="panel" id="panel-ranking-desktop">
           <div class="panel-header">
             <h3>Liderança</h3>
             <span class="badge">Ao vivo</span>
@@ -198,6 +208,22 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Modal Ranking Mobile -->
+  <div id="modalRankingMobile" class="modal-oculto">
+    <div class="modal-conteudo" style="max-width: 400px; padding: 24px; text-align: left;">
+    <span class="fechar-btn" id="fecharModalRanking" style="top: 15px; right: 20px;">&times;</span>
+  
+    <div class="panel-header" style="margin-top: 15px;">
+      <h3 style="margin-bottom: 0;">Liderança</h3>
+      <span class="badge">Ao vivo</span>
+    </div>
+    <div class="panel-body" id="ranking-container-mobile">
+      <p class="txt-calculando" style="color: #8b9bb4; text-align: center;">Calculando latinhas...</p>
+    </div>
+      
     </div>
   </div>
 
