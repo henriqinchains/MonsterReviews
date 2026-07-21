@@ -1420,15 +1420,15 @@ textarea {
   /* A liderança e o filtro quebram de linha e vão debaixo do feed */
   .coluna-direita {
     grid-column: 2;
-    order: 2;
+    order: 1;
     position: static;
     width: 100%;
-    margin-top: 25px;
+    margin-bottom: 25px;
   }
 
   .coluna-centro {
     grid-column: 2;
-    order: 1;
+    order: 2;
   }
 
   .filtro-conteudo {
