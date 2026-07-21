@@ -851,6 +851,21 @@ nav>a {
 /* ==========================================================================
    5. COMPONENTES DE PLACAR DA LIDERANÇA
    ========================================================================== */
+
+/* Esconde o link do ranking no Desktop (já tem na coluna direita) */
+@media (min-width: 769px) {
+  .mobile-only-link {
+    display: none !important;
+  }
+}
+
+/* Esconde o painel da coluna direita no Mobile para o scroll infinito não engolir */
+@media (max-width: 950px) {
+  #panel-ranking-desktop {
+    display: none !important;
+  }
+}
+
 .panel-header {
   display: flex;
   justify-content: space-between;
