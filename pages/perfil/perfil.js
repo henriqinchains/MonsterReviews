@@ -151,6 +151,8 @@ function aplicarCacheImediato() {
       if (tituloStats) tituloStats.textContent = "Seu Desempenho";
     }
   });
+
+  carregarRanking();
 }
 
 // ==========================================================================
