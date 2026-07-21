@@ -897,16 +897,24 @@ window.excluirComentario = async function (comentarioId, postId) {
 };
 
 async function carregarRanking() {
-  const container = document.getElementById("ranking-container");
-  if (!container) return;
+  const containerDesktop = document.getElementById("ranking-container");
+  const containerMobile = document.getElementById("ranking-container-mobile");
+  
   try {
     const respuesta = await fetch("https://monster-reviews-api.onrender.com/api/ranking");
     const ranking = await respuesta.json();
-    container.innerHTML = "";
+    
+    // Limpa o texto "Calculando latinhas..." dos dois
+    if (containerDesktop) containerDesktop.innerHTML = "";
+    if (containerMobile) containerMobile.innerHTML = "";
+    
     if (ranking.length === 0) {
-      container.innerHTML = "<p style='text-align: center; color: #888;'>Nenhuma latinha registrada ainda.</p>";
+      const msgVazio = "<p style='text-align: center; color: #888;'>Nenhuma latinha registrada ainda.</p>";
+      if (containerDesktop) containerDesktop.innerHTML = msgVazio;
+      if (containerMobile) containerMobile.innerHTML = msgVazio;
       return;
     }
+    
     ranking.forEach((usuario, index) => {
       let iconePosicao = `${index + 1}`;
       let classePodio = "";
@@ -914,12 +922,35 @@ async function carregarRanking() {
       else if (index === 1) classePodio = "rank-2";
       else if (index === 2) classePodio = "rank-3";
 
-      const linha = document.createElement("div");
-      linha.className = `ranking-item ${classePodio}`;
-      linha.innerHTML = `<div class="rank-info"><span class="rank-posicao">${iconePosicao}</span><span class="rank-nome" style="font-family: 'Nova Square';">${usuario._id}</span></div><div class="rank-latinhas">${usuario.totalLatinhas} 🥫</div>`;
-      container.appendChild(linha);
+      // O HTML da linha exato para os dois lugares
+      const htmlLinha = `
+        <div class="rank-info">
+          <span class="rank-posicao">${iconePosicao}</span>
+          <span class="rank-nome" style="font-family: 'Nova Square';">${usuario._id}</span>
+        </div>
+        <div class="rank-latinhas">${usuario.totalLatinhas} 🥫</div>
+      `;
+
+      if (containerDesktop) {
+        const linhaDesk = document.createElement("div");
+        linhaDesk.className = `ranking-item ${classePodio}`;
+        linhaDesk.innerHTML = htmlLinha;
+        containerDesktop.appendChild(linhaDesk);
+      }
+
+      if (containerMobile) {
+        const linhaMob = document.createElement("div");
+        linhaMob.className = `ranking-item ${classePodio}`;
+        linhaMob.innerHTML = htmlLinha;
+        containerMobile.appendChild(linhaMob);
+      }
     });
-  } catch (erro) { container.innerHTML = "<p style='text-align: center; color: #ff3333;'>Erro ao carregar o ranking.</p>"; console.error(erro); }
+  } catch (erro) { 
+    const msgErro = "<p style='text-align: center; color: #ff3333;'>Erro ao carregar o ranking.</p>";
+    if (containerDesktop) containerDesktop.innerHTML = msgErro;
+    if (containerMobile) containerMobile.innerHTML = msgErro;
+    console.error(erro); 
+  }
 }
 
 // Inicialização segura dos elementos do modal "Sobre"
@@ -976,4 +1007,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Manda o olheiro começar a vigiar a sentinela
   observer.observe(sentinela);
+});
+
+// ==========================================
+// CONTROLE DO MODAL DE RANKING NO MOBILE
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const modalRankingMob = document.getElementById("modalRankingMobile");
+  const btnRankingMob = document.getElementById("btn-ranking-mobile");
+  const fecharRankingMob = document.getElementById("fecharModalRanking");
+  const navLinks = document.querySelector('.nav-links');
+
+  // Abrir modal e fechar o menu hambúrguer ao mesmo tempo
+  if (btnRankingMob && modalRankingMob) {
+    btnRankingMob.addEventListener("click", () => {
+      modalRankingMob.style.display = "flex";
+      
+      if (navLinks && navLinks.classList.contains('open')) {
+        navLinks.classList.remove('open');
+      }
+    });
+  }
+
+  // Fechar no X
+  if (fecharRankingMob && modalRankingMob) {
+    fecharRankingMob.addEventListener("click", () => {
+      modalRankingMob.style.display = "none";
+    });
+  }
+
+  // Fechar clicando fora do modal (na parte escura)
+  window.addEventListener("click", (event) => {
+    if (modalRankingMob && event.target === modalRankingMob) {
+      modalRankingMob.style.display = "none";
+    }
+  });
 });
