@@ -323,27 +323,27 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
 
-      // 1. Descobre a cor exata
+      // 1. Descobre a cor exata da lata escolhida
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
-      // 2. Aplica a cor e detecta se é claro ou escuro para o texto do botão
+      // 2. Só agora, no submit, pinta a porra toda com a cor da lata
       const modalCardElement = formAvaliacao.closest(".modal-card");
       if (modalCardElement) {
           modalCardElement.style.setProperty('--cor-dinamica', corLata);
           modalCardElement.style.setProperty('--cor-glow', `${corLata}33`);
-
-          // Lista de cores claras que exigem texto preto nos botões
-          const coresClaras = ["#e0e0e0", "#cddc39"]; // Ex: Ultra White e Dragon Ice Tea Limão
-          
-          if (coresClaras.includes(corLata)) {
-              modalCardElement.classList.add("fundo-claro");
-          } else {
-              modalCardElement.classList.remove("fundo-claro");
-          }
       }
+
+      // Força a cor direto no botão de submit e arquivo para garantir
+      const coresClaras = ["#e0e0e0", "#cddc39", "#ff9ece", "#ffa07a"];
+      const corTexto = coresClaras.includes(corLata) ? "#0a0e27" : "#ffffff";
       
+      btnSubmit.style.backgroundColor = corLata;
+      btnSubmit.style.borderColor = corLata;
+      btnSubmit.style.color = corTexto;
+      btnSubmit.style.backgroundImage = "none";
+
       // ==========================================
-      // 🌊 TSUNAMI
+      // 🌊 A TSUNAMI ENGOLIDORA DE TEXTOS
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
@@ -416,7 +416,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             hintBar.innerText = textoOriginalHint;
             hintBar.style.border = "none";
           }
-          if (styleTema) styleTema.innerHTML = "";
           alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
@@ -424,7 +423,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           hintBar.innerText = textoOriginalHint;
           hintBar.style.border = "none";
         }
-        if (styleTema) styleTema.innerHTML = "";
         console.error("Erro no envio:", erro);
         alert("Erro ao conectar com o servidor.");
       } finally {
@@ -433,7 +431,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
-
   
   const btnAplicar = document.getElementById("btnAplicarFiltros");
   const btnLimpar = document.getElementById("btnLimparFiltros");
