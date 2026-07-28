@@ -1554,46 +1554,44 @@ textarea {
 }
 
 /* ==========================================
-CORES DINÂMICAS DO FORMULÁRIO DE REGISTRAR LATINHAS
+   VARIÁVEIS DINÂMICAS DO MODAL (TEMAS DA LATA)
    ========================================== */
+.modal-card {
+  --cor-dinamica: var(--monster-green);
+}
 
-/* Botão de Enviar (Usa a regra de fundo claro/escuro) */
-.modal-card .button {
+.modal-card::-webkit-scrollbar-thumb {
   background: var(--cor-dinamica) !important;
-  color: #0a0e27 !important; /* Padrão verde inicial = texto preto */
-  border: 1px solid var(--cor-dinamica) !important;
+  border-radius: 10px !important;
 }
 
-.modal-card.fundo-escuro .button {
-  color: #ffffff !important; /* Latinhas escuras = texto branco */
+.modal-card h2 {
+  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--cor-dinamica) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
 }
 
-/* Botão de Escolher Arquivo (Sempre texto escuro no padrão verde, adaptando nos outros) */
-.modal-card input[type="file"]::file-selector-button {
-  background: var(--cor-dinamica) !important;
-  color: #0a0e27 !important; 
-  border: 1px solid var(--cor-dinamica) !important;
+.modal-card,
+.modal-card input:not([type="radio"]),
+.modal-card textarea,
+.modal-card select,
+.modal-card .radio-group,
+.modal-card .hint,
+.modal-card .modal-subtitle,
+.modal-card .footer {
+  border-color: var(--cor-dinamica) !important;
 }
 
-.modal-card.fundo-escuro input[type="file"]::file-selector-button {
-  color: #ffffff !important;
+.modal-card label,
+.modal-card .radio-group legend {
+  color: var(--cor-dinamica) !important;
 }
 
-/* Radio Buttons: Mantém o texto legível e com a cor certa quando selecionado */
 .modal-card .radio-group label {
   border: 2px solid var(--cor-dinamica) !important;
-  color: var(--text-light) !important; /* Garante que o texto nunca suma */
+  color: var(--text-light) !important;
 }
 
 .modal-card .radio-group label:has(input:checked) {
   background: var(--cor-dinamica) !important;
-  /* Se for lata escura, texto branco quando selecionado; se for clara, texto escuro */
-}
-
-.modal-card.fundo-escuro .radio-group label:has(input:checked) {
-  color: #ffffff !important; 
-}
-
-.modal-card:not(.fundo-escuro) .radio-group label:has(input:checked) {
-  color: #0a0e27 !important; 
 }
