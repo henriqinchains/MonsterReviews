@@ -323,75 +323,69 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
 
-      // 1. Descobre a cor da lata escolhida
+      // 1. Descobre a cor exata
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
-      // 2. MÁGICA DO CSS DINÂMICO COMPLETO
+      // ==========================================
+      // ☢️ CSS DINÂMICO (Atacando a raiz do Modal)
+      // ==========================================
       let styleTema = document.getElementById("tema-dinamico-monster");
       if (!styleTema) {
         styleTema = document.createElement("style");
         styleTema.id = "tema-dinamico-monster";
-        document.head.appendChild(styleTema);
+        document.body.appendChild(styleTema); 
       }
       
+      // Aqui nós usamos #modal-container e asterisco (*) para aniquilar o CSS antigo
       styleTema.innerHTML = `
-        /* Muda a cor do título "Registrar Nova" e outros cabeçalhos dentro do modal */
-        .modal-conteudo h2, .modal-conteudo h3, .modal-header h2 { color: ${corLata} !important; transition: color 0.3s ease; }
+        /* Títulos */
+        #modal-container h2, #modal-container h3 { 
+            color: ${corLata} !important; 
+        }
         
-        /* Bordas dos inputs e textarea */
+        /* Caixa principal do modal (Bordas e Brilho) */
+        #modal-container > div, .modal-conteudo { 
+            border: 2px solid ${corLata} !important; 
+            box-shadow: 0 0 30px ${corLata}40 !important; 
+        }
+        
+        /* Inputs, Textarea e Borda do Valeu a Pena */
         #formAvaliacao input:not([type="radio"]):not([type="file"]), 
         #formAvaliacao textarea, 
         #formAvaliacao .radio-group { 
-            border-color: ${corLata} !important; 
+            border: 1px solid ${corLata} !important; 
         }
         
-        /* Brilho ao focar nos inputs */
+        /* Brilho ao digitar */
         #formAvaliacao input:focus, #formAvaliacao textarea:focus { 
-            box-shadow: 0 0 8px ${corLata}80 !important; outline: none; 
+            box-shadow: 0 0 10px ${corLata}80 !important; outline: none !important; 
         }
         
-        /* Pinta as Labels gerais e Legend */
+        /* Textinhos gerais */
         #formAvaliacao label, #formAvaliacao legend { color: ${corLata} !important; }
         
-        /* 🎯 MANTÉM O TEXTO DO RADIO NORMAL, MAS PINTA A BOLINHA (Accent Color) */
+        /* Radio Button (Apenas a bolinha) */
         #formAvaliacao .radio-group label { color: inherit !important; }
         #formAvaliacao input[type="radio"] { accent-color: ${corLata} !important; transform: scale(1.2); }
         
-        /* BOTÃO DE "ESCOLHER ARQUIVO" */
-        #formAvaliacao input[type="file"]::file-selector-button {
+        /* Botões */
+        #formAvaliacao input[type="file"]::file-selector-button, #btnSubmit {
             background-color: ${corLata} !important;
-            color: #fff !important;
-            border: 1px solid ${corLata} !important;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        /* Botão Submit (Fundo e Sombra) */
-        #btnSubmit { 
-            background-color: ${corLata} !important; 
-            border-color: ${corLata} !important; 
-            box-shadow: 0 0 15px ${corLata}60 !important; 
+            border-color: ${corLata} !important;
             color: #fff !important;
         }
-
-        /* Bordas e brilho do formulário completo (Modal) */
-        .modal-conteudo { 
-            box-shadow: 0 0 30px ${corLata}40, inset 0 0 15px ${corLata}20 !important; 
-            border: 1px solid ${corLata} !important; 
-            transition: all 0.5s ease;
-        }
+        #btnSubmit { box-shadow: 0 0 15px ${corLata}60 !important; }
         
-        /* Barra de rolagem flutuante */
-        .modal-conteudo::-webkit-scrollbar-thumb { 
+        /* Barra de rolagem universal DENTRO do modal */
+        #modal-container *::-webkit-scrollbar { width: 8px !important; }
+        #modal-container *::-webkit-scrollbar-thumb { 
             background-color: ${corLata} !important; 
-            border-radius: 10px; 
+            border-radius: 10px !important; 
         }
       `;
 
       // ==========================================
-      // A TSUNAMI ENGOLIDORA
+      // 🌊 TSUNAMI BLINDADA 
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
@@ -400,18 +394,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (hintBar) {
         textoOriginalHint = hintBar.innerText; 
         
-        // Trava a caixa pra nada voar
-        hintBar.style.position = "relative";
-        hintBar.style.overflow = "hidden";
-        hintBar.style.display = "flex";
-        hintBar.style.alignItems = "center";
-        hintBar.style.justifyContent = "center";
-        hintBar.style.border = `1px solid ${corLata}`;
+        hintBar.style.setProperty('position', 'relative', 'important');
+        hintBar.style.setProperty('overflow', 'hidden', 'important');
+        hintBar.style.setProperty('display', 'flex', 'important');
+        hintBar.style.setProperty('align-items', 'center', 'important');
+        hintBar.style.setProperty('justify-content', 'center', 'important');
+        hintBar.style.setProperty('border', `1px solid ${corLata}`, 'important');
         
-        // O texto "Rumo a 1k" fica de fundo (z-index 1)
         hintBar.innerHTML = `<span style="position: relative; z-index: 1;">${textoOriginalHint}</span>`;
         
-        // A tsunami nasce por CIMA do texto (z-index 2), sólida!
         fillBar = document.createElement("div");
         fillBar.style.position = "absolute";
         fillBar.style.top = "0";
@@ -425,13 +416,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         hintBar.appendChild(fillBar);
 
-        // Dispara a onda até 85%
         setTimeout(() => {
           fillBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
           fillBar.style.width = "85%";
         }, 50);
       }
-      // ==========================================
 
       try {
         const formData = new FormData(formAvaliacao);
@@ -450,16 +439,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         const dados = await resposta.json();
         
         if (resposta.ok) {
-          // Sucesso! A tsunami finaliza o serviço engolindo tudo até 100%
           if (fillBar) {
             fillBar.style.transition = "width 0.2s ease";
             fillBar.style.width = "100%";
           }
           
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
-          audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
+          audioLatinha.play().catch(erro => console.warn("Áudio bloqueado:", erro));
           
-          // Aguarda os exatos 400ms para você VER a barra no 100% antes do alert
           setTimeout(() => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
@@ -467,7 +454,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           }, 400); 
           
         } else {
-          // Deu erro: desfaz a barra e apaga o CSS dinâmico
           if (hintBar) {
             hintBar.innerText = textoOriginalHint;
             hintBar.style.border = "none";
@@ -476,7 +462,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
-        // Erro de internet: desfaz tudo
         if (hintBar) {
           hintBar.innerText = textoOriginalHint;
           hintBar.style.border = "none";
