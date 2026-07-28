@@ -1636,23 +1636,30 @@ textarea {
 /* ==========================================
    CORREÇÃO: INPUT DE ARQUIVO VAZANDO NO MOBILE
    ========================================== */
-#formAvaliacao input[type="file"] {
-  max-width: 100% !important; /* Trava o tamanho máximo para não vazar da div pai */
-  box-sizing: border-box !important;
-  overflow: hidden !important; /* Esconde o texto que passar do limite */
-  text-overflow: ellipsis !important; /* Adiciona '...' no texto que for cortado */
-  white-space: nowrap !important; /* Impede o texto de tentar criar novas linhas bizarramente */
+
+/* 1. Trava o container pai (label) para não esticar */
+#formAvaliacao label:has(input[type="file"]) {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important; /* Corta o que sobrar do container pai */
 }
 
-/* Um ajuste fino só para telas menores (celular) ficarem mais elegantes */
-@media (max-width: 768px) {
-  #formAvaliacao input[type="file"] {
-    font-size: 0.85rem !important; /* Diminui um pouco a fonte do texto do arquivo */
-    padding: 10px !important;
-  }
-  
-  #formAvaliacao input[type="file"]::file-selector-button {
-    margin-right: 8px !important; /* Reduz o espaço do botão para dar mais lugar ao nome do arquivo */
-    padding: 6px 10px !important;
-  }
+/* 2. Trava o input em si e o texto dentro dele */
+#formAvaliacao input[type="file"] {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important; /* Adiciona os 3 pontinhos... */
+  box-sizing: border-box !important;
+}
+
+/* 3. Se quiser manter aquele hackzinho do botão "Imagem" no mobile, continua aqui: */
+#formAvaliacao input[type="file"]::file-selector-button {
+  font-size: 0 !important; 
+}
+#formAvaliacao input[type="file"]::file-selector-button::before {
+  content: "Imagem" !important;
+  font-size: 0.95rem !important; 
 }
