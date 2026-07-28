@@ -1597,44 +1597,38 @@ textarea {
    MÁGICA DO TEXTO (PRETO X BRANCO) SEM JS
    ========================================== */
 
-/* 1. PADRÃO: Ao abrir o modal (Verde) e nas Latas Claras, o texto fica PRETO */
-.modal-card .radio-group label:has(input:checked) {
+#formAvaliacao .radio-group label:has(input:checked),
+#formAvaliacao .button,
+#formAvaliacao input[type="file"]::file-selector-button {
   background: var(--cor-dinamica) !important;
-  color: #0a0e27 !important; /* Preto */
-  font-weight: bold;
+  color: #0a0e27 !important; /* PRETO */
+  font-weight: bold !important;
 }
 
-.modal-card .button,
-.modal-card input[type="file"]::file-selector-button {
-  background: var(--cor-dinamica) !important;
-  color: #0a0e27 !important; /* Preto */
-  border: 1px solid var(--cor-dinamica) !important;
-}
-
-/* 2. LATAS ESCURAS: O CSS lê o HEX exato injetado pelo JS e força o texto BRANCO */
-.modal-card[style*="#005bb5"] .radio-group label:has(input:checked), /* Zero Sugar */
-.modal-card[style*="#1a1a2e"] .radio-group label:has(input:checked), /* Absolutely Zero */
-.modal-card[style*="#9b59b6"] .radio-group label:has(input:checked), /* Ultra Violet */
-.modal-card[style*="#4169e1"] .radio-group label:has(input:checked), /* Mango Loco */
-.modal-card[style*="#ff4d4d"] .radio-group label:has(input:checked), /* Watermelon */
-.modal-card[style*="#ff69b4"] .radio-group label:has(input:checked), /* Pipeline Punch */
-.modal-card[style*="#f08080"] .radio-group label:has(input:checked), /* Pacific Punch */
-.modal-card[style*="#ff8c00"] .radio-group label:has(input:checked), /* Khaotic */
-.modal-card[style*="#005bb5"] .button,
-.modal-card[style*="#1a1a2e"] .button,
-.modal-card[style*="#9b59b6"] .button,
-.modal-card[style*="#4169e1"] .button,
-.modal-card[style*="#ff4d4d"] .button,
-.modal-card[style*="#ff69b4"] .button,
-.modal-card[style*="#f08080"] .button,
-.modal-card[style*="#ff8c00"] .button,
-.modal-card[style*="#005bb5"] input[type="file"]::file-selector-button,
-.modal-card[style*="#1a1a2e"] input[type="file"]::file-selector-button,
-.modal-card[style*="#9b59b6"] input[type="file"]::file-selector-button,
-.modal-card[style*="#4169e1"] input[type="file"]::file-selector-button,
-.modal-card[style*="#ff4d4d"] input[type="file"]::file-selector-button,
-.modal-card[style*="#ff69b4"] input[type="file"]::file-selector-button,
-.modal-card[style*="#f08080"] input[type="file"]::file-selector-button,
-.modal-card[style*="#ff8c00"] input[type="file"]::file-selector-button {
-  color: #ffffff !important; /* Branco na marra */
+/* 2. LATAS ESCURAS: O CSS VÊ A COR E FORÇA O BRANCO */
+.modal-card[style*="#005bb5"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#1a1a2e"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#9b59b6"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#4169e1"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#ff4d4d"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#ff69b4"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#f08080"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#ff8c00"] #formAvaliacao .radio-group label:has(input:checked),
+.modal-card[style*="#005bb5"] #formAvaliacao .button,
+.modal-card[style*="#1a1a2e"] #formAvaliacao .button,
+.modal-card[style*="#9b59b6"] #formAvaliacao .button,
+.modal-card[style*="#4169e1"] #formAvaliacao .button,
+.modal-card[style*="#ff4d4d"] #formAvaliacao .button,
+.modal-card[style*="#ff69b4"] #formAvaliacao .button,
+.modal-card[style*="#f08080"] #formAvaliacao .button,
+.modal-card[style*="#ff8c00"] #formAvaliacao .button,
+.modal-card[style*="#005bb5"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#1a1a2e"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#9b59b6"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#4169e1"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#ff4d4d"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#ff69b4"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#f08080"] #formAvaliacao input[type="file"]::file-selector-button,
+.modal-card[style*="#ff8c00"] #formAvaliacao input[type="file"]::file-selector-button {
+  color: #ffffff !important; /* BRANCO */
 }
