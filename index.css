@@ -1637,29 +1637,17 @@ textarea {
    CORREÇÃO: INPUT DE ARQUIVO VAZANDO NO MOBILE
    ========================================== */
 
-/* 1. Trava o container pai (label) para não esticar */
-#formAvaliacao label:has(input[type="file"]) {
-  min-width: 0 !important;
-  max-width: 100% !important;
-  overflow: hidden !important; /* Corta o que sobrar do container pai */
-}
-
-/* 2. Trava o input em si e o texto dentro dele */
-#formAvaliacao input[type="file"] {
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  text-overflow: ellipsis !important; /* Adiciona os 3 pontinhos... */
-  box-sizing: border-box !important;
-}
-
-/* 3. Se quiser manter aquele hackzinho do botão "Imagem" no mobile, continua aqui: */
+/* Transforma o botão num bloco grandão e joga o texto do arquivo pra baixo */
 #formAvaliacao input[type="file"]::file-selector-button {
-  font-size: 0 !important; 
+  display: block !important; /* O segredo tá aqui: quebra a linha! */
+  width: 100% !important; /* Deixa o botão grandão de ponta a ponta */
+  margin: 0 0 10px 0 !important; /* Dá um espaço entre o botão e o nome do arquivo */
+  text-align: center !important;
+  font-size: 0 !important; /* Mantém o hack de esconder o texto padrão */
 }
+
+/* O texto novo do botão */
 #formAvaliacao input[type="file"]::file-selector-button::before {
-  content: "Imagem" !important;
+  content: "Escolher Imagem" !important; /* Botei 'Escolher Imagem' já que agora tem espaço de sobra, mas pode deixar só 'Imagem' se preferir! */
   font-size: 0.95rem !important; 
 }
