@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target === modalContainer) fecharModal();
   });
 
-  if (formAvaliacao) {
+ if (formAvaliacao) {
     formAvaliacao.addEventListener("submit", async (e) => {
       e.preventDefault();
       const inputSabor = document.getElementById("modalSabor").value;
@@ -297,25 +297,68 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("modalSabor").focus();
         return;
       }
-      const textoOriginal = btnSubmit.innerText;
+      
+      const textoOriginalBtn = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
-      const progressBar = document.getElementById("progress-bar");
 
-      if (progressBar) {
-        progressBar.style.width = "0%";
-        progressBar.style.transition = "width 0.1s ease"; // Reseta rápido
+      // ==========================================
+      // 🌊 INÍCIO DA MÁGICA DO TSUNAMI
+      // ==========================================
+      const hintBar = document.getElementById("progress-bar");
+      let fillBar = null;
+      let textoOriginalHint = "";
+
+      if (hintBar) {
+        textoOriginalHint = hintBar.innerText; // Salva o "Rumo a 1k..."
+
+        // Prepara a caixa pai
+        hintBar.style.position = "relative";
+        hintBar.style.overflow = "hidden";
         
-        // 2. Faz a barrinha andar até 85% bem devagar (simulando o upload)
+        // Mantém o texto antigo no fundo
+        hintBar.innerHTML = `<span style="position: relative; z-index: 1;">${textoOriginalHint}</span>`;
+        
+        // Cria a onda
+        fillBar = document.createElement("div");
+        fillBar.style.position = "absolute";
+        fillBar.style.top = "0";
+        fillBar.style.left = "0";
+        fillBar.style.height = "100%";
+        fillBar.style.width = "0%";
+        fillBar.style.backgroundColor = "var(--monster-green, #43b581)"; // Verde Monster
+        fillBar.style.zIndex = "2"; 
+        fillBar.style.transition = "width 0.1s ease";
+        fillBar.style.overflow = "hidden";
+        fillBar.style.whiteSpace = "nowrap";
+        fillBar.style.borderRadius = "inherit";
+        
+        const hintWidth = hintBar.offsetWidth; 
+        
+        // Cria o texto novo centralizado dentro da onda
+        const textoTsunami = document.createElement("div");
+        textoTsunami.style.width = `${hintWidth}px`; 
+        textoTsunami.style.height = "100%";
+        textoTsunami.style.display = "flex";
+        textoTsunami.style.alignItems = "center";
+        textoTsunami.style.justifyContent = "center";
+        textoTsunami.style.color = "#fff";
+        textoTsunami.style.fontWeight = "bold";
+        textoTsunami.innerText = "Subindo pro banco... 🚀";
+
+        fillBar.appendChild(textoTsunami);
+        hintBar.appendChild(fillBar);
+
+        // Dispara a onda até 85% devagarzinho
         setTimeout(() => {
-          progressBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)"; // Animação suave e lenta
-          progressBar.style.width = "85%";
+          fillBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+          fillBar.style.width = "85%";
         }, 50);
       }
+      // ==========================================
 
       try {
         const formData = new FormData(formAvaliacao);
-
         const blobWebp = await convertWebp("foto");
 
         if (blobWebp) {
@@ -330,32 +373,37 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const dados = await resposta.json();
         if (resposta.ok) {
-          if (progressBar) {
-            progressBar.style.transition = "width 0.4s ease";
-            progressBar.style.width = "100%";
+          
+          // Joga a onda para 100% direto
+          if (fillBar) {
+            fillBar.style.transition = "width 0.1s ease";
+            fillBar.style.width = "100%";
           }
+          
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
           audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
+          
+          // Delay de 10ms só para o navegador não "engolir" o áudio antes do alert travar a tela
           setTimeout(() => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
             location.reload();
-          }, 500);
+          }, 10);
+          
         } else {
-          progressBar.style.width = "0%";
+          if (hintBar) hintBar.innerText = textoOriginalHint;
           alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
-        progressBar.style.width = "0%";
+        if (hintBar) hintBar.innerText = textoOriginalHint;
         console.error("Erro no envio:", erro);
         alert("Erro ao conectar com o servidor.");
       } finally {
-        btnSubmit.innerText = textoOriginal;
+        btnSubmit.innerText = textoOriginalBtn;
         btnSubmit.disabled = false;
       }
     });
   }
-
   const btnAplicar = document.getElementById("btnAplicarFiltros");
   const btnLimpar = document.getElementById("btnLimparFiltros");
 
