@@ -337,11 +337,53 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
       
       styleTema.innerHTML = `
-        /* Títulos */
-        #modal-container h2, #modal-container h3, #formAvaliacao h2 { 
+        /* Títulos ("Registrar Nova") - Pegando TODOS os tamanhos e o cabeçalho */
+        #modal-container h2,.modal-header, .modal-header * { 
             color: ${corLata} !important; 
         }
         
+        /* Radio Buttons: */
+        #formAvaliacao .radio-group label { color: inherit !important; display: flex !important; align-items: center !important; gap: 5px !important;}
+        #formAvaliacao input[type="radio"] { 
+            -webkit-appearance: none !important;
+            appearance: none !important;
+            width: 18px !important;
+            height: 18px !important;
+            border: 2px solid ${corLata} !important;
+            border-radius: 50% !important;
+            background-color: transparent !important;
+            margin: 0 !important;
+            cursor: pointer !important;
+        }
+        #formAvaliacao input[type="radio"]:checked {
+            background-color: ${corLata} !important;
+            /* Cria aquele "furinho" preto/escuro no meio pra parecer marcado */
+            box-shadow: inset 0 0 0 4px #11161d !important; 
+        }
+        
+        /* Div de Upload de Imagem (Caixa completa e botão) */
+        #formAvaliacao input[type="file"] {
+            color: ${corLata} !important; /* Cor do texto "Nenhum arquivo..." */
+            background: rgba(0, 0, 0, 0.2) !important; /* Fundo escurinho */
+            border: 1px dashed ${corLata} !important; /* Borda tracejada colorida */
+            padding: 8px !important;
+            border-radius: 6px !important;
+            width: 100% !important;
+            cursor: pointer !important;
+        }
+        #formAvaliacao input[type="file"]::-webkit-file-upload-button,
+        #formAvaliacao input[type="file"]::file-selector-button {
+            background: ${corLata} !important;
+            background-color: ${corLata} !important;
+            color: #ffffff !important;
+            border: none !important;
+            border-radius: 4px !important;
+            padding: 8px 12px !important;
+            cursor: pointer !important;
+            margin-right: 15px !important;
+            font-weight: bold !important;
+        }
+
         /* Caixa principal do modal (Bordas e Brilho) */
         #modal-container > div, .modal-conteudo { 
             border: 2px solid ${corLata} !important; 
@@ -363,31 +405,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         /* Textinhos gerais */
         #formAvaliacao label, #formAvaliacao legend { color: ${corLata} !important; }
         
-        /* 🎯 RADIO BUTTONS SUPER BLINDADOS */
-        #formAvaliacao .radio-group label { color: inherit !important; }
-        #formAvaliacao input[type="radio"] { 
-            accent-color: ${corLata} !important; 
-            transform: scale(1.2) !important;
-            outline: 2px solid ${corLata} !important; /* Fallback caso o accent falhe */
-            border-radius: 50% !important;
-        }
-        #formAvaliacao input[type="radio"]:checked {
-            background-color: ${corLata} !important;
-        }
-        
-        /* 🎯 BOTÃO DE ESCOLHER ARQUIVO */
-        #formAvaliacao input[type="file"]::-webkit-file-upload-button,
-        #formAvaliacao input[type="file"]::file-selector-button {
-            background: ${corLata} !important;
-            background-color: ${corLata} !important;
-            color: #ffffff !important;
-            border: 1px solid ${corLata} !important;
-            border-radius: 4px !important;
-            padding: 8px 12px !important;
-            cursor: pointer !important;
-        }
-
-        /* 🎯 BOTÃO ENVIAR (Submit) */
+        /* BOTÃO ENVIAR */
         #formAvaliacao .button, 
         #btnSubmit, 
         button#btnSubmit {
@@ -407,7 +425,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
 
       // ==========================================
-      // 🌊 TSUNAMI BLINDADA 
+      // 🌊 TSUNAMI
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
