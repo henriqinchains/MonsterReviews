@@ -288,7 +288,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (e.target === modalContainer) fecharModal();
   });
 
- if (formAvaliacao) {
+   if (formAvaliacao) {
     const coresMonsters = {
       "Original": "#43b581",
       "Zero Sugar": "#005bb5",
@@ -327,7 +327,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
       // ==========================================
-      // ☢️ CSS DINÂMICO (Atacando a raiz do Modal)
+      // ☢️ CSS DINÂMICO (BOTÕES E RADIOS BLINDADOS)
       // ==========================================
       let styleTema = document.getElementById("tema-dinamico-monster");
       if (!styleTema) {
@@ -336,10 +336,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.body.appendChild(styleTema); 
       }
       
-      // Aqui nós usamos #modal-container e asterisco (*) para aniquilar o CSS antigo
       styleTema.innerHTML = `
         /* Títulos */
-        #modal-container h2, #modal-container h3 { 
+        #modal-container h2, #modal-container h3, #formAvaliacao h2 { 
             color: ${corLata} !important; 
         }
         
@@ -364,20 +363,43 @@ document.addEventListener("DOMContentLoaded", async () => {
         /* Textinhos gerais */
         #formAvaliacao label, #formAvaliacao legend { color: ${corLata} !important; }
         
-        /* Radio Button (Apenas a bolinha) */
+        /* 🎯 RADIO BUTTONS SUPER BLINDADOS */
         #formAvaliacao .radio-group label { color: inherit !important; }
-        #formAvaliacao input[type="radio"] { accent-color: ${corLata} !important; transform: scale(1.2); }
-        
-        /* Botões */
-        #formAvaliacao input[type="file"]::file-selector-button, #btnSubmit {
-            background-color: ${corLata} !important;
-            border-color: ${corLata} !important;
-            color: #fff !important;
+        #formAvaliacao input[type="radio"] { 
+            accent-color: ${corLata} !important; 
+            transform: scale(1.2) !important;
+            outline: 2px solid ${corLata} !important; /* Fallback caso o accent falhe */
+            border-radius: 50% !important;
         }
-        #btnSubmit { box-shadow: 0 0 15px ${corLata}60 !important; }
+        #formAvaliacao input[type="radio"]:checked {
+            background-color: ${corLata} !important;
+        }
+        
+        /* 🎯 BOTÃO DE ESCOLHER ARQUIVO */
+        #formAvaliacao input[type="file"]::-webkit-file-upload-button,
+        #formAvaliacao input[type="file"]::file-selector-button {
+            background: ${corLata} !important;
+            background-color: ${corLata} !important;
+            color: #ffffff !important;
+            border: 1px solid ${corLata} !important;
+            border-radius: 4px !important;
+            padding: 8px 12px !important;
+            cursor: pointer !important;
+        }
+
+        /* 🎯 BOTÃO ENVIAR (Submit) */
+        #formAvaliacao .button, 
+        #btnSubmit, 
+        button#btnSubmit {
+            background: ${corLata} !important;
+            background-color: ${corLata} !important;
+            border: 1px solid ${corLata} !important;
+            box-shadow: 0 0 15px ${corLata}60 !important;
+            color: #ffffff !important;
+        }
         
         /* Barra de rolagem universal DENTRO do modal */
-        #modal-container *::-webkit-scrollbar { width: 8px !important; }
+        #modal-container *::-webkit-scrollbar { width: 8px !important; background: transparent !important; }
         #modal-container *::-webkit-scrollbar-thumb { 
             background-color: ${corLata} !important; 
             border-radius: 10px !important; 
@@ -475,6 +497,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
   
   const btnAplicar = document.getElementById("btnAplicarFiltros");
   const btnLimpar = document.getElementById("btnLimparFiltros");
