@@ -289,7 +289,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
  if (formAvaliacao) {
-    // 🎨 O Dicionário de Cores (Garante que as cores estão aqui para o JS achar)
+    // 🎨 O Dicionário de Cores
     const coresMonsters = {
       "Original": "#43b581",
       "Zero Sugar": "#005bb5",
@@ -327,30 +327,47 @@ document.addEventListener("DOMContentLoaded", async () => {
       // 1. Descobre a cor da lata escolhida
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
-      // 2. Transforma o modal numa usina de energia (Brilho dinâmico)
+      // 2. Acende as bordas do Modal
       const modalConteudo = formAvaliacao.closest(".modal-conteudo") || formAvaliacao;
       const boxOriginal = modalConteudo.style.boxShadow;
       const borderOriginal = modalConteudo.style.border;
       
       modalConteudo.style.transition = "box-shadow 0.5s ease, border-color 0.5s ease";
-      modalConteudo.style.boxShadow = `0 0 40px ${corLata}40, inset 0 0 20px ${corLata}1A`; 
-      modalConteudo.style.border = `1px solid ${corLata}`;
+      modalConteudo.style.boxShadow = `0 0 25px ${corLata}40`; // Brilho suave por fora
+      modalConteudo.style.border = `1px solid ${corLata}`; // Borda colorida
+
+      // 3. Pinta os textos das Labels
+      const labels = formAvaliacao.querySelectorAll("label, legend");
+      const coresOriginaisLabels = [];
+      labels.forEach((label, i) => {
+        coresOriginaisLabels[i] = label.style.color;
+        label.style.transition = "color 0.5s ease";
+        label.style.color = corLata;
+      });
 
       // ==========================================
-      // 🌊 INÍCIO DA MÁGICA DO TSUNAMI DINÂMICO
+      // 🌊 MÁGICA DO TSUNAMI LIMPO NEON
       // ==========================================
-      // 🔥 A CORREÇÃO ESTÁ AQUI: Pegando direto pela classe .hint!
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
       let textoOriginalHint = "";
+      let originalHeight = "";
+      let originalBorder = "";
 
       if (hintBar) {
         textoOriginalHint = hintBar.innerText; 
+        
+        // Trava a altura original
+        originalHeight = hintBar.style.height;
+        originalBorder = hintBar.style.border;
+        hintBar.style.height = hintBar.offsetHeight + "px";
 
         hintBar.style.position = "relative";
         hintBar.style.overflow = "hidden";
+        hintBar.style.border = `1px solid ${corLata}`; // Borda da barra ganha a cor também
         
-        hintBar.innerHTML = `<span style="position: relative; z-index: 1;">${textoOriginalHint}</span>`;
+        // ZERA O TEXTO
+        hintBar.innerHTML = "";
         
         fillBar = document.createElement("div");
         fillBar.style.position = "absolute";
@@ -358,29 +375,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         fillBar.style.left = "0";
         fillBar.style.height = "100%";
         fillBar.style.width = "0%";
-        fillBar.style.backgroundColor = corLata; // 🎨 A onda ganha a cor da lata!
-        fillBar.style.zIndex = "2"; 
+        fillBar.style.backgroundColor = corLata; // O Tsunami é da cor da lata!
         fillBar.style.transition = "width 0.1s ease";
-        fillBar.style.overflow = "hidden";
-        fillBar.style.whiteSpace = "nowrap";
         fillBar.style.borderRadius = "inherit";
         
-        const hintWidth = hintBar.offsetWidth; 
-        
-        const textoTsunami = document.createElement("div");
-        textoTsunami.style.width = `${hintWidth}px`; 
-        textoTsunami.style.height = "100%";
-        textoTsunami.style.display = "flex";
-        textoTsunami.style.alignItems = "center";
-        textoTsunami.style.justifyContent = "center";
-        textoTsunami.style.color = "#fff";
-        textoTsunami.style.textShadow = "1px 1px 3px rgba(0,0,0,0.8)"; 
-        textoTsunami.style.fontWeight = "bold";
-        textoTsunami.innerText = "Subindo pro banco... 🚀";
-
-        fillBar.appendChild(textoTsunami);
         hintBar.appendChild(fillBar);
 
+        // Dispara a onda até 85%
         setTimeout(() => {
           fillBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
           fillBar.style.width = "85%";
@@ -404,34 +405,51 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const dados = await resposta.json();
         if (resposta.ok) {
+          
+          // Sucesso! A onda bate em 100%
           if (fillBar) {
-            fillBar.style.transition = "width 0.1s ease";
+            fillBar.style.transition = "width 0.2s ease";
             fillBar.style.width = "100%";
           }
           
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
           audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
           
+          // Espera 400ms pro 100% bater antes de exibir a mensagem
           setTimeout(() => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
             location.reload();
-          }, 10);
+          }, 400); 
           
         } else {
-          if (hintBar) hintBar.innerText = textoOriginalHint;
+          // Deu erro, desfaz a barra
+          if (hintBar) {
+            hintBar.innerHTML = textoOriginalHint;
+            hintBar.style.height = originalHeight;
+            hintBar.style.border = originalBorder;
+          }
           alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
-        if (hintBar) hintBar.innerText = textoOriginalHint;
+        // Erro de rede, desfaz a barra
+        if (hintBar) {
+          hintBar.innerHTML = textoOriginalHint;
+          hintBar.style.height = originalHeight;
+          hintBar.style.border = originalBorder;
+        }
         console.error("Erro no envio:", erro);
         alert("Erro ao conectar com o servidor.");
       } finally {
         btnSubmit.innerText = textoOriginalBtn;
         btnSubmit.disabled = false;
         
+        // Se deu erro, apaga as luzes e devolve as cores normais
         modalConteudo.style.boxShadow = boxOriginal;
         modalConteudo.style.border = borderOriginal;
+        labels.forEach((label, i) => {
+          label.style.color = coresOriginaisLabels[i];
+        });
       }
     });
   }
