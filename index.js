@@ -334,6 +334,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.head.appendChild(styleTema);
       }
       
+      // Aqui a gente pinta TUDO que você pediu
       styleTema.innerHTML = `
         /* Muda a cor do título "Registrar Nova" e outros cabeçalhos dentro do modal */
         .modal-conteudo h2, .modal-conteudo h3, .modal-header h2 { color: ${corLata} !important; transition: color 0.3s ease; }
@@ -391,7 +392,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
 
       // ==========================================
-      // 🌊 A TSUNAMI ENGOLIDORA
+      // 🌊 A TSUNAMI ENGOLIDORA (Perfeita agora)
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
