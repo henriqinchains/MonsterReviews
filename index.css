@@ -1595,3 +1595,9 @@ textarea {
 .modal-card .radio-group label:has(input:checked) {
   background: var(--cor-dinamica) !important;
 }
+
+/* Quando o modal estiver com o verde padrão, o radio button selecionado fica com texto preto */
+.modal-card:not([style*="--cor-dinamica:"]) .radio-group label:has(input:checked),
+.modal-card[style*="--cor-dinamica: #00ff66"] .radio-group label:has(input:checked) {
+  color: #0a0e27 !important;
+}
