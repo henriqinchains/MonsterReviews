@@ -1609,14 +1609,15 @@ textarea {
   color: #0a0e27 !important;
 }
 
-/* 4. Botões: Fundo na cor da lata e texto BRANCO por padrão (exceto se a lógica pedir contraste) */
+/* 4. Botões: */
 .modal-card .button,
 .modal-card input[type="file"]::file-selector-button {
   background: var(--cor-dinamica) !important;
-  color: #ffffff !important; /* Texto branco padrão para destacar em latas escuras/coloridas */
+  color: #ffffff !important;
   border: 1px solid var(--cor-dinamica) !important;
 }
 
-.modal-card input[type="file"]::file-selector-button:hover {
-  filter: brightness(1.1);
+.modal-card.fundo-claro .button,
+.modal-card.fundo-claro input[type="file"]::file-selector-button {
+  color: #0a0e27 !important;
 }
