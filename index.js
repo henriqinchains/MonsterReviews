@@ -300,6 +300,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       const textoOriginal = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
+      const progressBar = document.getElementById("progress-bar");
+
+      if (progressBar) {
+        progressBar.style.width = "0%";
+        progressBar.style.transition = "width 0.1s ease"; // Reseta rápido
+        
+        // 2. Faz a barrinha andar até 85% bem devagar (simulando o upload)
+        setTimeout(() => {
+          progressBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)"; // Animação suave e lenta
+          progressBar.style.width = "85%";
+        }, 50);
+      }
 
       try {
         const formData = new FormData(formAvaliacao);
@@ -318,6 +330,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const dados = await resposta.json();
         if (resposta.ok) {
+          if (progressBar) {
+            progressBar.style.transition = "width 0.4s ease";
+            progressBar.style.width = "100%";
+          }
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
           audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
           setTimeout(() => {
@@ -326,9 +342,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             location.reload();
           }, 500);
         } else {
-          alert(`Erro: ${dados.erro || "Falha ao postar"}`);
+          progressBar.style.width = "0%";
+          alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
+        progressBar.style.width = "0%";
         console.error("Erro no envio:", erro);
         alert("Erro ao conectar com o servidor.");
       } finally {
