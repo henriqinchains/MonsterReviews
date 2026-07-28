@@ -326,28 +326,72 @@ document.addEventListener("DOMContentLoaded", async () => {
       // 1. Descobre a cor da lata escolhida
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
-      // 2. CSS DINÂMICO (Pinta bordas, labels, botão e barra de rolagem!)
+      // 2. MÁGICA DO CSS DINÂMICO COMPLETO
       let styleTema = document.getElementById("tema-dinamico-monster");
       if (!styleTema) {
         styleTema = document.createElement("style");
         styleTema.id = "tema-dinamico-monster";
         document.head.appendChild(styleTema);
       }
-      // Esse bloco CSS reescreve as cores de todos os inputs, labels e até da scrollbar
+      
       styleTema.innerHTML = `
-        #formAvaliacao input, #formAvaliacao textarea { border-color: ${corLata} !important; }
-        #formAvaliacao input:focus, #formAvaliacao textarea:focus { box-shadow: 0 0 8px ${corLata}80 !important; outline: none; }
-        #formAvaliacao label, #formAvaliacao legend { color: ${corLata} !important; }
-        #formAvaliacao .radio-group { border-color: ${corLata} !important; }
-        #btnSubmit { background-color: ${corLata} !important; border-color: ${corLata} !important; box-shadow: 0 0 15px ${corLata}60 !important; color: #fff !important;}
-        .modal-conteudo { box-shadow: 0 0 30px ${corLata}40, inset 0 0 15px ${corLata}20 !important; border-color: ${corLata} !important; }
+        /* Muda a cor do título "Registrar Nova" e outros cabeçalhos dentro do modal */
+        .modal-conteudo h2, .modal-conteudo h3, .modal-header h2 { color: ${corLata} !important; transition: color 0.3s ease; }
         
-        /* Muda a cor da barra de rolagem flutuante do modal */
-        .modal-conteudo::-webkit-scrollbar-thumb { background-color: ${corLata} !important; border-radius: 10px; }
+        /* Bordas dos inputs e textarea */
+        #formAvaliacao input:not([type="radio"]):not([type="file"]), 
+        #formAvaliacao textarea, 
+        #formAvaliacao .radio-group { 
+            border-color: ${corLata} !important; 
+        }
+        
+        /* Brilho ao focar nos inputs */
+        #formAvaliacao input:focus, #formAvaliacao textarea:focus { 
+            box-shadow: 0 0 8px ${corLata}80 !important; outline: none; 
+        }
+        
+        /* Pinta as Labels gerais e Legend */
+        #formAvaliacao label, #formAvaliacao legend { color: ${corLata} !important; }
+        
+        /* 🎯 MANTÉM O TEXTO DO RADIO NORMAL, MAS PINTA A BOLINHA (Accent Color) */
+        #formAvaliacao .radio-group label { color: inherit !important; }
+        #formAvaliacao input[type="radio"] { accent-color: ${corLata} !important; transform: scale(1.2); }
+        
+        /* 🎯 HACK PARA O BOTÃO DE "ESCOLHER ARQUIVO" */
+        #formAvaliacao input[type="file"]::file-selector-button {
+            background-color: ${corLata} !important;
+            color: #fff !important;
+            border: 1px solid ${corLata} !important;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        /* Botão Submit (Fundo e Sombra) */
+        #btnSubmit { 
+            background-color: ${corLata} !important; 
+            border-color: ${corLata} !important; 
+            box-shadow: 0 0 15px ${corLata}60 !important; 
+            color: #fff !important;
+        }
+
+        /* Bordas e brilho do formulário completo (Modal) */
+        .modal-conteudo { 
+            box-shadow: 0 0 30px ${corLata}40, inset 0 0 15px ${corLata}20 !important; 
+            border: 1px solid ${corLata} !important; 
+            transition: all 0.5s ease;
+        }
+        
+        /* Barra de rolagem flutuante */
+        .modal-conteudo::-webkit-scrollbar-thumb { 
+            background-color: ${corLata} !important; 
+            border-radius: 10px; 
+        }
       `;
 
       // ==========================================
-      // 🌊 A TSUNAMI ENGOLIDORA DE TEXTOS
+      // 🌊 A TSUNAMI ENGOLIDORA
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
@@ -367,7 +411,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         // O texto "Rumo a 1k" fica de fundo (z-index 1)
         hintBar.innerHTML = `<span style="position: relative; z-index: 1;">${textoOriginalHint}</span>`;
         
-        // A tsunami é criada por CIMA do texto (z-index 2), sólida e vazia!
+        // A tsunami nasce por CIMA do texto (z-index 2), sólida!
         fillBar = document.createElement("div");
         fillBar.style.position = "absolute";
         fillBar.style.top = "0";
@@ -406,7 +450,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const dados = await resposta.json();
         
         if (resposta.ok) {
-          // Sucesso! A tsunami finaliza o serviço batendo em 100%
+          // Sucesso! A tsunami finaliza o serviço engolindo tudo até 100%
           if (fillBar) {
             fillBar.style.transition = "width 0.2s ease";
             fillBar.style.width = "100%";
@@ -415,7 +459,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
           audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
           
-          // Espera 400ms propositalmente para o usuário VER a barra em 100%
+          // Aguarda os exatos 400ms para você VER a barra no 100% antes do alert
           setTimeout(() => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
@@ -423,14 +467,20 @@ document.addEventListener("DOMContentLoaded", async () => {
           }, 400); 
           
         } else {
-          // Deu erro: desfaz a barra e reseta as cores do formulário
-          if (hintBar) hintBar.innerText = textoOriginalHint;
+          // Deu erro: desfaz a barra e apaga o CSS dinâmico
+          if (hintBar) {
+            hintBar.innerText = textoOriginalHint;
+            hintBar.style.border = "none";
+          }
           if (styleTema) styleTema.innerHTML = "";
           alert(`Erro: ${dados.erro || "Falha ao postar"}`); 
         }
       } catch (erro) {
-        // Erro de internet: desfaz a barra e reseta as cores
-        if (hintBar) hintBar.innerText = textoOriginalHint;
+        // Erro de internet: desfaz tudo
+        if (hintBar) {
+          hintBar.innerText = textoOriginalHint;
+          hintBar.style.border = "none";
+        }
         if (styleTema) styleTema.innerHTML = "";
         console.error("Erro no envio:", erro);
         alert("Erro ao conectar com o servidor.");
