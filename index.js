@@ -266,8 +266,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
       modalContainer.style.display = "flex";
       document.body.style.overflow = "hidden";
-
-      // 👇 COLOCA ISSO AQUI: Garante que o modal nasce com o verde padrão e texto preto nos botões/rádios
+      
       const modalCardElement = document.querySelector(".modal-card");
       if (modalCardElement) {
           modalCardElement.style.setProperty('--cor-dinamica', '#00ff66');
