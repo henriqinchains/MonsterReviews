@@ -289,6 +289,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
  if (formAvaliacao) {
+    // 🎨 O Dicionário de Cores (Paleta baseada nas latinhas reais)
+    const coresMonsters = {
+      "Original": "#43b581", // Verde clássico
+      "Zero Sugar": "#005bb5", // Azul clássico
+      "Absolutely Zero": "#1a1a2e", // Azul escuro/preto
+      "Ultra White": "#e0e0e0", // Branco/Prata
+      "Ultra Violet": "#9b59b6", // Roxo
+      "Ultra Strawberry Dreams": "#ff9ece", // Rosa claro
+      "Ultra Watermelon": "#ff4d4d", // Vermelho
+      "Ultra Fiesta Mango": "#00ced1", // Turquesa
+      "Ultra Peachy Keen": "#ffb347", // Pêssego
+      "Mango Loco": "#4169e1", // Azul Royal
+      "Pacific Punch": "#f08080", // Coral/Rosa claro
+      "Khaotic": "#ff8c00", // Laranja
+      "Pipeline Punch": "#ff69b4", // Rosa chiclete
+      "Rio Punch": "#32cd32", // Verde Brasil
+      "Dragon Ice Tea Limão": "#cddc39", // Limão
+      "Dragon Ice Tea Pêssego": "#ffa07a", // Laranja chá
+      "Outro": "#43b581" // Verde padrão
+    };
+
     formAvaliacao.addEventListener("submit", async (e) => {
       e.preventDefault();
       const inputSabor = document.getElementById("modalSabor").value;
@@ -302,31 +323,41 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
 
+      // 1. Descobre a cor da lata escolhida
+      const corLata = coresMonsters[inputSabor] || "#43b581";
+
+      // 2. Transforma o modal numa usina de energia (Brilho dinâmico)
+      const modalConteudo = formAvaliacao.closest(".modal-conteudo") || formAvaliacao;
+      const boxOriginal = modalConteudo.style.boxShadow;
+      const borderOriginal = modalConteudo.style.border;
+      
+      modalConteudo.style.transition = "box-shadow 0.5s ease, border-color 0.5s ease";
+      // Adiciona o código '40' no fim do HEX para dar 25% de opacidade no brilho (não agride o olho)
+      modalConteudo.style.boxShadow = `0 0 40px ${corLata}40, inset 0 0 20px ${corLata}1A`; 
+      modalConteudo.style.border = `1px solid ${corLata}`;
+
       // ==========================================
-      // 🌊 INÍCIO DA MÁGICA DO TSUNAMI
+      // 🌊 INÍCIO DA MÁGICA DO TSUNAMI DINÂMICO
       // ==========================================
       const hintBar = document.getElementById("progress-bar");
       let fillBar = null;
       let textoOriginalHint = "";
 
       if (hintBar) {
-        textoOriginalHint = hintBar.innerText; // Salva o "Rumo a 1k..."
+        textoOriginalHint = hintBar.innerText; 
 
-        // Prepara a caixa pai
         hintBar.style.position = "relative";
         hintBar.style.overflow = "hidden";
         
-        // Mantém o texto antigo no fundo
         hintBar.innerHTML = `<span style="position: relative; z-index: 1;">${textoOriginalHint}</span>`;
         
-        // Cria a onda
         fillBar = document.createElement("div");
         fillBar.style.position = "absolute";
         fillBar.style.top = "0";
         fillBar.style.left = "0";
         fillBar.style.height = "100%";
         fillBar.style.width = "0%";
-        fillBar.style.backgroundColor = "var(--monster-green, #43b581)"; // Verde Monster
+        fillBar.style.backgroundColor = corLata; // 🎨 A onda ganha a cor da lata!
         fillBar.style.zIndex = "2"; 
         fillBar.style.transition = "width 0.1s ease";
         fillBar.style.overflow = "hidden";
@@ -335,7 +366,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         
         const hintWidth = hintBar.offsetWidth; 
         
-        // Cria o texto novo centralizado dentro da onda
         const textoTsunami = document.createElement("div");
         textoTsunami.style.width = `${hintWidth}px`; 
         textoTsunami.style.height = "100%";
@@ -343,13 +373,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         textoTsunami.style.alignItems = "center";
         textoTsunami.style.justifyContent = "center";
         textoTsunami.style.color = "#fff";
+        // Adiciona um contorno sombreado forte no texto para ele ficar legível até em cores claras (ex: Branco do Ultra White)
+        textoTsunami.style.textShadow = "1px 1px 3px rgba(0,0,0,0.8)"; 
         textoTsunami.style.fontWeight = "bold";
         textoTsunami.innerText = "Subindo pro banco... 🚀";
 
         fillBar.appendChild(textoTsunami);
         hintBar.appendChild(fillBar);
 
-        // Dispara a onda até 85% devagarzinho
         setTimeout(() => {
           fillBar.style.transition = "width 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
           fillBar.style.width = "85%";
@@ -373,8 +404,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const dados = await resposta.json();
         if (resposta.ok) {
-          
-          // Joga a onda para 100% direto
           if (fillBar) {
             fillBar.style.transition = "width 0.1s ease";
             fillBar.style.width = "100%";
@@ -383,7 +412,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           const audioLatinha = new Audio('./src/audio/latinha.mp3');
           audioLatinha.play().catch(erro => console.warn("Navegador bloqueou o áudio:", erro));
           
-          // Delay de 10ms só para o navegador não "engolir" o áudio antes do alert travar a tela
           setTimeout(() => {
             alert("Review postada com sucesso! 🔋");
             fecharModal();
@@ -401,9 +429,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       } finally {
         btnSubmit.innerText = textoOriginalBtn;
         btnSubmit.disabled = false;
+        
+        // Se deu erro e o formulário não recarregar, nós devolvemos o visual original do modal
+        modalConteudo.style.boxShadow = boxOriginal;
+        modalConteudo.style.border = borderOriginal;
       }
     });
   }
+
   const btnAplicar = document.getElementById("btnAplicarFiltros");
   const btnLimpar = document.getElementById("btnLimparFiltros");
 
