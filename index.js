@@ -325,14 +325,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // 1. Descobre a cor exata
       const corLata = coresMonsters[inputSabor] || "#43b581";
-      
-      // 2. APLICAÇÃO LIMPA VIA VARIÁVEIS CSS (O CSS cuida do resto!)
+
+      // 2. Aplica a cor e detecta se é claro ou escuro para o texto do botão
       const modalCardElement = formAvaliacao.closest(".modal-card");
       if (modalCardElement) {
           modalCardElement.style.setProperty('--cor-dinamica', corLata);
-          modalCardElement.style.setProperty('--cor-glow', `${corLata}33`); // Equivalente a 20% de opacidade
-      }
+          modalCardElement.style.setProperty('--cor-glow', `${corLata}33`);
 
+          // Lista de cores claras que exigem texto preto nos botões
+          const coresClaras = ["#e0e0e0", "#cddc39"]; // Ex: Ultra White e Dragon Ice Tea Limão
+          
+          if (coresClaras.includes(corLata)) {
+              modalCardElement.classList.add("fundo-claro");
+          } else {
+              modalCardElement.classList.remove("fundo-claro");
+          }
+      }
+      
       // ==========================================
       // 🌊 TSUNAMI
       // ==========================================
