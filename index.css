@@ -1552,3 +1552,49 @@ textarea {
     transform: translateY(0);
   }
 }
+
+/* ==========================================
+   VARIÁVEIS DINÂMICAS DO MODAL (TEMAS DA LATA)
+   ========================================== */
+.modal-card {
+  --cor-dinamica: var(--monster-green); /* Cor padrão que muda via JS */
+}
+
+/* Força o título, bordas e elementos do modal a obedecerem a cor escolhida */
+.modal-card h2 {
+  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+}
+
+.modal-card,
+.modal-card input,
+.modal-card textarea,
+.modal-card select,
+.modal-card .radio-group,
+.modal-card .hint {
+  border-color: var(--cor-dinamica) !important;
+}
+
+.modal-card input:focus,
+.modal-card textarea:focus,
+.modal-card select:focus {
+  border-color: var(--cor-dinamica) !important;
+  box-shadow: 0 0 0 4px var(--cor-glow, rgba(0,255,102,0.15)), inset 0 0 10px var(--cor-glow, rgba(0,255,102,0.15)) !important;
+}
+
+.modal-card label,
+.modal-card .radio-group legend {
+  color: var(--cor-dinamica) !important;
+}
+
+/* Radio button personalizado com a cor da lata */
+.modal-card .radio-group label:has(input:checked) {
+  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+  color: #0a0e27 !important;
+}
+
+.modal-card .button,
+.modal-card input[type="file"]::file-selector-button {
+  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+}
