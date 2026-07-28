@@ -1562,7 +1562,7 @@ textarea {
 
 /* Força o título, bordas e elementos do modal a obedecerem a cor escolhida */
 .modal-card h2 {
-  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--cor-dinamica) 100%) !important;
   -webkit-background-clip: text !important;
   -webkit-text-fill-color: transparent !important;
 }
@@ -1590,11 +1590,13 @@ textarea {
 
 /* Radio button personalizado com a cor da lata */
 .modal-card .radio-group label:has(input:checked) {
-  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+  background: var(--cor-dinamica) !important;
   color: #0a0e27 !important;
 }
 
+/* Botões: Cor sólida da lata (sem misturar com verde) e texto visível */
 .modal-card .button,
 .modal-card input[type="file"]::file-selector-button {
-  background: linear-gradient(135deg, var(--cor-dinamica) 0%, var(--monster-hover) 100%) !important;
+  background: var(--cor-dinamica) !important;
+  color: #0a0e27 !important; /* Texto escuro com alto contraste sobre a cor sólida */
 }
