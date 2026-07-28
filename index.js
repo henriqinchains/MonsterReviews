@@ -266,6 +266,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault();
       modalContainer.style.display = "flex";
       document.body.style.overflow = "hidden";
+
+      // 👇 COLOCA ISSO AQUI: Garante que o modal nasce com o verde padrão e texto preto nos botões/rádios
+      const modalCardElement = document.querySelector(".modal-card");
+      if (modalCardElement) {
+          modalCardElement.style.setProperty('--cor-dinamica', '#00ff66');
+          modalCardElement.style.setProperty('--cor-glow', 'rgba(0, 255, 102, 0.15)');
+      }
+
+      const btnSubmit = document.getElementById("btnSubmit");
+      if (btnSubmit) {
+          btnSubmit.style.backgroundColor = "#00ff66";
+          btnSubmit.style.borderColor = "#00ff66";
+          btnSubmit.style.color = "#0a0e27"; // Texto preto no verde padrão
+      }
+      
       if (selectSabor) {
         selectSabor.focus();
       }
