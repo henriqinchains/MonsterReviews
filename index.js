@@ -334,7 +334,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.head.appendChild(styleTema);
       }
       
-      // Aqui a gente pinta TUDO que você pediu
       styleTema.innerHTML = `
         /* Muda a cor do título "Registrar Nova" e outros cabeçalhos dentro do modal */
         .modal-conteudo h2, .modal-conteudo h3, .modal-header h2 { color: ${corLata} !important; transition: color 0.3s ease; }
@@ -358,7 +357,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         #formAvaliacao .radio-group label { color: inherit !important; }
         #formAvaliacao input[type="radio"] { accent-color: ${corLata} !important; transform: scale(1.2); }
         
-        /* 🎯 HACK PARA O BOTÃO DE "ESCOLHER ARQUIVO" */
+        /* BOTÃO DE "ESCOLHER ARQUIVO" */
         #formAvaliacao input[type="file"]::file-selector-button {
             background-color: ${corLata} !important;
             color: #fff !important;
@@ -392,7 +391,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       `;
 
       // ==========================================
-      // 🌊 A TSUNAMI ENGOLIDORA (Perfeita agora)
+      // A TSUNAMI ENGOLIDORA
       // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
