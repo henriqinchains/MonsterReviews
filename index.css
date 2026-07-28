@@ -1380,6 +1380,27 @@ textarea {
   padding: 5px;
 }
 
+/* ==========================================
+   AJUSTE MOBILE: FOOTER DO FORMULÁRIO
+   ========================================== */
+@media (max-width: 768px) {
+  #formAvaliacao .footer {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  #formAvaliacao .hint {
+    width: 100%;
+    text-align: center;
+  }
+  
+  #formAvaliacao #btnSubmit {
+    width: 100%;
+  }
+}
+
 /* ==========================================================================
    8. MEDIA QUERIES (A MÁGICA DE RESPONSIVIDADE COMPACTA)
    ========================================================================== */
