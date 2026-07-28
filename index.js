@@ -289,25 +289,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
  if (formAvaliacao) {
-    // 🎨 O Dicionário de Cores (Paleta baseada nas latinhas reais)
+    // 🎨 O Dicionário de Cores (Garante que as cores estão aqui para o JS achar)
     const coresMonsters = {
-      "Original": "#43b581", // Verde clássico
-      "Zero Sugar": "#005bb5", // Azul clássico
-      "Absolutely Zero": "#1a1a2e", // Azul escuro/preto
-      "Ultra White": "#e0e0e0", // Branco/Prata
-      "Ultra Violet": "#9b59b6", // Roxo
-      "Ultra Strawberry Dreams": "#ff9ece", // Rosa claro
-      "Ultra Watermelon": "#ff4d4d", // Vermelho
-      "Ultra Fiesta Mango": "#00ced1", // Turquesa
-      "Ultra Peachy Keen": "#ffb347", // Pêssego
-      "Mango Loco": "#4169e1", // Azul Royal
-      "Pacific Punch": "#f08080", // Coral/Rosa claro
-      "Khaotic": "#ff8c00", // Laranja
-      "Pipeline Punch": "#ff69b4", // Rosa chiclete
-      "Rio Punch": "#32cd32", // Verde Brasil
-      "Dragon Ice Tea Limão": "#cddc39", // Limão
-      "Dragon Ice Tea Pêssego": "#ffa07a", // Laranja chá
-      "Outro": "#43b581" // Verde padrão
+      "Original": "#43b581",
+      "Zero Sugar": "#005bb5",
+      "Absolutely Zero": "#1a1a2e",
+      "Ultra White": "#e0e0e0",
+      "Ultra Violet": "#9b59b6",
+      "Ultra Strawberry Dreams": "#ff9ece",
+      "Ultra Watermelon": "#ff4d4d",
+      "Ultra Fiesta Mango": "#00ced1",
+      "Ultra Peachy Keen": "#ffb347",
+      "Mango Loco": "#4169e1",
+      "Pacific Punch": "#f08080",
+      "Khaotic": "#ff8c00",
+      "Pipeline Punch": "#ff69b4",
+      "Rio Punch": "#32cd32",
+      "Dragon Ice Tea Limão": "#cddc39",
+      "Dragon Ice Tea Pêssego": "#ffa07a",
+      "Outro": "#43b581"
     };
 
     formAvaliacao.addEventListener("submit", async (e) => {
@@ -319,6 +319,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
       
+      const btnSubmit = document.getElementById("btnSubmit");
       const textoOriginalBtn = btnSubmit.innerText;
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
@@ -332,14 +333,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const borderOriginal = modalConteudo.style.border;
       
       modalConteudo.style.transition = "box-shadow 0.5s ease, border-color 0.5s ease";
-      // Adiciona o código '40' no fim do HEX para dar 25% de opacidade no brilho (não agride o olho)
       modalConteudo.style.boxShadow = `0 0 40px ${corLata}40, inset 0 0 20px ${corLata}1A`; 
       modalConteudo.style.border = `1px solid ${corLata}`;
 
       // ==========================================
       // 🌊 INÍCIO DA MÁGICA DO TSUNAMI DINÂMICO
       // ==========================================
-      const hintBar = document.getElementById("progress-bar");
+      // 🔥 A CORREÇÃO ESTÁ AQUI: Pegando direto pela classe .hint!
+      const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
       let textoOriginalHint = "";
 
@@ -373,7 +374,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         textoTsunami.style.alignItems = "center";
         textoTsunami.style.justifyContent = "center";
         textoTsunami.style.color = "#fff";
-        // Adiciona um contorno sombreado forte no texto para ele ficar legível até em cores claras (ex: Branco do Ultra White)
         textoTsunami.style.textShadow = "1px 1px 3px rgba(0,0,0,0.8)"; 
         textoTsunami.style.fontWeight = "bold";
         textoTsunami.innerText = "Subindo pro banco... 🚀";
@@ -430,13 +430,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         btnSubmit.innerText = textoOriginalBtn;
         btnSubmit.disabled = false;
         
-        // Se deu erro e o formulário não recarregar, nós devolvemos o visual original do modal
         modalConteudo.style.boxShadow = boxOriginal;
         modalConteudo.style.border = borderOriginal;
       }
     });
   }
-
+  
   const btnAplicar = document.getElementById("btnAplicarFiltros");
   const btnLimpar = document.getElementById("btnLimparFiltros");
 
