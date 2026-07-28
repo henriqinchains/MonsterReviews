@@ -305,23 +305,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
    if (formAvaliacao) {
     const coresMonsters = {
-      "Original": "#43b581",
-      "Zero Sugar": "#005bb5",
-      "Absolutely Zero": "#1a1a2e",
+      "Original": "#00ff66",
+      "Zero Sugar": "#00ff66",
+      "Absolutely Zero": "#000080",
       "Ultra White": "#e0e0e0",
-      "Ultra Violet": "#9b59b6",
-      "Ultra Strawberry Dreams": "#ff9ece",
-      "Ultra Watermelon": "#ff4d4d",
-      "Ultra Fiesta Mango": "#00ced1",
+      "Ultra Violet": "#8a2be2",
+      "Ultra Strawberry Dreams": "#ff69b4",
+      "Ultra Watermelon": "#ff1a1a",
+      "Ultra Fiesta Mango": "#33ccff",
       "Ultra Peachy Keen": "#ffb347",
       "Mango Loco": "#4169e1",
-      "Pacific Punch": "#f08080",
-      "Khaotic": "#ff8c00",
-      "Pipeline Punch": "#ff69b4",
-      "Rio Punch": "#32cd32",
+      "Khaotic": "#ffcc00",
+      "Pipeline Punch": "#ff8c69",
+      "Rio Punch": "#98fb98",
+      "Pacific Punch": "#f08080", 
       "Dragon Ice Tea Limão": "#cddc39",
       "Dragon Ice Tea Pêssego": "#ffa07a",
-      "Outro": "#43b581"
+      "Outro": "#00ff66" 
     };
 
     formAvaliacao.addEventListener("submit", async (e) => {
