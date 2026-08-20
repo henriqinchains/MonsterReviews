@@ -74,6 +74,7 @@ const listaSabores = [
   "Rio Punch",
   "Dragon Ice Tea Limão",
   "Dragon Ice Tea Pêssego",
+  "Ultra Golden Pineapple",
   "Outro"
 ];
 
@@ -320,6 +321,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "Pacific Punch": "#f08080", 
       "Dragon Ice Tea Limão": "#cddc39",
       "Dragon Ice Tea Pêssego": "#ffa07a",
+      "Ultra Golden Pineapple: ##d4af37",
       "Outro": "#00ff66" 
     };
 
