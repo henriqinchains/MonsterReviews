@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       "Pacific Punch": "#f08080", 
       "Dragon Ice Tea Limão": "#cddc39",
       "Dragon Ice Tea Pêssego": "#ffa07a",
-      "Ultra Golden Pineapple: ##d4af37",
+      "Ultra Golden Pineapple": "#d4af37",
       "Outro": "#00ff66" 
     };
 
