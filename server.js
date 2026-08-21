@@ -6,6 +6,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 const cookieParser = require("cookie-parser");
 const multer = require("multer");
 const jwt = require("jsonwebtoken");
@@ -70,6 +71,29 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+
+// ============================================================================
+// 3.1 LIMITE DE REQUISIÇÕES (Proteção contra DDoS / abuso)
+// ============================================================================
+// Limite geral: aplica pra toda a API
+const limiteGeral = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  limit: 100, // até 100 requisições por IP por minuto
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { erro: "Muitas requisições. Tente novamente em instantes." },
+});
+app.use("/api", limiteGeral);
+
+// Limite mais rígido pra rotas sensíveis (login, cadastro) - alvo comum de bots
+const limiteAuth = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  limit: 10, // até 10 tentativas por IP a cada 15 minutos
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { erro: "Muitas tentativas. Aguarde alguns minutos antes de tentar de novo." },
+});
+app.use(["/api/auth/login", "/api/auth/cadastro"], limiteAuth);
 
 // ============================================================================
 // 4. BANCO DE DADOS E MODELS (MONGODB)
