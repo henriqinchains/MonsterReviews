@@ -52,6 +52,7 @@ let loggedUser = sessionStorage.getItem("cache_usuario") || "";
 let userRole = sessionStorage.getItem("cache_cargo") || "user";
 let userEmail = sessionStorage.getItem("cache_email") || "";
 let todasAvaliacoes = [];
+let filtrosAtivos = false;
 let paginaAtual = 1;
 let carregandoPosts = false;
 let temMaisPosts = true;
@@ -453,6 +454,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (btnAplicar) {
     btnAplicar.addEventListener("click", () => {
+      
+      filtrosAtivos = true; // Bloqueia o carregamento em blocos
+      const sentinela = document.getElementById("sentinela-scroll");
+      if (sentinela) sentinela.style.display = "none"; // Oculta a sentinela
+      
       const apenasMinhas = document.getElementById("checkMeusPosts").checked;
       const sabor = document.getElementById("filtroSabor").value;
       const ordem = document.getElementById("filtroOrdem").value;
@@ -479,6 +485,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   if (btnLimpar) {
     btnLimpar.addEventListener("click", () => {
+      filtrosAtivos = false; // Libera o carregamento em blocos
+      const sentinela = document.getElementById("sentinela-scroll");
+      if (sentinela && temMaisPosts) sentinela.style.display = "block"; // Mostra a sentinela novamente
+      
       document.getElementById("checkMeusPosts").checked = false;
       document.getElementById("filtroSabor").value = "";
       document.getElementById("filtroOrdem").value = "recentes";
@@ -1101,7 +1111,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cria o "olheiro"
   const observer = new IntersectionObserver((entries) => {
     // Se a sentinela apareceu na tela e não estamos no meio de um carregamento
-    if (entries[0].isIntersecting && !carregandoPosts) {
+    if (entries[0].isIntersecting && !carregandoPosts && !filtrosAtivos) {
       
       // Se a API disse que ainda tem post, busca mais!
       if (temMaisPosts) {
