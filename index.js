@@ -56,6 +56,9 @@ let filtrosAtivos = false;
 let paginaAtual = 1;
 let carregandoPosts = false;
 let temMaisPosts = true;
+let filtroAtualSabor = "";
+let filtroAtualOrdem = "recentes";
+let filtroAtualSujeito = "";
 const feedContainer = document.getElementById("feed-container");
 const cacheMemoriaAvatares = {};
 const listaSabores = [
@@ -448,55 +451,42 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
-  
-  const btnAplicar = document.getElementById("btnAplicarFiltros");
-  const btnLimpar = document.getElementById("btnLimparFiltros");
 
-  if (btnAplicar) {
-    btnAplicar.addEventListener("click", () => {
-      
-      filtrosAtivos = true; // Bloqueia o carregamento em blocos
-      const sentinela = document.getElementById("sentinela-scroll");
-      if (sentinela) sentinela.style.display = "none"; // Oculta a sentinela
-      
-      const apenasMinhas = document.getElementById("checkMeusPosts").checked;
-      const sabor = document.getElementById("filtroSabor").value;
-      const ordem = document.getElementById("filtroOrdem").value;
+// 2. Os botões agora só avisam o Backend e mandam buscar do zero
+const btnAplicar = document.getElementById("btnAplicarFiltros");
+const btnLimpar = document.getElementById("btnLimparFiltros");
 
-      let postsFiltrados = todasAvaliacoes.filter((post) => {
-        if (apenasMinhas && post.sujeito !== loggedUser) return false;
-        if (sabor && post.sabor !== sabor) return false;
-        return true;
-      });
+if (btnAplicar) {
+  btnAplicar.addEventListener("click", () => {
+    const apenasMinhas = document.getElementById("checkMeusPosts").checked;
+    
+    // Salva o que o cara escolheu
+    filtroAtualSabor = document.getElementById("filtroSabor").value;
+    filtroAtualOrdem = document.getElementById("filtroOrdem").value;
+    filtroAtualSujeito = apenasMinhas ? loggedUser : ""; 
 
-      postsFiltrados.sort((a, b) => {
-        if (ordem === "recentes") return new Date(b.createdAt) - new Date(a.createdAt);
-        if (ordem === "antigos") return new Date(a.createdAt) - new Date(b.createdAt);
-        if (ordem === "maior_nota") return b.nota - a.nota;
-        if (ordem === "menor_nota") return a.nota - b.nota;
-        if (ordem === "menor_preco") return a.valor - b.valor;
-        return 0;
-      });
+    // Manda limpar a tela e buscar tudo novo na API
+    carregarFeed(true);
+  });
+}
 
-      feedContainer.innerHTML = "";
-      renderizarPosts(postsFiltrados);
-    });
-  }
+if (btnLimpar) {
+  btnLimpar.addEventListener("click", () => {
+    // Reseta o visual
+    document.getElementById("checkMeusPosts").checked = false;
+    document.getElementById("filtroSabor").value = "";
+    document.getElementById("filtroOrdem").value = "recentes";
 
-  if (btnLimpar) {
-    btnLimpar.addEventListener("click", () => {
-      filtrosAtivos = false; // Libera o carregamento em blocos
-      const sentinela = document.getElementById("sentinela-scroll");
-      if (sentinela && temMaisPosts) sentinela.style.display = "block"; // Mostra a sentinela novamente
-      
-      document.getElementById("checkMeusPosts").checked = false;
-      document.getElementById("filtroSabor").value = "";
-      document.getElementById("filtroOrdem").value = "recentes";
+    // Reseta a memória
+    filtroAtualSabor = "";
+    filtroAtualOrdem = "recentes";
+    filtroAtualSujeito = "";
 
-      feedContainer.innerHTML = "";
-      renderizarPosts(todasAvaliacoes);
-    });
-  }
+    // Busca o feed original de novo
+    carregarFeed(true);
+  });
+}
+
 });
 
 function toggleDropdown() {
@@ -509,6 +499,7 @@ document.addEventListener("click", (e) => {
   if (nu && !nu.contains(e.target)) nu.classList.remove("open");
 });
 
+// 3. O carregarFeed agora manda os parâmetros na URL!
 async function carregarFeed(recarregarTudo = false) {
   if (!feedContainer) return;
 
@@ -516,6 +507,7 @@ async function carregarFeed(recarregarTudo = false) {
     paginaAtual = 1;
     temMaisPosts = true;
     feedContainer.innerHTML = ""; 
+    todasAvaliacoes = []; // Zera os posts da memória
   }
 
   if (carregandoPosts || !temMaisPosts) return;
@@ -523,18 +515,28 @@ async function carregarFeed(recarregarTudo = false) {
   carregandoPosts = true;
 
   try {
-    const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes?page=${paginaAtual}&limit=10`);
+    // Montando a URL inteligente
+    const url = new URL("https://monster-reviews-api.onrender.com/api/avaliacoes");
+    url.searchParams.append("page", paginaAtual);
+    url.searchParams.append("limit", 10);
+    
+    // Só adiciona na URL se o cara tiver filtrado algo
+    if (filtroAtualSabor) url.searchParams.append("sabor", filtroAtualSabor);
+    if (filtroAtualSujeito) url.searchParams.append("sujeito", filtroAtualSujeito);
+    if (filtroAtualOrdem) url.searchParams.append("ordem", filtroAtualOrdem);
+
+    const resposta = await fetch(url.toString());
     const dados = await resposta.json();
 
     temMaisPosts = dados.hasMore;
     
-    // Atualiza a variável global que o filtro usa
     if (recarregarTudo) {
       todasAvaliacoes = dados.avaliacoes;
     } else {
       todasAvaliacoes = [...todasAvaliacoes, ...dados.avaliacoes];
     }
 
+    // Passamos sempre dados, e a função renderizarPosts lá embaixo se vira
     renderizarPosts(dados);
     paginaAtual++;
 
@@ -543,7 +545,7 @@ async function carregarFeed(recarregarTudo = false) {
     console.error(erro);
   } finally {
     carregandoPosts = false;
-    ocultarLoading(); // Garante que a tela preta vai sumir!
+    ocultarLoading(); 
   }
 }
 
@@ -1111,7 +1113,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Cria o "olheiro"
   const observer = new IntersectionObserver((entries) => {
     // Se a sentinela apareceu na tela e não estamos no meio de um carregamento
-    if (entries[0].isIntersecting && !carregandoPosts && !filtrosAtivos) {
+    if (entries[0].isIntersecting && !carregandoPosts) {
       
       // Se a API disse que ainda tem post, busca mais!
       if (temMaisPosts) {
