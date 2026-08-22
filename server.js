@@ -298,36 +298,46 @@ app.post("/api/resetar-senha", async (req, res) => {
 // 7. ROTAS DO CORE (AVALIAÇÕES, FEED E ESTATÍSTICAS)
 // ============================================================================
 
-// Rota para buscar as avaliações com Paginação
+// Rota para buscar as avaliações com Paginação e Filtros dinâmicos
 app.get("/api/avaliacoes", async (req, res) => {
   try {
-    // Pega a página da URL (se não mandar, assume página 1)
+    // 1. Pegamos todos os parâmetros da URL
     const page = parseInt(req.query.page) || 1;
-    // Define o limite de latinhas por vez
-    const limit = parseInt(req.query.limit) || 10; 
-    
-    // Calcula quantas latinhas pular
+    const limit = parseInt(req.query.limit) || 10;
+    const { sabor, sujeito, ordem } = req.query; 
+
+    // 2. Montamos o objeto de busca (query) dinamicamente
+    const query = {};
+    if (sabor) query.sabor = sabor;
+    if (sujeito) query.sujeito = sujeito;
+
+    // 3. Montamos a lógica de ordenação
+    let sortConfig = { createdAt: -1 }; // Padrão: Mais recentes
+    if (ordem === "antigos") sortConfig = { createdAt: 1 };
+    else if (ordem === "maior_nota") sortConfig = { nota: -1 };
+    else if (ordem === "menor_nota") sortConfig = { nota: 1 };
+    else if (ordem === "menor_preco") sortConfig = { valor: 1 };
+
+    // 4. Calcula o offset do scroll (skip)
     const skip = (page - 1) * limit;
 
-    // Busca no banco aplicando a ordenação, o pulo e o limite
-    const avaliacoes = await Avaliacao.find()
-      .sort({ createdAt: -1 }) // Mais novas primeiro
+    // 5. Busca no banco aplicando filtros, ordem e paginação juntos
+    const avaliacoes = await Avaliacao.find(query)
+      .sort(sortConfig)
       .skip(skip)
       .limit(limit);
 
-    // Conta o total de latinhas no banco para sabermos quando parar de pedir
-    const totalPosts = await Avaliacao.countDocuments();
-    const hasMore = (page * limit) < totalPosts;
+    // 6. Conta o total de latinhas MAS SÓ as que respeitam o filtro
+    const totalPosts = await Avaliacao.countDocuments(query);
+    const hasMore = (skip + avaliacoes.length) < totalPosts;
 
-    // 🚨 ATENÇÃO: Agora não devolvemos mais só o array puro!
-    // Devolvemos um objeto com as avaliações e a informação se tem mais.
     return res.status(200).json({
       avaliacoes: avaliacoes,
       hasMore: hasMore
     });
 
   } catch (erro) {
-    console.error("Erro ao buscar avaliações:", erro);
+    console.error("Erro ao buscar avaliações filtradas:", erro);
     return res.status(500).json({ erro: "Erro ao carregar o feed." });
   }
 });
