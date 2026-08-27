@@ -34,7 +34,7 @@ async function convertWebp(inputId) {
         canvas.toBlob(
           (blob) => resolve(blob),
           "image/webp",
-          0.7
+          0.65
         );
       };
 
