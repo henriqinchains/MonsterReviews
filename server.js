@@ -632,42 +632,6 @@ app.post("/api/usuarios/avatar", upload.single("fotoPerfil"), async (req, res) =
   }
 });
 
-app.get("/api/musicas/buscar", async (req, res) => {
-  try {
-    const { query } = req.query;
-    
-    // 1. Gera o token temporário do Spotify
-    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: "Basic " + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET).toString("base64"),
-      },
-      body: "grant_type=client_credentials",
-    });
-    const { access_token } = await tokenRes.json();
-
-    // 2. Busca a música
-    const buscaRes = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
-      headers: { Authorization: "Bearer " + access_token },
-    });
-    const dadosBusca = await buscaRes.json();
-
-    // 3. Filtra apenas faixas que tenham o preview_url de 30 segundos
-    const faixasComPreview = dadosBusca.tracks.items
-      .filter(t => t.preview_url !== null)
-      .map(t => ({ 
-        nome: t.name, 
-        artista: t.artists[0].name, 
-        previewUrl: t.preview_url 
-      }));
-
-    res.json(faixasComPreview);
-  } catch (erro) {
-    res.status(500).json({ erro: "Erro ao conectar com o Spotify." });
-  }
-});
-
 // ============================================================================
 // 8. INICIALIZAÇÃO DO SERVIDOR
 // ============================================================================
