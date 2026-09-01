@@ -555,17 +555,14 @@ function renderizarPosts(dadosRecebidos) {
   let arrayAvaliacoes = [];
 
   if (Array.isArray(dadosRecebidos)) {
-    // Se veio de uma rota antiga que ainda manda o Array direto
     arrayAvaliacoes = dadosRecebidos; 
   } else if (dadosRecebidos && Array.isArray(dadosRecebidos.avaliacoes)) {
-    // Se veio da nossa rota nova de paginação { avaliacoes: [...], hasMore: true }
     arrayAvaliacoes = dadosRecebidos.avaliacoes; 
   } else {
     console.error("renderizarPosts não conseguiu entender os dados:", dadosRecebidos);
     return;
   }
 
-  // Só mostra a mensagem de vazio se o array estiver zerado e o feed também
   if (arrayAvaliacoes.length === 0 && feedContainer.innerHTML.trim() === "") {
     feedContainer.innerHTML = "<p style='text-align: center; color: #8b9bb4; padding: 20px;'>Nenhuma avaliação postada ainda. Seja o primeiro!</p>";
     return;
@@ -598,18 +595,19 @@ function renderizarPosts(dadosRecebidos) {
     const comentariosContainerId = `container-comentarios-${post._id}`;
     const formComentarioId = `form-comentario-${post._id}`;
 
-    // Extrai o ID do link colado pelo usuário
+    // ==========================================================
+    // 🎵 EXTRAÇÃO BLINDADA DO SPOTIFY
+    // ==========================================================
     let spotifyPlayerHtml = "";
-    if (post.musica_preview && post.musica_preview.includes("spotify.com/track/")) {
-      // Pega só o código da música que fica depois de "track/"
+    // Agora ele só confere se tem 'spotify' e 'track' no link, independente do país!
+    if (post.musica_preview && post.musica_preview.includes("spotify") && post.musica_preview.includes("track")) {
       const regex = /track\/([a-zA-Z0-9]+)/;
       const match = post.musica_preview.match(regex);
       
       if (match && match[1]) {
         const trackId = match[1];
-        // Cria o player escuro (theme=0 combina com o Monster)
         spotifyPlayerHtml = `
-          <div style="margin-top: 15px;">
+          <div style="margin-top: 15px; margin-bottom: 5px;">
             <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
           </div>
         `;
@@ -658,15 +656,21 @@ function renderizarPosts(dadosRecebidos) {
         <div class="info-item"><span class="info-label">Valeu a pena?</span><span class="info-value ${valeuClasse}">${valeuTexto}</span></div>
       </div>
 
-
+      <!-- FOOTER RESTAURADO COM O BOTÃO DE EXCLUIR! -->
       <div class="post-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-        <div style="display: flex; gap: 10px;">
-          <button class="${classeBotao}" onclick="toggleCurtida(this, '${post._id}')" style="color: ${corTexto}; background-color: ${bgBotao}; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;">
-            <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            <span class="contador-likes">${numLikes}</span>
+        <button class="${classeBotao}" onclick="toggleCurtida(this, '${post._id}')" style="color: ${corTexto}; background-color: ${bgBotao}; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;">
+          <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span class="contador-likes">${numLikes}</span>
+        </button>
+        ${post.sujeito === loggedUser || userRole === "admin" ? `
+          <button class="post-action" onclick="deletarPost('${post._id}')" style="color: #ff4d4d; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; padding: 6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            Excluir
           </button>
+        ` : ""}
+      </div>
       
       <div class="post-comments-area">
         <div id="${comentariosContainerId}" class="comments-list">
@@ -679,7 +683,6 @@ function renderizarPosts(dadosRecebidos) {
         </form>
       </div>
     `;
-
 
     feedContainer.appendChild(postArticle);
 
