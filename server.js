@@ -367,6 +367,7 @@ app.post("/api/avaliacoes", upload.single("foto"), async (req, res) => {
       review: req.body.review,
       valeu_a_pena: req.body.valeu_a_pena === "true",
       foto_url: linkDaFotoNaNuvem,
+      musica_preview: req.body.musica_preview
     });
 
     await novaAvaliacao.save();
