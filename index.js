@@ -615,7 +615,7 @@ function renderizarPosts(dadosRecebidos) {
       `;
       
       // Transforma a foto da latinha em um botão gigante invisível para tocar a música
-      cliqueImagem = `onclick="tocarPausarMusica('${previewUrl}', '${iconId}')" style="cursor: pointer;" title="Clique na foto para tocar/pausar a música!"`;
+      cliqueImagem = `onclick="tocarPausarMusica('${previewUrl}', '${iconId}')" style="cursor: pointer;"`;
     }
     
     const postArticle = document.createElement("article");
