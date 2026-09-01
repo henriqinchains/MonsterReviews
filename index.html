@@ -191,11 +191,14 @@
           Review (opcional)
           <textarea name="review" placeholder="Conte o que achou do sabor, energia e sensação geral..."></textarea>
         </label>
-        <!-- CAMPO DA MÚSICA -->
+        <!-- CAMPO DA MÚSICA (DEEZER) -->
         <label>
-          Link da Trilha Sonora (NOVO)
-          <input type="text" name="musica_preview" placeholder="Cole o link da música aqui..." autocomplete="off" />
+          Trilha Sonora (NOVO)
+          <input type="text" id="buscaDeezer" placeholder="Digite a música e/ou artista..." autocomplete="off" />
+          <input type="hidden" id="musicaPreviewUrl" name="musica_preview" />
         </label>
+        <div id="resultadosDeezer" style="display: flex; flex-direction: column; gap: 5px; max-height: 150px; overflow-y: auto;"></div>
+        <div id="musicaSelecionada" style="color: var(--monster-green); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px;"></div>
         <div class="footer">
           <div class="hint">Rumo a um salário mínimo gasto em monsters! (R$ 1.621,00)</div>
           <button class="button" type="submit" id="btnSubmit">
