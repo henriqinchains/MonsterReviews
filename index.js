@@ -81,6 +81,8 @@ const listaSabores = [
   "Ultra Golden Pineapple",
   "Outro"
 ];
+let audioTocando = null;
+let botaoTocando = null;
 
 // Renderiza o cache de sessão imediatamente para a Navbar nascer preenchida
 aplicarCacheImediato();
@@ -640,19 +642,20 @@ function renderizarPosts(dadosRecebidos) {
 
 
       <div class="post-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
-        <button class="${classeBotao}" onclick="toggleCurtida(this, '${post._id}')" style="color: ${corTexto}; background-color: ${bgBotao}; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;">
-          <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span class="contador-likes">${numLikes}</span>
-        </button>
-        ${post.sujeito === loggedUser || userRole === "admin" ? `
-          <button class="post-action" onclick="deletarPost('${post._id}')" style="color: #ff4d4d; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 5px; font-weight: bold; padding: 6px;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 18px; height: 18px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            Excluir
+        <div style="display: flex; gap: 10px;">
+          <button class="${classeBotao}" onclick="toggleCurtida(this, '${post._id}')" style="color: ${corTexto}; background-color: ${bgBotao}; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;">
+            <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="contador-likes">${numLikes}</span>
           </button>
-        ` : ""}
-      </div>
+
+          ${post.musica_preview ? `
+            <button onclick="tocarMusicaPost('${post.musica_preview}', this)" style="background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); color: var(--monster-green); border-radius: 6px; padding: 6px 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+              🎵
+            </button>
+          ` : ""}
+        </div>
       
       <div class="post-comments-area">
         <div id="${comentariosContainerId}" class="comments-list">
@@ -1171,3 +1174,91 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// ==========================================
+// INTEGRAÇÃO SPOTIFY: BUSCA DE MÚSICA
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const inputBusca = document.getElementById("buscaMusica");
+  const divResultados = document.getElementById("resultadosMusica");
+  const inputHidden = document.getElementById("musicaPreviewUrl");
+  const divSelecionada = document.getElementById("musicaSelecionada");
+  let timeoutBusca;
+
+  if (inputBusca) {
+    inputBusca.addEventListener("input", (e) => {
+      clearTimeout(timeoutBusca); // Evita floodar a API a cada letra digitada
+      const query = e.target.value.trim();
+
+      if (query.length < 3) {
+        divResultados.innerHTML = "";
+        return;
+      }
+
+      // Espera o usuário parar de digitar por 500ms antes de buscar
+      timeoutBusca = setTimeout(async () => {
+        try {
+          divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando no Spotify... 🎧</span>";
+          
+          const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/musicas/buscar?query=${encodeURIComponent(query)}`);
+          const musicas = await resposta.json();
+
+          divResultados.innerHTML = "";
+
+          if (musicas.length === 0) {
+            divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Nenhum trecho de 30s liberado para essa busca.</span>";
+            return;
+          }
+
+          musicas.forEach(musica => {
+            const item = document.createElement("div");
+            item.innerHTML = `🎵 <strong>${musica.nome}</strong> - ${musica.artista}`;
+            item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
+            
+            // Quando clicar na música, salva o link oculto pro backend e limpa a lista
+            item.addEventListener("click", () => {
+              inputHidden.value = musica.previewUrl;
+              divSelecionada.innerHTML = `✅ Selecionada: ${musica.nome}`;
+              divResultados.innerHTML = "";
+              inputBusca.value = ""; // Limpa o campo de busca
+            });
+            
+            divResultados.appendChild(item);
+          });
+        } catch (erro) {
+          divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Erro ao buscar música.</span>";
+        }
+      }, 500);
+    });
+  }
+});
+
+window.tocarMusicaPost = function(url, btnElement) {
+  // Se já tem algo tocando, pausa
+  if (audioTocando) {
+    audioTocando.pause();
+    if (botaoTocando) botaoTocando.innerHTML = "🎵 Ouvir Vibe";
+    
+    // Se clicou no mesmo botão que já estava tocando, apenas desliga
+    if (audioTocando.src === url) {
+       audioTocando = null; 
+       botaoTocando = null;
+       return; 
+    }
+  }
+
+  // Toca a nova música
+  audioTocando = new Audio(url);
+  audioTocando.volume = 0.3; // 30% do volume para não assustar ninguém
+  audioTocando.play();
+  
+  botaoTocando = btnElement;
+  botaoTocando.innerHTML = "⏸️ Pausar Vibe";
+
+  // Quando os 30s acabarem, volta o botão ao normal
+  audioTocando.onended = () => {
+    botaoTocando.innerHTML = "🎵 Ouvir Vibe";
+    audioTocando = null;
+    botaoTocando = null;
+  };
+};
