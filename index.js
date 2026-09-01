@@ -1212,16 +1212,12 @@ document.addEventListener("DOMContentLoaded", () => {
       timeoutBusca = setTimeout(async () => {
         divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando no Deezer... 🎧</span>";
         try {
-          // 1. Monta o link puro do Deezer
-          const urlDeezer = `https://api.deezer.com/search?q=${encodeURIComponent(query)}`;
-          
-          // 2. Busca usando a rota /raw do proxy (traz o JSON limpinho)
-          const resposta = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(urlDeezer)}`);
+          // Bate na SUA API, ignorando totalmente bloqueios de CORS externos
+          const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/deezer?q=${encodeURIComponent(query)}`);
           const dadosApi = await resposta.json();
 
           divResultados.innerHTML = "";
           
-          // 3. Verifica se achou alguma coisa
           if (!dadosApi.data || dadosApi.data.length === 0) {
             divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Nenhuma música encontrada.</span>";
             return;
@@ -1235,7 +1231,6 @@ document.addEventListener("DOMContentLoaded", () => {
             item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
             
             item.addEventListener("click", () => {
-              // Salva o link e o nome separados por "|||"
               inputHidden.value = `${musica.preview}|||${musica.title} - ${musica.artist.name}`;
               divSelecionada.innerHTML = `✅ Selecionada: ${musica.title}`;
               divResultados.innerHTML = "";
@@ -1244,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
             divResultados.appendChild(item);
           });
         } catch (erro) {
-          console.error("Erro detalhado do Deezer:", erro); // Se der ruim, ele avisa no F12!
+          console.error("Erro na busca:", erro);
           divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Erro na busca. Olhe o Console (F12).</span>";
         }
       }, 500);
