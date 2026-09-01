@@ -632,6 +632,22 @@ app.post("/api/usuarios/avatar", upload.single("fotoPerfil"), async (req, res) =
   }
 });
 
+// ==========================================
+// ROTA DO DEEZER (PROXY PRÓPRIO)
+// ==========================================
+app.get("/api/deezer", async (req, res) => {
+  try {
+    const { q } = req.query;
+    // O servidor (Node.js) não sofre com bloqueio de CORS!
+    const resposta = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(q)}`);
+    const dados = await resposta.json();
+    res.json(dados);
+  } catch (erro) {
+    console.error("Erro no Deezer:", erro);
+    res.status(500).json({ erro: "Falha ao buscar músicas" });
+  }
+});
+
 // ============================================================================
 // 8. INICIALIZAÇÃO DO SERVIDOR
 // ============================================================================
