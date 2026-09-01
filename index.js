@@ -81,8 +81,6 @@ const listaSabores = [
   "Ultra Golden Pineapple",
   "Outro"
 ];
-let audioTocando = null;
-let botaoTocando = null;
 
 // Renderiza o cache de sessão imediatamente para a Navbar nascer preenchida
 aplicarCacheImediato();
@@ -600,6 +598,24 @@ function renderizarPosts(dadosRecebidos) {
     const comentariosContainerId = `container-comentarios-${post._id}`;
     const formComentarioId = `form-comentario-${post._id}`;
 
+    // Extrai o ID do link colado pelo usuário
+    let spotifyPlayerHtml = "";
+    if (post.musica_preview && post.musica_preview.includes("spotify.com/track/")) {
+      // Pega só o código da música que fica depois de "track/"
+      const regex = /track\/([a-zA-Z0-9]+)/;
+      const match = post.musica_preview.match(regex);
+      
+      if (match && match[1]) {
+        const trackId = match[1];
+        // Cria o player escuro (theme=0 combina com o Monster)
+        spotifyPlayerHtml = `
+          <div style="margin-top: 15px;">
+            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+        `;
+      }
+    }
+
     const postArticle = document.createElement("article");
     postArticle.className = "post-card";
     postArticle.innerHTML = `
@@ -632,6 +648,8 @@ function renderizarPosts(dadosRecebidos) {
       </div>
 
       <div class="post-desc">${(post.review || "Sem descrição.").trim()}</div>
+
+      ${spotifyPlayerHtml}
       
       <div class="post-info">
         <div class="info-item"><span class="info-label">Sabor</span><span class="info-value">${post.sabor}</span></div>
@@ -649,13 +667,6 @@ function renderizarPosts(dadosRecebidos) {
             </svg>
             <span class="contador-likes">${numLikes}</span>
           </button>
-
-          ${post.musica_preview ? `
-            <button onclick="tocarMusicaPost('${post.musica_preview}', this)" style="background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); color: var(--monster-green); border-radius: 6px; padding: 6px 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-              🎵
-            </button>
-          ` : ""}
-        </div>
       
       <div class="post-comments-area">
         <div id="${comentariosContainerId}" class="comments-list">
@@ -1174,91 +1185,3 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
-
-// ==========================================
-// INTEGRAÇÃO SPOTIFY: BUSCA DE MÚSICA
-// ==========================================
-document.addEventListener("DOMContentLoaded", () => {
-  const inputBusca = document.getElementById("buscaMusica");
-  const divResultados = document.getElementById("resultadosMusica");
-  const inputHidden = document.getElementById("musicaPreviewUrl");
-  const divSelecionada = document.getElementById("musicaSelecionada");
-  let timeoutBusca;
-
-  if (inputBusca) {
-    inputBusca.addEventListener("input", (e) => {
-      clearTimeout(timeoutBusca); // Evita floodar a API a cada letra digitada
-      const query = e.target.value.trim();
-
-      if (query.length < 3) {
-        divResultados.innerHTML = "";
-        return;
-      }
-
-      // Espera o usuário parar de digitar por 500ms antes de buscar
-      timeoutBusca = setTimeout(async () => {
-        try {
-          divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando no Spotify... 🎧</span>";
-          
-          const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/musicas/buscar?query=${encodeURIComponent(query)}`);
-          const musicas = await resposta.json();
-
-          divResultados.innerHTML = "";
-
-          if (musicas.length === 0) {
-            divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Nenhum trecho de 30s liberado para essa busca.</span>";
-            return;
-          }
-
-          musicas.forEach(musica => {
-            const item = document.createElement("div");
-            item.innerHTML = `🎵 <strong>${musica.nome}</strong> - ${musica.artista}`;
-            item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
-            
-            // Quando clicar na música, salva o link oculto pro backend e limpa a lista
-            item.addEventListener("click", () => {
-              inputHidden.value = musica.previewUrl;
-              divSelecionada.innerHTML = `✅ Selecionada: ${musica.nome}`;
-              divResultados.innerHTML = "";
-              inputBusca.value = ""; // Limpa o campo de busca
-            });
-            
-            divResultados.appendChild(item);
-          });
-        } catch (erro) {
-          divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Erro ao buscar música.</span>";
-        }
-      }, 500);
-    });
-  }
-});
-
-window.tocarMusicaPost = function(url, btnElement) {
-  // Se já tem algo tocando, pausa
-  if (audioTocando) {
-    audioTocando.pause();
-    if (botaoTocando) botaoTocando.innerHTML = "🎵 Ouvir Vibe";
-    
-    // Se clicou no mesmo botão que já estava tocando, apenas desliga
-    if (audioTocando.src === url) {
-       audioTocando = null; 
-       botaoTocando = null;
-       return; 
-    }
-  }
-
-  // Toca a nova música
-  audioTocando = new Audio(url);
-  audioTocando.volume = 0.3; // 30% do volume para não assustar ninguém
-  audioTocando.play();
-  
-  botaoTocando = btnElement;
-  botaoTocando.innerHTML = "⏸️ Pausar Vibe";
-
-  // Quando os 30s acabarem, volta o botão ao normal
-  audioTocando.onended = () => {
-    botaoTocando.innerHTML = "🎵 Ouvir Vibe";
-    audioTocando = null;
-    botaoTocando = null;
-  };
-};
