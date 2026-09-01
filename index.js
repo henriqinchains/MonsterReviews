@@ -596,24 +596,28 @@ function renderizarPosts(dadosRecebidos) {
     const formComentarioId = `form-comentario-${post._id}`;
 
     // ==========================================================
-    // 🎵 EXTRAÇÃO BLINDADA DO SPOTIFY
+    // 🎵 ESTÉTICA INSTAGRAM (DEEZER)
     // ==========================================================
-    let spotifyPlayerHtml = "";
-    // Agora ele só confere se tem 'spotify' e 'track' no link, independente do país!
-    if (post.musica_preview && post.musica_preview.includes("spotify") && post.musica_preview.includes("track")) {
-      const regex = /track\/([a-zA-Z0-9]+)/;
-      const match = post.musica_preview.match(regex);
-      
-      if (match && match[1]) {
-        const trackId = match[1];
-        spotifyPlayerHtml = `
-          <div style="margin-top: 15px; margin-bottom: 5px;">
-            <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
-          </div>
-        `;
-      }
-    }
+    let htmlMusicaTop = "";
+    let cliqueImagem = "";
 
+    if (post.musica_preview && post.musica_preview.includes("|||")) {
+      const partes = post.musica_preview.split("|||");
+      const previewUrl = partes[0];
+      const nomeMusica = partes[1];
+      const iconId = `music-icon-${post._id}`;
+
+      // Texto da música que vai ficar lá no topo do post
+      htmlMusicaTop = `
+        <div style="font-size: 0.75rem; color: var(--monster-green); margin-top: 5px; display: flex; align-items: center; gap: 4px; font-weight: bold;">
+          <span id="${iconId}" class="icone-musica-feed" style="display: inline-block;">🎵</span> ${nomeMusica}
+        </div>
+      `;
+      
+      // Transforma a foto da latinha em um botão gigante invisível para tocar a música
+      cliqueImagem = `onclick="tocarPausarMusica('${previewUrl}', '${iconId}')" style="cursor: pointer;" title="Clique na foto para tocar/pausar a música!"`;
+    }
+    
     const postArticle = document.createElement("article");
     postArticle.className = "post-card";
     postArticle.innerHTML = `
@@ -638,16 +642,15 @@ function renderizarPosts(dadosRecebidos) {
             </a>
           </strong>
           <span>${dataEHoraFinal}</span>
+          ${htmlMusicaTop}
         </div>
       </div>
 
-      <div class="post-image">
+      <div class="post-image" ${cliqueImagem}>
         <img src="${post.foto_url}" alt="Foto do Monster">
       </div>
 
       <div class="post-desc">${(post.review || "Sem descrição.").trim()}</div>
-
-      ${spotifyPlayerHtml}
       
       <div class="post-info">
         <div class="info-item"><span class="info-label">Sabor</span><span class="info-value">${post.sabor}</span></div>
@@ -1188,3 +1191,84 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// ==========================================
+// INTEGRAÇÃO DEEZER: BUSCA DE MÚSICA
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+  const inputBusca = document.getElementById("buscaDeezer");
+  const divResultados = document.getElementById("resultadosDeezer");
+  const inputHidden = document.getElementById("musicaPreviewUrl");
+  const divSelecionada = document.getElementById("musicaSelecionada");
+  let timeoutBusca;
+
+  if (inputBusca) {
+    inputBusca.addEventListener("input", (e) => {
+      clearTimeout(timeoutBusca);
+      const query = e.target.value.trim();
+
+      if (query.length < 3) { divResultados.innerHTML = ""; return; }
+
+      timeoutBusca = setTimeout(async () => {
+        divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando no Deezer... 🎧</span>";
+        try {
+          // Busca no Deezer via proxy gratuito pra não dar erro de CORS
+          const resposta = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://api.deezer.com/search?q=' + query)}`);
+          const dadosApi = await resposta.json();
+          const musicas = JSON.parse(dadosApi.contents).data.slice(0, 5); // Pega as 5 primeiras
+
+          divResultados.innerHTML = "";
+          musicas.forEach(musica => {
+            const item = document.createElement("div");
+            item.innerHTML = `🎵 <strong>${musica.title}</strong> - ${musica.artist.name}`;
+            item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
+            
+            item.addEventListener("click", () => {
+              // HACK: Salva o link E o nome da música separados por "|||" no mesmo campo do banco!
+              inputHidden.value = `${musica.preview}|||${musica.title} - ${musica.artist.name}`;
+              divSelecionada.innerHTML = `✅ Selecionada: ${musica.title}`;
+              divResultados.innerHTML = "";
+              inputBusca.value = ""; 
+            });
+            divResultados.appendChild(item);
+          });
+        } catch (erro) {
+          divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Erro na busca.</span>";
+        }
+      }, 500);
+    });
+  }
+});
+
+// ==========================================
+// PLAYER INVISÍVEL ESTILO INSTAGRAM
+// ==========================================
+let audioDeezer = null;
+window.tocarPausarMusica = function(url, iconId) {
+  const icone = document.getElementById(iconId);
+
+  // Se clicou na mesma música que já está tocando
+  if (audioDeezer && audioDeezer.src === url) {
+    if (!audioDeezer.paused) {
+      audioDeezer.pause();
+      icone.style.animation = "none";
+    } else {
+      audioDeezer.play();
+      icone.style.animation = "pulse 2s infinite";
+    }
+    return;
+  }
+
+  // Se clicou em uma música nova
+  if (audioDeezer) {
+    audioDeezer.pause();
+    document.querySelectorAll('.icone-musica-feed').forEach(el => el.style.animation = 'none');
+  }
+
+  audioDeezer = new Audio(url);
+  audioDeezer.volume = 0.4;
+  audioDeezer.play();
+  icone.style.animation = "pulse 2s infinite";
+
+  audioDeezer.onended = () => { icone.style.animation = "none"; };
+};
