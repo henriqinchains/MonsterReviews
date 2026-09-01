@@ -123,7 +123,8 @@ const AvaliacaoSchema = new mongoose.Schema({
   valeu_a_pena: { type: Boolean, required: true },
   review: { type: String, required: false },
   foto_url: { type: String, required: true },
-  likes: { type: [String], default: [] }
+  likes: { type: [String], default: [] },
+  musica_preview: { type: String, required: false, default: "" }
 }, { timestamps: true });
 
 const Avaliacao = mongoose.model("Avaliacao", AvaliacaoSchema, "avaliacoes");
@@ -627,6 +628,42 @@ app.post("/api/usuarios/avatar", upload.single("fotoPerfil"), async (req, res) =
   } catch (erro) {
     console.error("❌ Erro na rota de avatar:", erro);
     return res.status(500).json({ erro: "Erro interno no servidor ao atualizar avatar." });
+  }
+});
+
+app.get("/api/musicas/buscar", async (req, res) => {
+  try {
+    const { query } = req.query;
+    
+    // 1. Gera o token temporário do Spotify
+    const tokenRes = await fetch("https://accounts.spotify.com/api/token", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: "Basic " + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET).toString("base64"),
+      },
+      body: "grant_type=client_credentials",
+    });
+    const { access_token } = await tokenRes.json();
+
+    // 2. Busca a música
+    const buscaRes = await fetch(`https://api.spotify.com/v1/search?q=${encodeURIComponent(query)}&type=track&limit=5`, {
+      headers: { Authorization: "Bearer " + access_token },
+    });
+    const dadosBusca = await buscaRes.json();
+
+    // 3. Filtra apenas faixas que tenham o preview_url de 30 segundos
+    const faixasComPreview = dadosBusca.tracks.items
+      .filter(t => t.preview_url !== null)
+      .map(t => ({ 
+        nome: t.name, 
+        artista: t.artists[0].name, 
+        previewUrl: t.preview_url 
+      }));
+
+    res.json(faixasComPreview);
+  } catch (erro) {
+    res.status(500).json({ erro: "Erro ao conectar com o Spotify." });
   }
 });
 
