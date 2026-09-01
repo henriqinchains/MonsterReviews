@@ -1193,7 +1193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // ==========================================
-// INTEGRAÇÃO DEEZER: BUSCA DE MÚSICA
+// BUSCA DE MÚSICA
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
   const inputBusca = document.getElementById("buscaDeezer");
@@ -1210,36 +1210,40 @@ document.addEventListener("DOMContentLoaded", () => {
       if (query.length < 3) { divResultados.innerHTML = ""; return; }
 
       timeoutBusca = setTimeout(async () => {
-        divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando no Deezer... 🎧</span>";
+        divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando na Apple Music... 🎧</span>";
         try {
-          // Bate na SUA API, ignorando totalmente bloqueios de CORS externos
-          const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/deezer?q=${encodeURIComponent(query)}`);
+          // Bate direto na Apple Music (Zero bloqueio de CORS e não precisa do backend!)
+          const resposta = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=5`);
           const dadosApi = await resposta.json();
 
           divResultados.innerHTML = "";
           
-          if (!dadosApi.data || dadosApi.data.length === 0) {
+          if (!dadosApi.results || dadosApi.results.length === 0) {
             divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Nenhuma música encontrada.</span>";
             return;
           }
 
-          const musicas = dadosApi.data.slice(0, 5); // Pega as 5 primeiras
+          const musicas = dadosApi.results;
 
           musicas.forEach(musica => {
+            // Garante que só vai listar músicas que a Apple liberou o MP3 de 30s
+            if (!musica.previewUrl) return;
+
             const item = document.createElement("div");
-            item.innerHTML = `🎵 <strong>${musica.title}</strong> - ${musica.artist.name}`;
+            item.innerHTML = `🎵 <strong>${musica.trackName}</strong> - ${musica.artistName}`;
             item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
             
             item.addEventListener("click", () => {
-              inputHidden.value = `${musica.preview}|||${musica.title} - ${musica.artist.name}`;
-              divSelecionada.innerHTML = `✅ Selecionada: ${musica.title}`;
+              // A mesma lógica que a gente bolou antes: salva o link e o nome da música!
+              inputHidden.value = `${musica.previewUrl}|||${musica.trackName} - ${musica.artistName}`;
+              divSelecionada.innerHTML = `✅ Selecionada: ${musica.trackName}`;
               divResultados.innerHTML = "";
               inputBusca.value = ""; 
             });
             divResultados.appendChild(item);
           });
         } catch (erro) {
-          console.error("Erro na busca:", erro);
+          console.error("Erro na busca da Apple:", erro);
           divResultados.innerHTML = "<span style='color: #ff4d4d; font-size: 0.85rem;'>Erro na busca. Olhe o Console (F12).</span>";
         }
       }, 500);
