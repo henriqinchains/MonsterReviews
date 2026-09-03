@@ -17,6 +17,12 @@ const fs = require("fs");
 const path = require("path");
 const dns = require("dns");
 
+// Package de proteção contra injeção de código malicioso noSQL
+const mongoSanitize = require("express-mongo-sanitize");
+
+// Package de proteção CSRF (Cross-Site Request Forgery)
+const csrf = require("csurf");
+
 // ============================================================================
 // 2. CONFIGURAÇÕES GERAIS E SERVIÇOS EXTERNOS
 // ============================================================================
@@ -71,6 +77,13 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(mongoSanitize());
+app.use(csrf({ cookie: true }));
+
+// Rota pro frontend pedir a chave antes de fazer o login
+app.get("/api/token-seguranca", (req, res) => {
+  res.json({ token: req.csrfToken() }); // O pacote gera a chave
+});
 
 // ============================================================================
 // 3.1 LIMITE DE REQUISIÇÕES (Proteção contra DDoS / abuso)
@@ -88,7 +101,7 @@ app.use("/api", limiteGeral);
 // Limite mais rígido pra rotas sensíveis (login, cadastro) - alvo comum de bots
 const limiteAuth = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  limit: 10, // até 10 tentativas por IP a cada 15 minutos
+  limit: 5, // até 5 tentativas por IP a cada 15 minutos
   standardHeaders: true,
   legacyHeaders: false,
   message: { erro: "Muitas tentativas. Aguarde alguns minutos antes de tentar de novo." },
