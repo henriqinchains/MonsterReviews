@@ -1,6 +1,20 @@
 const API_URL = "https://monster-reviews-api.onrender.com/api";
 const footerLogin = document.querySelector('.footer-login');
 let tokenTemporario = "";
+let csrfToken = ""; // Variável global para armazenar o token
+
+// ==========================================
+// BUSCAR TOKEN CSRF
+// ==========================================
+async function obterCsrfToken() {
+  try {
+    const response = await fetch(`${API_URL}/token-seguranca`);
+    const data = await response.json();
+    csrfToken = data.token;
+  } catch (error) {
+    console.error("Erro ao obter CSRF Token:", error);
+  }
+}
 
 //CHECAR SE O USUÁRIO JÁ ESTÁ LOGADO
 async function checarLogin() {
@@ -19,7 +33,8 @@ async function checarLogin() {
 }
 
 // Inicializadores do DOM
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await obterCsrfToken(); // Espera buscar o token antes de liberar as ações
   checarLogin();
   initLogin();
   initCadastro();
@@ -67,7 +82,6 @@ function SwitchBackFromRecovery() {
   document.getElementById("login-section").style.display = "block";
 }
 
-
 // login
 function initLogin() {
   const form = document.getElementById("login-form");
@@ -101,7 +115,10 @@ function initLogin() {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+        },
         body: JSON.stringify({ login: usuario, password: senha }),
         credentials: "include",
       });
@@ -169,7 +186,10 @@ function initCadastro() {
     try {
       const resposta = await fetch(`${API_URL}/auth/cadastro`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+        },
         body: JSON.stringify({
           login: usuario,
           email: email,
@@ -231,7 +251,10 @@ function initRecuperacao() {
     try {
       const resposta = await fetch(`${API_URL}/esqueci-senha`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+        },
         body: JSON.stringify({ email: emailDigitado }),
       });
 
@@ -297,7 +320,10 @@ function initReset() {
     try {
       const resposta = await fetch(`${API_URL}/resetar-senha`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+        },
         body: JSON.stringify({
           token: tokenTemporario,
           codigoDigitado: codigoDigitado,
