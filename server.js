@@ -78,7 +78,13 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(mongoSanitize());
-app.use(csrf({ cookie: true }));
+app.use(csrf({ 
+  cookie: { 
+    httpOnly: true, 
+    secure: true, // Exige HTTPS
+    sameSite: "none" // Permite que o cookie viaje de um domínio pro outro
+  } 
+}));
 
 // Rota pro frontend pedir a chave antes de fazer o login
 app.get("/api/token-seguranca", (req, res) => {
