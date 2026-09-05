@@ -167,6 +167,17 @@ function initLogin() {
           return; 
         }
 
+        else if (data.logadoDireto) {
+          if (data.avatarUrl) {
+            localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
+          }
+          message.style.color = "#00ff66";
+          message.textContent = `Dispositivo confiável! Redirecionando...`;
+          form.reset();
+          window.setTimeout(() => { window.location.href = "../../"; }, 1500);
+          return;
+        }
+
         // Se por algum motivo o 2FA não for exigido, loga normal
         if (data.avatarUrl) {
           localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
@@ -202,6 +213,8 @@ function init2FA() {
     const codigo = document.getElementById("codigo-2fa").value.trim();
     if (!codigo) return;
 
+    const querSalvar = document.getElementById("salvar-dispositivo").checked;
+
     button2FA.disabled = true;
     message2FA.style.display = "block";
     button2FA.textContent = "Verificando...";
@@ -217,7 +230,8 @@ function init2FA() {
         },
         body: JSON.stringify({
           tokenTemporario: tokenTemporario2FA,
-          codigoDigitado: codigo
+          codigoDigitado: codigo,
+          salvarDispositivo: querSalvar
         }),
         credentials: "include",
       });

@@ -46,12 +46,17 @@
       <!-- 2FA -->
       <section id="2fa-section" style="display: none" class="login-card">
         <p class="eyebrow">Segurança</p>
-        <h1>Autenticação <span>2FA</span></h1>
+        <h1>2FA</h1>
         <p class="subtitle">Digite o código de 6 dígitos que enviamos para o seu e-mail.</p>
 
         <form id="form-2fa">
           <label for="codigo-2fa">Código de Acesso</label>
           <input type="text" id="codigo-2fa" placeholder="Ex: 123456" maxlength="6" required />
+
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px; margin-top: 5px;">
+            <input type="checkbox" id="salvar-dispositivo" checked style="width: 16px; height: 16px; margin: 0; accent-color: #00ff66; cursor: pointer;">
+            <label for="salvar-dispositivo" style="color: #adadad; font-size: 13px; font-weight: normal; margin: 0; cursor: pointer; text-transform: none;">Não pedir código neste dispositivo</label>
+          </div>
 
           <button type="submit" id="btn-2fa">Verificar Código</button>
           <p style="display: none" id="2fa-message" aria-live="polite"></p>
