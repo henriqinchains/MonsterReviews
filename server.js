@@ -361,7 +361,15 @@ app.post("/api/auth/verify-2fa", async (req, res) => {
 
 // Logout
 app.post("/api/auth/logout", (req, res) => {
-  res.cookie("authToken", "", { httpOnly: true, secure: true, sameSite: "none", partitioned: true, expires: new Date(0) });
+  // Apaga a sessão ativa (authToken)
+  res.cookie("authToken", "", { 
+    httpOnly: true, 
+    secure: true, 
+    sameSite: "none", 
+    partitioned: true, 
+    expires: new Date(0) 
+  });
+
   return res.status(200).json({ mensagem: "Deslogado com sucesso!" });
 });
 
