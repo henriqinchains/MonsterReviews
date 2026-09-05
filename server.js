@@ -235,7 +235,9 @@ app.post("/api/auth/cadastro", async (req, res) => {
   }
 });
 
-// Login (FASE 1: Valida senha e dispara Resend)
+// ============================================================================
+// Login (Valida a senha sempre. Se o dispositivo for confiável, pula o 2FA!)
+// ============================================================================
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { login, password } = req.body;
@@ -243,13 +245,47 @@ app.post("/api/auth/login", async (req, res) => {
 
     if (!usuarioEncontrado) return res.status(400).json({ erro: "Usuário ou senha incorretos." });
 
+    // 1. A SENHA SEMPRE É OBRIGATÓRIA
     const senhaValidaLogin = await bcrypt.compare(password, usuarioEncontrado.senha);
     if (!senhaValidaLogin) return res.status(400).json({ erro: "Usuário ou senha incorretos." });
 
-    // 🛡️ 2FA: Gera código de 6 dígitos
+    // 2. Senha certa! Agora checamos se o dispositivo é confiável
+    const trustedToken = req.cookies.trustedDevice;
+    let dispositivoConiavel = false;
+
+    if (trustedToken) {
+      try {
+        const decodedTrusted = jwt.verify(trustedToken, process.env.JWT_SECRET);
+        if (decodedTrusted.id === usuarioEncontrado._id.toString()) {
+          dispositivoConiavel = true;
+        }
+      } catch (e) {
+        // Cookie expirado ou inválido, segue o fluxo normal
+      }
+    }
+
+    // 3. SE O DISPOSITIVO É CONFIÁVEL: Pula o 2FA e já gera a sessão real!
+    if (dispositivoConiavel) {
+      const tokenReal = jwt.sign(
+        { id: usuarioEncontrado._id, nome: usuarioEncontrado.nome, email: usuarioEncontrado.email, cargo: usuarioEncontrado.cargo },
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+      );
+      
+      res.cookie("authToken", tokenReal, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+      return res.status(200).json({
+        mensagem: "Login realizado com sucesso! (Dispositivo confiável)",
+        requer2FA: false, // 🛡️ Avisa o front que passou direto do 2FA
+        login: usuarioEncontrado.nome,
+        email: usuarioEncontrado.email,
+        avatarUrl: usuarioEncontrado.avatarUrl,
+      });
+    }
+
+    // 4. SE NÃO É CONFIÁVEL: Dispara o 2FA via Resend normalmente
     const codigoPin = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // 🛡️ 2FA: Dispara o e-mail via Resend
     await resend.emails.send({
       from: "nao-responda@monstereviews.com.br", 
       to: usuarioEncontrado.email,
@@ -264,14 +300,12 @@ app.post("/api/auth/login", async (req, res) => {
       `,
     });
 
-    // 🛡️ 2FA: Gera Token temporário (só pra carregar o ID do usuário e o PIN gerado)
     const tokenTemporario = jwt.sign(
       { id: usuarioEncontrado._id, codigo: codigoPin },
       process.env.JWT_SECRET,
       { expiresIn: "5m" }
     );
 
-    // Retorna avisando o front que precisa do PIN
     return res.status(200).json({
       mensagem: "Código enviado para seu e-mail!",
       requer2FA: true, 
@@ -284,20 +318,20 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 
-// Login (FASE 2: Confere o PIN e Loga)
+// ============================================================================
+// Login (FASE 2: Confere o PIN, Loga e Salva o Dispositivo)
+// ============================================================================
 app.post("/api/auth/verify-2fa", async (req, res) => {
   try {
-    const { tokenTemporario, codigoDigitado } = req.body;
+    // Agora recebemos a variável salvarDispositivo do frontend
+    const { tokenTemporario, codigoDigitado, salvarDispositivo } = req.body;
     
-    // Abre o token temporário
     const decoded = jwt.verify(tokenTemporario, process.env.JWT_SECRET);
 
-    // Bate o código que o cara digitou com o que tá dentro do token
     if (decoded.codigo !== codigoDigitado) {
       return res.status(400).json({ erro: "Código inválido ou incorreto." });
     }
 
-    // Se bateu, pega o usuário e gera o Cookie oficial!
     const usuarioFinal = await Usuario.findById(decoded.id);
     const tokenReal = jwt.sign(
       { id: usuarioFinal._id, nome: usuarioFinal.nome, email: usuarioFinal.email, cargo: usuarioFinal.cargo },
@@ -306,6 +340,12 @@ app.post("/api/auth/verify-2fa", async (req, res) => {
     );
 
     res.cookie("authToken", tokenReal, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    // 🛡️ NOVIDADE: Se o usuário marcou a caixinha, gera o cookie VIP de 30 dias
+    if (salvarDispositivo) {
+      const trustedToken = jwt.sign({ id: usuarioFinal._id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+      res.cookie("trustedDevice", trustedToken, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 180 * 24 * 60 * 60 * 1000 });
+    }
 
     return res.status(200).json({
       mensagem: "Login realizado com sucesso!",
