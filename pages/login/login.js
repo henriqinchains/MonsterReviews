@@ -9,7 +9,10 @@ let tokenTemporario2FA = "";
 // ==========================================
 async function obterCsrfToken() {
   try {
-    const response = await fetch(`${API_URL}/token-seguranca`);
+    const response = await fetch(`${API_URL}/token-seguranca`, {
+      method: "GET",
+      credentials: "include"
+    });
     const data = await response.json();
     csrfToken = data.token;
   } catch (error) {
