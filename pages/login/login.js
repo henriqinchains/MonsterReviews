@@ -1,7 +1,8 @@
 const API_URL = "https://monster-reviews-api.onrender.com/api";
 const footerLogin = document.querySelector('.footer-login');
 let tokenTemporario = "";
-let csrfToken = ""; // Variável global para armazenar o token
+let csrfToken = "";
+let tokenTemporario2FA = "";
 
 // ==========================================
 // BUSCAR TOKEN CSRF
@@ -34,20 +35,24 @@ async function checarLogin() {
 
 // Inicializadores do DOM
 document.addEventListener("DOMContentLoaded", async () => {
-  await obterCsrfToken(); // Espera buscar o token antes de liberar as ações
+  await obterCsrfToken();
   checarLogin();
   initLogin();
+  init2FA(); // 🛡️ Inicializa o form do 2FA
   initCadastro();
   initRecuperacao();
   initReset();
 });
 
+// ==========================================
 // TRANSFORMACOES DE TELA
+// ==========================================
 function Switch() {
   if (footerLogin) footerLogin.style.display = 'none';
   document.getElementById("login-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "none";
   document.getElementById("register-section").style.display = "block";
 }
 
@@ -56,6 +61,7 @@ function SwitchBack() {
   document.getElementById("register-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "none";
   document.getElementById("login-section").style.display = "block";
 }
 
@@ -64,6 +70,7 @@ function SwitchToRecovery() {
   document.getElementById("login-section").style.display = "none";
   document.getElementById("register-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "block";
 }
 
@@ -72,6 +79,7 @@ function SwitchToReset() {
   document.getElementById("login-section").style.display = "none";
   document.getElementById("register-section").style.display = "none";
   document.getElementById("recovery-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "none";
   document.getElementById("reset-section").style.display = "block";
 }
 
@@ -79,10 +87,29 @@ function SwitchBackFromRecovery() {
   if (footerLogin) footerLogin.style.display = 'block';
   document.getElementById("recovery-section").style.display = "none";
   document.getElementById("reset-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "none";
   document.getElementById("login-section").style.display = "block";
 }
 
-// login
+// 🛡️ Novas funções de tela para o 2FA
+function SwitchTo2FA() {
+  if (footerLogin) footerLogin.style.display = 'none';
+  document.getElementById("login-section").style.display = "none";
+  document.getElementById("register-section").style.display = "none";
+  document.getElementById("recovery-section").style.display = "none";
+  document.getElementById("reset-section").style.display = "none";
+  document.getElementById("2fa-section").style.display = "block";
+}
+
+function SwitchBackFrom2FA() {
+  if (footerLogin) footerLogin.style.display = 'block';
+  document.getElementById("2fa-section").style.display = "none";
+  document.getElementById("login-section").style.display = "block";
+}
+
+// ==========================================
+// 1. LOGIN (Fase 1)
+// ==========================================
 function initLogin() {
   const form = document.getElementById("login-form");
   const button = document.getElementById("login-button");
@@ -98,16 +125,12 @@ function initLogin() {
       message.style.display = "block";
       message.textContent = "Preencha usuário e senha.";
       message.style.color = "#aa0000";
-      message.style.fontFamily = "Nova Square, sans-serif";
-      setTimeout(() => {
-        message.style.display = "none";
-      }, 3000);
+      setTimeout(() => { message.style.display = "none"; }, 3000);
       return;
     }
 
     button.disabled = true;
     message.style.display = "block";
-    message.style.fontFamily = "Nova Square, sans-serif";
     button.textContent = "Entrando...";
     message.textContent = "Validando suas credenciais...";
     message.style.color = "#adadad";
@@ -117,7 +140,7 @@ function initLogin() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+          "CSRF-Token": csrfToken 
         },
         body: JSON.stringify({ login: usuario, password: senha }),
         credentials: "include",
@@ -128,18 +151,27 @@ function initLogin() {
       if (!response.ok) {
         throw new Error(data.erro || "Falha no login");
       } else {
+        // 🛡️ AQUI OCORRE O INTERCEPTO DO 2FA
+        if (data.requer2FA) {
+          tokenTemporario2FA = data.tokenTemporario;
+          message.style.color = "#00ff66";
+          message.textContent = data.mensagem;
+          
+          setTimeout(() => {
+            message.style.display = "none";
+            SwitchTo2FA(); // Muda pra tela do PIN
+          }, 1500);
+          return; 
+        }
+
+        // Se por algum motivo o 2FA não for exigido, loga normal
         if (data.avatarUrl) {
           localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
         }
-
         message.style.color = "#00ff66";
         message.textContent = `Login realizado com sucesso! Redirecionando...`;
         form.reset();
-
-        window.setTimeout(() => {
-          // Caminho corrigido!
-          window.location.href = "../../";
-        }, 1500);
+        window.setTimeout(() => { window.location.href = "../../"; }, 1500);
       }
     } catch (error) {
       message.textContent = error.message || "Não foi possível fazer login.";
@@ -151,7 +183,72 @@ function initLogin() {
   });
 }
 
-//REALIZAR CADASTRO
+// ==========================================
+// 🛡️ 2. VALIDAÇÃO DO 2FA (Fase 2)
+// ==========================================
+function init2FA() {
+  const form2FA = document.getElementById("form-2fa");
+  const button2FA = document.getElementById("btn-2fa");
+  const message2FA = document.getElementById("2fa-message");
+
+  if (!form2FA) return;
+
+  form2FA.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const codigo = document.getElementById("codigo-2fa").value.trim();
+    if (!codigo) return;
+
+    button2FA.disabled = true;
+    message2FA.style.display = "block";
+    button2FA.textContent = "Verificando...";
+    message2FA.textContent = "Validando código...";
+    message2FA.style.color = "#adadad";
+
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-2fa`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "CSRF-Token": csrfToken
+        },
+        body: JSON.stringify({
+          tokenTemporario: tokenTemporario2FA,
+          codigoDigitado: codigo
+        }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.avatarUrl) {
+          localStorage.setItem(`avatar_${data.email}`, data.avatarUrl);
+        }
+        
+        message2FA.style.color = "#00ff66";
+        message2FA.textContent = "Autenticado com sucesso! Entrando...";
+        
+        setTimeout(() => {
+          window.location.href = "../../";
+        }, 1500);
+      } else {
+        message2FA.style.color = "#aa0000";
+        message2FA.textContent = data.erro || "Código inválido.";
+      }
+    } catch (error) {
+      message2FA.style.color = "#aa0000";
+      message2FA.textContent = "Erro ao conectar com o servidor.";
+    } finally {
+      button2FA.disabled = false;
+      button2FA.textContent = "Verificar Código";
+    }
+  });
+}
+
+// ==========================================
+// REALIZAR CADASTRO
+// ==========================================
 function initCadastro() {
   const formCadastro = document.getElementById("formCadastro");
   if (!formCadastro) return;
@@ -162,20 +259,15 @@ function initCadastro() {
     const usuario = document.getElementById("usuario-cadastro").value;
     const email = document.getElementById("email-cadastro").value;
     const senha = document.getElementById("senha-cadastro").value;
-    const confirmacaoSenha = document.getElementById(
-      "confirm-senha-cadastro",
-    ).value;
+    const confirmacaoSenha = document.getElementById("confirm-senha-cadastro").value;
     const message = document.getElementById("cadastro-message");
 
     if (senha !== confirmacaoSenha) {
       message.style.display = "block";
-      message.textContent =
-        "As senhas não coincidem. Por favor, tente novamente.";
+      message.textContent = "As senhas não coincidem. Por favor, tente novamente.";
       message.style.color = "#aa0000";
       document.getElementById("confirm-senha-cadastro").value = "";
-      setTimeout(() => {
-        message.style.display = "none";
-      }, 3000);
+      setTimeout(() => { message.style.display = "none"; }, 3000);
       return;
     }
 
@@ -188,13 +280,9 @@ function initCadastro() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+          "CSRF-Token": csrfToken
         },
-        body: JSON.stringify({
-          login: usuario,
-          email: email,
-          password: senha,
-        }),
+        body: JSON.stringify({ login: usuario, email: email, password: senha }),
         credentials: "include",
       });
 
@@ -206,30 +294,24 @@ function initCadastro() {
         }
         message.textContent = `✅ ${dados.mensagem}`;
         message.style.color = "#00ff66";
-
         formCadastro.reset();
-
-        window.setTimeout(() => {
-          window.location.href = "../../";
-        }, 2000);
+        window.setTimeout(() => { window.location.href = "../../"; }, 2000);
       } else {
         message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
         message.style.color = "#aa0000";
-        setTimeout(() => {
-          message.style.display = "none";
-        }, 3000);
+        setTimeout(() => { message.style.display = "none"; }, 3000);
       }
     } catch (error) {
       message.textContent = "❌ Erro ao conectar com o servidor.";
       message.style.color = "#aa0000";
-      setTimeout(() => {
-        message.style.display = "none";
-      }, 3000);
+      setTimeout(() => { message.style.display = "none"; }, 3000);
     }
   });
 }
 
-//INICIAR RECUPERACAO DE SENHA
+// ==========================================
+// INICIAR RECUPERACAO DE SENHA
+// ==========================================
 function initRecuperacao() {
   const formRecuperacao = document.getElementById("formRecuperacao");
   const emailInput = document.getElementById("email-recuperacao");
@@ -253,7 +335,7 @@ function initRecuperacao() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+          "CSRF-Token": csrfToken
         },
         body: JSON.stringify({ email: emailDigitado }),
       });
@@ -265,7 +347,6 @@ function initRecuperacao() {
         msgRecuperacao.style.color = "#00ff66";
         msgRecuperacao.innerText = "Código enviado! Cheque seu email.";
         emailInput.value = "";
-
         tokenTemporario = dados.tokenAuth;
 
         setTimeout(() => {
@@ -274,8 +355,7 @@ function initRecuperacao() {
         }, 1500);
       } else {
         msgRecuperacao.style.color = "#ff3333";
-        msgRecuperacao.innerText =
-          dados.erro || "Não achamos esse email no banco.";
+        msgRecuperacao.innerText = dados.erro || "Não achamos esse email no banco.";
       }
     } catch (erro) {
       msgRecuperacao.style.display = "block";
@@ -288,7 +368,9 @@ function initRecuperacao() {
   });
 }
 
-//INSERIR RECUPERACAO DE SENHA
+// ==========================================
+// INSERIR RECUPERACAO DE SENHA
+// ==========================================
 function initReset() {
   const formReset = document.getElementById("formResetSenha");
   const inputCodigo = document.getElementById("codigo-pin");
@@ -322,7 +404,7 @@ function initReset() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO TOKEN CSRF AQUI
+          "CSRF-Token": csrfToken
         },
         body: JSON.stringify({
           token: tokenTemporario,

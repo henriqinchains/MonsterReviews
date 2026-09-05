@@ -17,6 +17,7 @@
     <div class="rain"></div>
 
     <main class="page-shell">
+      <!-- SESSÃO DE LOGIN -->
       <section id="login-section" style="display: block" class="login-card">
         <p class="eyebrow">Bem-vindo</p>
         <h1><span>Monster</span> Reviews</h1>
@@ -24,62 +25,39 @@
 
         <form id="login-form">
           <label for="usuario-login">Usuário</label>
-          <input
-            type="text"
-            id="usuario-login"
-            name="usuario"
-            placeholder="Digite seu usuário"
-            required
-          />
+          <input type="text" id="usuario-login" name="usuario" placeholder="Digite seu usuário" required />
 
           <label for="senha-login">Senha</label>
-          <input
-            type="password"
-            id="senha-login"
-            name="senha"
-            placeholder="Digite sua senha"
-            required
-          />
+          <input type="password" id="senha-login" name="senha" placeholder="Digite sua senha" required />
 
           <button type="submit" id="login-button">Entrar</button>
           <p style="display: none" id="login-message" aria-live="polite"></p>
 
-          <div
-            class="opcoes-extras"
-            style="text-align: right; margin-top: 10px"
-          >
-            <span
-              id="btn-esqueci-senha"
-              class="link-alternativo"
-              onclick="SwitchToRecovery()"
-              style="
-                cursor: pointer;
-                font-size: 14px;
-                color: #888;
-                text-decoration: underline;
-              "
-              >Esqueci minha senha</span
-            >
+          <div class="opcoes-extras" style="text-align: right; margin-top: 10px">
+            <span id="btn-esqueci-senha" class="link-alternativo" onclick="SwitchToRecovery()" style="cursor: pointer; font-size: 14px; color: #888; text-decoration: underline;">Esqueci minha senha</span>
           </div>
 
-          <p
-            style="
-              font-weight: 600;
-              padding-left: 12px;
-              color: #d3d3d3;
-              font-family: Nova Square;
-              margin-top: 15px;
-            "
-          >
-            Novo aqui?
-            <a
-              href="#"
-              onclick="
-                Switch();
-                return false;
-              "
-              >Crie uma conta</a
-            >
+          <p style="font-weight: 600; padding-left: 12px; color: #d3d3d3; font-family: Nova Square; margin-top: 15px;">
+            Novo aqui? <a href="#" onclick="Switch(); return false;">Crie uma conta</a>
+          </p>
+        </form>
+      </section>
+
+      <!-- 2FA -->
+      <section id="2fa-section" style="display: none" class="login-card">
+        <p class="eyebrow">Segurança</p>
+        <h1>Autenticação <span>2FA</span></h1>
+        <p class="subtitle">Digite o código de 6 dígitos que enviamos para o seu e-mail.</p>
+
+        <form id="form-2fa">
+          <label for="codigo-2fa">Código de Acesso</label>
+          <input type="text" id="codigo-2fa" placeholder="Ex: 123456" maxlength="6" required />
+
+          <button type="submit" id="btn-2fa">Verificar Código</button>
+          <p style="display: none" id="2fa-message" aria-live="polite"></p>
+
+          <p style="font-weight: 600; padding-left: 12px; color: #d3d3d3; font-family: Nova Square; margin-top: 15px;">
+            <a href="#" onclick="SwitchBackFrom2FA(); return false;">Voltar para o login</a>
           </p>
         </form>
       </section>
