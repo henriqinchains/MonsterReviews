@@ -259,7 +259,11 @@
         try {
           await fetch("https://monster-reviews-api.onrender.com/api/auth/logout", {
             method: "POST",
-            credentials: "include",
+            headers: {
+            "Content-Type": "application/json",
+            "CSRF-Token": csrfToken
+            },
+            credentials: "include"
           });
           sessionStorage.clear();
           localStorage.removeItem("userRole");
