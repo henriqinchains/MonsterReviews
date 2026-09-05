@@ -59,6 +59,7 @@ let temMaisPosts = true;
 let filtroAtualSabor = "";
 let filtroAtualOrdem = "recentes";
 let filtroAtualSujeito = "";
+let csrfToken = ""; // 🛡️ NOSSO CRACHÁ GLOBAL
 const feedContainer = document.getElementById("feed-container");
 const cacheMemoriaAvatares = {};
 const listaSabores = [
@@ -112,6 +113,22 @@ function aplicarCacheImediato() {
 }
 
 // ==========================================
+// 🛡️ BUSCADOR DO TOKEN CSRF
+// ==========================================
+async function obterCsrfToken() {
+  try {
+    const response = await fetch("https://monster-reviews-api.onrender.com/api/token-seguranca", {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    csrfToken = data.token;
+  } catch (error) {
+    console.error("Erro ao obter CSRF Token:", error);
+  }
+}
+
+// ==========================================
 // 1. CONTROLE E VALIDAÇÃO DE SESSÃO SECURE
 // ==========================================
 async function verificarSessao() {
@@ -153,7 +170,6 @@ async function verificarSessao() {
 // ==========================================
 // 2. INICIALIZAÇÃO DA INTERFACE PÓS-LOGIN
 // ==========================================
-
 function popularSelectsDeSabor() {
   const datalistFiltro = document.getElementById("listaSaboresFiltro");
   const datalistModal = document.getElementById("listaSaboresModal");
@@ -249,6 +265,8 @@ async function buscarAvatarEmSegundoPlano(usuario) {
 document.addEventListener("DOMContentLoaded", async () => {
   const logadoComSucesso = await verificarSessao();
   if (!logadoComSucesso) return;
+  
+  await obterCsrfToken(); // 🛡️ BUSCA O CRACHÁ ASSIM QUE ENTRA NA PÁGINA
 
   popularSelectsDeSabor();
 
@@ -282,7 +300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (btnSubmit) {
           btnSubmit.style.backgroundColor = "#00ff66";
           btnSubmit.style.borderColor = "#00ff66";
-          btnSubmit.style.color = "#0a0e27"; // Texto preto no verde padrão
+          btnSubmit.style.color = "#0a0e27"; 
       }
       
       if (selectSabor) {
@@ -343,17 +361,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnSubmit.innerText = "Enviando... 🚀";
       btnSubmit.disabled = true;
 
-      // 1. Descobre a cor exata da lata escolhida
       const corLata = coresMonsters[inputSabor] || "#43b581";
 
-      // 2. Só agora, no submit, pinta a porra toda com a cor da lata
       const modalCardElement = formAvaliacao.closest(".modal-card");
       if (modalCardElement) {
           modalCardElement.style.setProperty('--cor-dinamica', corLata);
           modalCardElement.style.setProperty('--cor-glow', `${corLata}33`);
       }
 
-      // Força a cor direto no botão de submit e arquivo para garantir
       const coresClaras = ["#e0e0e0", "#cddc39", "#ff9ece", "#ffa07a"];
       const corTexto = coresClaras.includes(corLata) ? "#0a0e27" : "#ffffff";
       
@@ -362,9 +377,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnSubmit.style.color = corTexto;
       btnSubmit.style.backgroundImage = "none";
 
-      // ==========================================
-      // 🌊 A TSUNAMI ENGOLIDORA DE TEXTOS
-      // ==========================================
       const hintBar = formAvaliacao.querySelector(".hint"); 
       let fillBar = null;
       let textoOriginalHint = "";
@@ -410,6 +422,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const resposta = await fetch("https://monster-reviews-api.onrender.com/api/avaliacoes", {
           method: "POST",
+          headers: {
+            "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI! (Não vai Content-Type porque é FormData)
+          },
           body: formData,
           credentials: "include",
         });
@@ -659,7 +674,6 @@ function renderizarPosts(dadosRecebidos) {
         <div class="info-item"><span class="info-label">Valeu a pena?</span><span class="info-value ${valeuClasse}">${valeuTexto}</span></div>
       </div>
 
-      <!-- FOOTER RESTAURADO COM O BOTÃO DE EXCLUIR! -->
       <div class="post-footer" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
         <button class="${classeBotao}" onclick="toggleCurtida(this, '${post._id}')" style="color: ${corTexto}; background-color: ${bgBotao}; border: none; cursor: pointer; display: flex; align-items: center; gap: 8px; font-weight: bold; padding: 6px 12px; border-radius: 6px; transition: all 0.2s;">
           <svg viewBox="0 0 24 24" fill="${fillIcone}" stroke="${corIcone}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
@@ -711,7 +725,6 @@ async function buscarComentariosDoPost(postId, containerId) {
     container.innerHTML = ""; // Limpa o "Carregando..."
 
     comentarios.forEach(comentario => {
-      // Formata a data do comentário de um jeito simples
       const dataComentario = new Date(comentario.createdAt).toLocaleDateString("pt-BR", { hour: '2-digit', minute: '2-digit' });
       const iniciais = comentario.sujeito ? comentario.sujeito.substring(0, 2).toUpperCase() : "US";
       const avatarComentarioId = `avatar-comment-${comentario._id}`;
@@ -723,7 +736,6 @@ async function buscarComentariosDoPost(postId, containerId) {
       const fillIcone = jaCurtiu ? '#ff4d5a' : 'none';
       const numLikes = arrayLikes.length;
 
-      // ⚙️ Lógica para renderizar o botão de excluir
       const podeExcluir = (comentario.sujeito === loggedUser) || (userRole === "admin");
       const btnExcluirHtml = podeExcluir ? `
         <button class="comment-delete-button" onclick="excluirComentario('${comentario._id}', '${comentario.avaliacaoId}')" title="Excluir">
@@ -785,14 +797,16 @@ async function enviarComentario(event, postId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/comentarios`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI!
+      },
       body: JSON.stringify({ texto }),
       credentials: "include"
     });
 
     if (resposta.ok) {
-      input.value = ""; // Limpa a caixa de texto
-      // Atualiza apenas a listinha daquele card específico, sem dar reload na página inteira!
+      input.value = ""; 
       buscarComentariosDoPost(postId, `container-comentarios-${postId}`);
     } else {
       const dados = await resposta.json();
@@ -921,6 +935,10 @@ window.toggleCurtida = async function (btn, postId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${postId}/curtidas`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI!
+      },
       credentials: "include"
     });
 
@@ -949,7 +967,6 @@ window.toggleCurtida = async function (btn, postId) {
   }
 };
 
-// Função global para curtir/descurtir comentários (Interface Otimista)
 window.toggleCurtidaComentario = async function (btn, comentarioId) {
   const svg = btn.querySelector('svg');
   const span = btn.querySelector('.contador-likes-comentario');
@@ -957,7 +974,6 @@ window.toggleCurtidaComentario = async function (btn, comentarioId) {
 
   const isCurtido = btn.classList.contains('curtido');
 
-  // Atualização Visual Instantânea
   if (!isCurtido) {
     btn.classList.add('curtido');
     svg.style.fill = '#ff4d5a';
@@ -975,6 +991,10 @@ window.toggleCurtidaComentario = async function (btn, comentarioId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/comentarios/${comentarioId}/curtidas`, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI!
+      },
       credentials: "include"
     });
 
@@ -984,7 +1004,6 @@ window.toggleCurtidaComentario = async function (btn, comentarioId) {
   } catch (erro) {
     console.error("❌ Erro na sincronização da curtida do comentário:", erro);
 
-    // Rollback (desfaz a alteração visual caso a API caia)
     if (!isCurtido) {
       btn.classList.remove('curtido');
       svg.style.fill = 'none';
@@ -1007,6 +1026,10 @@ async function deletarPost(id) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/avaliacoes/${id}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI!
+      },
       credentials: "include",
     });
     if (resposta.ok) { alert("Post excluído com sucesso!"); location.reload(); }
@@ -1014,7 +1037,6 @@ async function deletarPost(id) {
   } catch (erro) { console.error("Erro no fetch:", erro); }
 }
 
-// Função global para excluir um comentário
 window.excluirComentario = async function (comentarioId, postId) {
   const confirmacao = confirm("Tem certeza que deseja apagar esse comentário?");
   if (!confirmacao) return;
@@ -1022,11 +1044,14 @@ window.excluirComentario = async function (comentarioId, postId) {
   try {
     const resposta = await fetch(`https://monster-reviews-api.onrender.com/api/comentarios/${comentarioId}`, {
       method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "CSRF-Token": csrfToken // 🛡️ CRACHÁ AQUI!
+      },
       credentials: "include"
     });
 
     if (resposta.ok) {
-      // 🎉 Excluído com sucesso! Atualiza os comentários do post invisivelmente
       buscarComentariosDoPost(postId, `container-comentarios-${postId}`);
     } else {
       const dados = await resposta.json();
@@ -1046,7 +1071,6 @@ async function carregarRanking() {
     const respuesta = await fetch("https://monster-reviews-api.onrender.com/api/ranking");
     const ranking = await respuesta.json();
     
-    // Limpa o texto "Calculando latinhas..." dos dois
     if (containerDesktop) containerDesktop.innerHTML = "";
     if (containerMobile) containerMobile.innerHTML = "";
     
@@ -1064,7 +1088,6 @@ async function carregarRanking() {
       else if (index === 1) classePodio = "rank-2";
       else if (index === 2) classePodio = "rank-3";
 
-      // O HTML da linha exato para os dois lugares
       const htmlLinha = `
         <div class="rank-info">
           <span class="rank-posicao">${iconePosicao}</span>
@@ -1130,27 +1153,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!sentinela) return;
 
-  // Cria o "olheiro"
   const observer = new IntersectionObserver((entries) => {
-    // Se a sentinela apareceu na tela e não estamos no meio de um carregamento
     if (entries[0].isIntersecting && !carregandoPosts) {
-      
-      // Se a API disse que ainda tem post, busca mais!
       if (temMaisPosts) {
         carregarFeed(false);
       } else {
-        // Se acabaram as latinhas, mostra a mensagem final e desliga o olheiro
         if (msgFimFeed) msgFimFeed.style.display = "block";
         observer.unobserve(sentinela);
       }
     }
   }, {
     root: null,
-    rootMargin: "100px", // Pede pra carregar 100px antes do usuário chegar no final da tela (fica mais fluido)
+    rootMargin: "100px", 
     threshold: 0.1
   });
 
-  // Manda o olheiro começar a vigiar a sentinela
   observer.observe(sentinela);
 });
 
@@ -1163,7 +1180,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const fecharRankingMob = document.getElementById("fecharModalRanking");
   const navLinks = document.querySelector('.nav-links');
 
-  // Abrir modal e fechar o menu hambúrguer ao mesmo tempo
   if (btnRankingMob && modalRankingMob) {
     btnRankingMob.addEventListener("click", () => {
       modalRankingMob.style.display = "flex";
@@ -1175,7 +1191,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fechar no X
   if (fecharRankingMob && modalRankingMob) {
     fecharRankingMob.addEventListener("click", () => {
       modalRankingMob.style.display = "none";
@@ -1183,7 +1198,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Fechar clicando fora do modal (na parte escura)
   window.addEventListener("click", (event) => {
     if (modalRankingMob && event.target === modalRankingMob) {
       modalRankingMob.style.display = "none";
@@ -1212,7 +1226,6 @@ document.addEventListener("DOMContentLoaded", () => {
       timeoutBusca = setTimeout(async () => {
         divResultados.innerHTML = "<span style='color: #8b9bb4; font-size: 0.85rem;'>Buscando na Apple Music... 🎧</span>";
         try {
-          // Bate direto na Apple Music (Zero bloqueio de CORS e não precisa do backend!)
           const resposta = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=song&limit=5`);
           const dadosApi = await resposta.json();
 
@@ -1226,7 +1239,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const musicas = dadosApi.results;
 
           musicas.forEach(musica => {
-            // Garante que só vai listar músicas que a Apple liberou o MP3 de 30s
             if (!musica.previewUrl) return;
 
             const item = document.createElement("div");
@@ -1234,7 +1246,6 @@ document.addEventListener("DOMContentLoaded", () => {
             item.style.cssText = "padding: 8px; background: rgba(0,255,102,0.1); border: 1px solid var(--monster-green); border-radius: 6px; cursor: pointer; font-size: 0.85rem; color: #fff;";
             
             item.addEventListener("click", () => {
-              // A mesma lógica que a gente bolou antes: salva o link e o nome da música!
               inputHidden.value = `${musica.previewUrl}|||${musica.trackName} - ${musica.artistName}`;
               divSelecionada.innerHTML = `✅ Selecionada: ${musica.trackName}`;
               divResultados.innerHTML = "";
@@ -1258,7 +1269,6 @@ let audioDeezer = null;
 window.tocarPausarMusica = function(url, iconId) {
   const icone = document.getElementById(iconId);
 
-  // Se clicou na mesma música que já está tocando
   if (audioDeezer && audioDeezer.src === url) {
     if (!audioDeezer.paused) {
       audioDeezer.pause();
@@ -1270,7 +1280,6 @@ window.tocarPausarMusica = function(url, iconId) {
     return;
   }
 
-  // Se clicou em uma música nova
   if (audioDeezer) {
     audioDeezer.pause();
     document.querySelectorAll('.icone-musica-feed').forEach(el => el.style.animation = 'none');

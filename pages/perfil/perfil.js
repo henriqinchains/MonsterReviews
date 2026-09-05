@@ -16,8 +16,26 @@ let usuarioLogado = sessionStorage.getItem("cache_usuario") || "";
 let emailLogado = sessionStorage.getItem("cache_email") || "";
 let targetUser = "";
 let isMeuPerfil = false;
+let csrfToken = ""; // 🛡️ NOSSA VARIÁVEL GLOBAL DO CSRF
 
-document.addEventListener("DOMContentLoaded", () => {
+// ==========================================
+// 🛡️ BUSCADOR DO TOKEN CSRF
+// ==========================================
+async function obterCsrfToken() {
+  try {
+    const response = await fetch("https://monster-reviews-api.onrender.com/api/token-seguranca", {
+      method: "GET",
+      credentials: "include"
+    });
+    const data = await response.json();
+    csrfToken = data.token;
+  } catch (error) {
+    console.error("Erro ao obter CSRF Token:", error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await obterCsrfToken(); // 🛡️ BUSCA O CRACHÁ ASSIM QUE A PÁGINA CARREGA
 
   const loggedUserEmailEl = document.getElementById("loggedEmail");
   const loggedUserEl = document.getElementById("loggedUser");
@@ -125,6 +143,9 @@ function aplicarCacheImediato() {
             try {
               const resposta = await fetch("https://monster-reviews-api.onrender.com/api/usuarios/avatar", {
                 method: "POST",
+                headers: {
+                  "CSRF-Token": csrfToken // 🛡️ INJEÇÃO DO CRACHÁ CSRF NO UPLOAD DO AVATAR
+                },
                 body: formData,
                 credentials: "include",
               });
@@ -406,18 +427,22 @@ const span = document.getElementById("fecharModal");
 const btnHamSobre = document.getElementById("sobreProjetoBtnHam");
 
 // Quando clica no botão do Nav, abre
-btnHamSobre.onclick = function() {
-  modal.style.display = "block";
+if (btnHamSobre && modal) {
+  btnHamSobre.onclick = function() {
+    modal.style.display = "block";
+  }
 }
 
 // Quando clica no X, fecha
-span.onclick = function() {
-  modal.style.display = "none";
+if (span && modal) {
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
 }
 
 // Se o cara clicar fora da caixinha (no fundo escuro), fecha
 window.onclick = function(event) {
-  if (event.target == modal) {
+  if (modal && event.target == modal) {
     modal.style.display = "none";
   }
 }
