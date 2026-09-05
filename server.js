@@ -197,7 +197,7 @@ app.post("/api/auth/cadastro", async (req, res) => {
   }
 });
 
-// Login
+// Login (FASE 1: Valida senha e dispara Resend)
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { login, password } = req.body;
@@ -208,24 +208,76 @@ app.post("/api/auth/login", async (req, res) => {
     const senhaValidaLogin = await bcrypt.compare(password, usuarioEncontrado.senha);
     if (!senhaValidaLogin) return res.status(400).json({ erro: "Usuário ou senha incorretos." });
 
-    const token = jwt.sign(
-      { id: usuarioEncontrado._id, nome: usuarioEncontrado.nome, email: usuarioEncontrado.email, cargo: usuarioEncontrado.cargo },
+    // 🛡️ 2FA: Gera código de 6 dígitos
+    const codigoPin = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 🛡️ 2FA: Dispara o e-mail via Resend
+    await resend.emails.send({
+      from: "nao-responda@monstereviews.com.br", 
+      to: usuarioEncontrado.email,
+      subject: "🔒 Código de Acesso - Monster Reviews",
+      html: `
+        <div style="background-color: #121212; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="color: #00ff66;">Segurança em primeiro lugar!</h2>
+            <p>Seu código para logar no Monster Reviews é:</p>
+            <h1 style="background-color: #222; padding: 15px; letter-spacing: 5px; color: #00ff66;">${codigoPin}</h1>
+            <p style="color: #aaa; font-size: 12px;">Válido por 5 minutos.</p>
+        </div>
+      `,
+    });
+
+    // 🛡️ 2FA: Gera Token temporário (só pra carregar o ID do usuário e o PIN gerado)
+    const tokenTemporario = jwt.sign(
+      { id: usuarioEncontrado._id, codigo: codigoPin },
+      process.env.JWT_SECRET,
+      { expiresIn: "5m" }
+    );
+
+    // Retorna avisando o front que precisa do PIN
+    return res.status(200).json({
+      mensagem: "Código enviado para seu e-mail!",
+      requer2FA: true, 
+      tokenTemporario: tokenTemporario
+    });
+
+  } catch (erro) {
+    return res.status(500).json({ erro: "Erro ao tentar fazer login." });
+  }
+});
+
+
+// Login (FASE 2: Confere o PIN e Loga)
+app.post("/api/auth/verify-2fa", async (req, res) => {
+  try {
+    const { tokenTemporario, codigoDigitado } = req.body;
+    
+    // Abre o token temporário
+    const decoded = jwt.verify(tokenTemporario, process.env.JWT_SECRET);
+
+    // Bate o código que o cara digitou com o que tá dentro do token
+    if (decoded.codigo !== codigoDigitado) {
+      return res.status(400).json({ erro: "Código inválido ou incorreto." });
+    }
+
+    // Se bateu, pega o usuário e gera o Cookie oficial!
+    const usuarioFinal = await Usuario.findById(decoded.id);
+    const tokenReal = jwt.sign(
+      { id: usuarioFinal._id, nome: usuarioFinal.nome, email: usuarioFinal.email, cargo: usuarioFinal.cargo },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.cookie("authToken", tokenReal, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     return res.status(200).json({
       mensagem: "Login realizado com sucesso!",
-      login: usuarioEncontrado.nome,
-      email: usuarioEncontrado.email,
-      cargo: usuarioEncontrado.cargo,
-      avatarUrl: usuarioEncontrado.avatarUrl,
+      login: usuarioFinal.nome,
+      email: usuarioFinal.email,
+      avatarUrl: usuarioFinal.avatarUrl,
     });
+
   } catch (erro) {
-    console.error("❌ Erro no login:", erro);
-    return res.status(500).json({ erro: "Erro ao tentar fazer login." });
+    return res.status(400).json({ erro: "Código expirado. Faça login novamente." });
   }
 });
 
