@@ -77,7 +77,15 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
-app.use(mongoSanitize());
+
+// 🛡️ [SEC-01] Middleware Anti-NoSQL Injection Customizado
+// Limpa o corpo da requisição e os parâmetros, ignorando o req.query para evitar conflito com o Express 4.19+
+app.use((req, res, next) => {
+  if (req.body) req.body = mongoSanitize.sanitize(req.body);
+  if (req.params) req.params = mongoSanitize.sanitize(req.params);
+  next();
+});
+
 app.use(csrf({ 
   cookie: { 
     httpOnly: true, 
