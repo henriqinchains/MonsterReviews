@@ -16,12 +16,10 @@ const { Resend } = require("resend");
 const fs = require("fs");
 const path = require("path");
 const dns = require("dns");
+const crypto = require("crypto");
 
 // Package de proteção contra injeção de código malicioso noSQL
 const mongoSanitize = require("express-mongo-sanitize");
-
-// Package de proteção CSRF (Cross-Site Request Forgery)
-const csrf = require("csurf");
 
 // ============================================================================
 // 2. CONFIGURAÇÕES GERAIS E SERVIÇOS EXTERNOS
@@ -86,18 +84,43 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(csrf({ 
-  cookie: { 
-    httpOnly: true, 
-    secure: true, // Exige HTTPS
-    sameSite: "none", // Permite que o cookie viaje de um domínio pro outro
-    partitioned: true
-  } 
-}));
+// ============================================================================
+// PROTEÇÃO CSRF
+// ============================================================================
+app.use((req, res, next) => {
+  // 1. Pega o cookie atual ou gera um novo
+  let csrfCookie = req.cookies._csrfSeguro;
 
-// Rota pro frontend pedir a chave antes de fazer o login
+  if (!csrfCookie) {
+    csrfCookie = crypto.randomBytes(16).toString("hex"); // Cria a chave
+    res.cookie("_csrfSeguro", csrfCookie, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      partitioned: true
+    });
+  }
+
+  // Pendura a chave na requisição para o frontend poder pedir depois
+  req.csrfToken = csrfCookie;
+
+  // 2. Se for POST, PUT ou DELETE, a gente exige a chave no cabeçalho!
+  if (req.method === "POST" || req.method === "PUT" || req.method === "DELETE") {
+    const tokenNoHeader = req.headers["csrf-token"]; // O que o login.js manda
+    
+    // Compara o cabeçalho com o cookie. Se não bater, é hacker.
+    if (!tokenNoHeader || tokenNoHeader !== csrfCookie) {
+      console.log("🚫 Ataque CSRF Bloqueado!");
+      return res.status(403).json({ erro: "Sessão inválida ou erro de segurança (CSRF)." });
+    }
+  }
+
+  next();
+});
+
+// A rota exata que o seu frontend já chama hoje:
 app.get("/api/token-seguranca", (req, res) => {
-  res.json({ token: req.csrfToken() }); // O pacote gera a chave
+  res.json({ token: req.csrfToken });
 });
 
 // ============================================================================
