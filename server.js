@@ -90,7 +90,8 @@ app.use(csrf({
   cookie: { 
     httpOnly: true, 
     secure: true, // Exige HTTPS
-    sameSite: "none" // Permite que o cookie viaje de um domínio pro outro
+    sameSite: "none", // Permite que o cookie viaje de um domínio pro outro
+    partitioned: true
   } 
 }));
 
