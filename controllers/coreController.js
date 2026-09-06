@@ -118,16 +118,6 @@ exports.deleteAvaliacao = async (req, res) => {
   }
 };
 
-// Deletar Avaliação (Função Auxiliar)
-const obterPublicIdDaUrl = (url) => {
-  if (!url) return null;
-  const partes = url.split('/');
-  const arquivoComExtensao = partes.pop();
-  const pasta = partes.pop(); 
-  const arquivoSemExtensao = arquivoComExtensao.split('.')[0];
-  return `${pasta}/${arquivoSemExtensao}`;
-};
-
 exports.curtirAvaliacao = async (req, res) => { 
   try {
     const token = req.cookies.authToken;
