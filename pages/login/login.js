@@ -149,9 +149,16 @@ function initLogin() {
         credentials: "include",
       });
 
+      const tentativasRestantes = response.headers.get("RateLimit-Remaining");
+
       const data = await response.json();
 
       if (!response.ok) {
+        // Se a requisição falhou (senha errada) E as tentativas zeraram:
+        if (tentativasRestantes === "0") {
+          throw new Error("Senha incorreta. Seu limite de tentativas acabou. Aguarde 15 minutos.");
+        }
+        
         throw new Error(data.erro || "Falha no login");
       } else {
         // 🛡️ AQUI OCORRE O INTERCEPTO DO 2FA
