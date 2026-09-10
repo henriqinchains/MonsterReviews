@@ -38,6 +38,34 @@ app.use(cookieParser());
 app.use(express.json());
 
 // ==========================================
+// SEGURANÇA (RATE LIMITING)
+// ==========================================
+// 1. Limite geral da API: 100 acessos por minuto pra não derrubar o banco
+app.use("/api", rateLimit({ 
+  windowMs: 1 * 60 * 1000, 
+  limit: 100, 
+  standardHeaders: true, 
+  legacyHeaders: false,
+  message: { erro: "Muitas requisições. Tente novamente em instantes." }
+}));
+
+// 2. Limite restrito: Só 5 tentativas a cada 15 minutos nas rotas de Login e Cadastro
+app.use(["/api/auth/login", "/api/auth/cadastro"], rateLimit({ 
+  windowMs: 15 * 60 * 1000, 
+  limit: 5, 
+  standardHeaders: true, 
+  legacyHeaders: false,
+  message: { erro: "Muitas tentativas. Aguarde alguns minutos antes de tentar de novo." }
+}));
+
+// ==========================================
+// MÓDULOS DE ROTAS 
+// ==========================================
+app.use("/api/auth", authRoutes); 
+app.use("/api", coreRoutes);      
+
+
+// ==========================================
 // SEGURANÇA (Middlewares Globais)
 // ==========================================
 app.use(seguranca.antiNoSql);
