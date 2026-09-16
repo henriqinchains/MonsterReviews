@@ -20,7 +20,7 @@ exports.csrfProtection = (req, res, next) => {
   if (["POST", "PUT", "DELETE"].includes(req.method)) {
     const tokenNoHeader = req.headers["csrf-token"];
     if (!tokenNoHeader || tokenNoHeader !== csrfCookie) {
-      console.log("🚫 Ataque CSRF Bloqueado!");
+      console.log("Ataque CSRF Bloqueado!");
       return res.status(403).json({ erro: "Sessão inválida ou erro de segurança (CSRF)." });
     }
   }
