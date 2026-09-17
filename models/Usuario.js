@@ -7,6 +7,8 @@ const UsuarioSchema = new mongoose.Schema({
   cargo: { type: String, enum: ["user", "admin"], default: "user" },
   codigoRecuperacao: { type: String, default: null },
   expiracaoCodigo: { type: Date, default: null },
+  codigo2FA: { type: String, default: null },
+  expiracao2FA: { type: Date, default: null },
   avatarUrl: { type: String, default: "" },
 }, { timestamps: true });
 
