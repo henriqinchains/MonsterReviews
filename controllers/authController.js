@@ -106,9 +106,18 @@ exports.login = async (req, res) => {
         </div>
       `,
     });
+    
+    // 1. Define a expiração (5 minutos)
+    const expiracao = new Date(Date.now() + 5 * 60 * 1000);
 
+    // 2. Salva o código NO BANCO DE DADOS
+    usuarioEncontrado.codigo2FA = codigoPin;
+    usuarioEncontrado.expiracao2FA = expiracao;
+    await usuarioEncontrado.save();
+
+    // 3. O JWT temporário agora só leva o ID. Seguro!
     const tokenTemporario = jwt.sign(
-      { id: usuarioEncontrado._id, codigo: codigoPin },
+      { id: usuarioEncontrado._id },
       process.env.JWT_SECRET,
       { expiresIn: "5m" }
     );
@@ -126,16 +135,24 @@ exports.login = async (req, res) => {
 
 exports.verify2FA = async (req, res) => {
   try {
-    // Agora recebemos a variável salvarDispositivo do frontend
     const { tokenTemporario, codigoDigitado, salvarDispositivo } = req.body;
     
+    // 1. Pega só o ID do token
     const decoded = jwt.verify(tokenTemporario, process.env.JWT_SECRET);
+    const usuarioFinal = await Usuario.findById(decoded.id);
 
-    if (decoded.codigo !== codigoDigitado) {
+    // 2. Valida contra o banco de dados
+    if (!usuarioFinal.codigo2FA || usuarioFinal.codigo2FA !== codigoDigitado) {
       return res.status(400).json({ erro: "Código inválido ou incorreto." });
     }
+    if (Date.now() > usuarioFinal.expiracao2FA) {
+      return res.status(400).json({ erro: "Este código expirou." });
+    }
 
-    const usuarioFinal = await Usuario.findById(decoded.id);
+    // 3. Limpa os códigos do 2FA do banco pra não serem reaproveitados
+    usuarioFinal.codigo2FA = null;
+    usuarioFinal.expiracao2FA = null;
+    await usuarioFinal.save();
     const tokenReal = jwt.sign(
       { id: usuarioFinal._id, nome: usuarioFinal.nome, email: usuarioFinal.email, cargo: usuarioFinal.cargo },
       process.env.JWT_SECRET,
