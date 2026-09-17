@@ -194,8 +194,15 @@ exports.esqueciSenha = async (req, res) => {
     const usuario = await Usuario.findOne({ email });
     if (!usuario) return res.status(404).json({ erro: "Email não encontrado na nossa base." });
 
+    // 1. Gera o código e o tempo de expiração (15 minutos a partir de agora)
     const codigoPin = Math.floor(100000 + Math.random() * 900000).toString();
-    const tokenParaOFront = jwt.sign({ id: usuario._id, codigo: codigoPin }, process.env.JWT_SECRET, { expiresIn: "15m" });
+    const expiracao = new Date(Date.now() + 15 * 60 * 1000);
+  
+    usuario.codigoRecuperacao = codigoPin;
+    usuario.expiracaoCodigo = expiracao;
+    await usuario.save();
+
+    const tokenParaOFront = jwt.sign({ id: usuario._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
 
     const { data, error } = await resend.emails.send({
       from: "nao-responda@monstereviews.com.br",
@@ -221,17 +228,30 @@ exports.esqueciSenha = async (req, res) => {
 exports.resetarSenha = async (req, res) => {
   try {
     const { token, codigoDigitado, novaSenha } = req.body;
+    
+    // 1. Descobre quem é o usuário pelo token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (decoded.codigo !== codigoDigitado) return res.status(400).json({ erro: "Código inválido." });
-
     const usuario = await Usuario.findById(decoded.id);
+
+    // 2. Verifica se o código bate com o que está SALVO NO BANCO e se não expirou
+    if (!usuario.codigoRecuperacao || usuario.codigoRecuperacao !== codigoDigitado) {
+      return res.status(400).json({ erro: "Código inválido." });
+    }
+    if (Date.now() > usuario.expiracaoCodigo) {
+      return res.status(400).json({ erro: "Este código expirou." });
+    }
+
+    // 3. Código correto! Atualiza a senha.
     const salt = await bcrypt.genSalt(10);
     usuario.senha = await bcrypt.hash(novaSenha, salt);
+    
+    // 4. Limpa os códigos do banco para não serem reusados!
+    usuario.codigoRecuperacao = null;
+    usuario.expiracaoCodigo = null;
     await usuario.save();
 
     return res.status(200).json({ mensagem: "Senha atualizada com sucesso!" });
   } catch (erro) {
-    return res.status(400).json({ erro: "Código expirado ou inválido." });
+    return res.status(400).json({ erro: "Sessão inválida ou expirada." });
   }
 };
