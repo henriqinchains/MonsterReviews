@@ -163,8 +163,8 @@ exports.verify2FA = async (req, res) => {
 
     // 🛡️ NOVIDADE: Se o usuário marcou a caixinha, gera o cookie VIP de 30 dias
     if (salvarDispositivo) {
-      const trustedToken = jwt.sign({ id: usuarioFinal._id }, process.env.JWT_SECRET, { expiresIn: "180d" });
-      res.cookie("trustedDevice", trustedToken, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 180 * 24 * 60 * 60 * 1000 });
+      const trustedToken = jwt.sign({ id: usuarioFinal._id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+      res.cookie("trustedDevice", trustedToken, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 30 * 24 * 60 * 60 * 1000 });
     }
 
     return res.status(200).json({
