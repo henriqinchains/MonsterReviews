@@ -99,7 +99,7 @@ exports.login = async (req, res) => {
       subject: "🔒 Código de Acesso - Monster Reviews",
       html: `
         <div style="background-color: #121212; color: #fff; padding: 20px; text-align: center;">
-            <h2 style="color: #00ff66;">Segurança em primeiro lugar!</h2>
+            <h2 style="color: #00ff66;">Toma teu código geladinho, monstro!</h2>
             <p>Seu código para logar no Monster Reviews é:</p>
             <h1 style="background-color: #222; padding: 15px; letter-spacing: 5px; color: #00ff66;">${codigoPin}</h1>
             <p style="color: #aaa; font-size: 12px;">Válido por 5 minutos.</p>
