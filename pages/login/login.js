@@ -313,6 +313,22 @@ function initCadastro() {
       const dados = await resposta.json();
 
       if (resposta.ok) {
+        
+        // 💥 A MÁGICA ENTRA AQUI 💥
+        if (dados.requer2FA) {
+          tokenTemporario2FA = dados.tokenTemporario; // Guarda o token globalmente pro init2FA usar
+          message.textContent = `✅ ${dados.mensagem}`;
+          message.style.color = "#00ff66";
+          
+          setTimeout(() => {
+            message.style.display = "none";
+            formCadastro.reset(); // Limpa as senhas digitadas
+            SwitchTo2FA(); // Esconde o cadastro e puxa o modal de PIN!
+          }, 1500);
+          return; // Para a execução aqui
+        }
+
+        // Caso o 2FA não seja exigido (fallback de segurança)
         if (dados.avatarUrl) {
           localStorage.setItem(`avatar_${dados.email}`, dados.avatarUrl);
         }
@@ -320,6 +336,7 @@ function initCadastro() {
         message.style.color = "#00ff66";
         formCadastro.reset();
         window.setTimeout(() => { window.location.href = "../../"; }, 2000);
+
       } else {
         message.textContent = `❌ ${dados.erro || "Erro ao cadastrar."}`;
         message.style.color = "#aa0000";
