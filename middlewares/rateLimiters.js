@@ -2,7 +2,7 @@ const rateLimit = require('express-rate-limit');
 
 const commentLimiter = rateLimit({
   windowMs: 3 * 1000, // 3 seg
-  max: 1
+  max: 1,
   message: { 
     erro: "Calma aí, monstro! Você está comentando rápido demais. Tente novamente em 1 minuto." 
   }
