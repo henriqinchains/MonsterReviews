@@ -23,22 +23,51 @@ exports.cadastro = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const senhaCriptografada = await bcrypt.hash(password, salt);
 
-    const novoUsuario = new Usuario({ nome: login, email: email, senha: senhaCriptografada });
+    // 1. Gera o PIN e a expiração (5 minutos)
+    const codigoPin = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiracao = new Date(Date.now() + 5 * 60 * 1000);
+
+    // 2. Cria o usuário já com o código de verificação embutido
+    const novoUsuario = new Usuario({ 
+      nome: login, 
+      email: email, 
+      senha: senhaCriptografada,
+      codigo2FA: codigoPin,
+      expiracao2FA: expiracao
+    });
+    
+    // Salva no banco de dados
     await novoUsuario.save();
 
-    const token = jwt.sign(
-      { id: novoUsuario._id, nome: novoUsuario.nome, email: novoUsuario.email, cargo: novoUsuario.cargo },
+    // 3. Dispara o e-mail de Boas-Vindas com o PIN
+    await resend.emails.send({
+      from: "nao-responda@monstereviews.com.br", 
+      to: novoUsuario.email,
+      subject: "🎉 Verifique sua conta - Monster Reviews",
+      html: `
+        <div style="background-color: #121212; color: #fff; padding: 20px; text-align: center;">
+            <h2 style="color: #00ff66;">Bem-vindo ao Monster Reviews, monstro!</h2>
+            <p>Para ativar sua conta e fazer o primeiro login, digite o código abaixo:</p>
+            <h1 style="background-color: #222; padding: 15px; letter-spacing: 5px; color: #00ff66;">${codigoPin}</h1>
+            <p style="color: #aaa; font-size: 12px;">Válido por 5 minutos.</p>
+        </div>
+      `,
+    });
+
+    // 4. O JWT temporário leva apenas o ID (exatamente igual ao login)
+    const tokenTemporario = jwt.sign(
+      { id: novoUsuario._id },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "5m" }
     );
 
-    res.cookie("authToken", token, { httpOnly: true, secure: true, sameSite: "none", partitioned: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
-
+    // 5. Retorna avisando o frontend que precisa da verificação!
     return res.status(201).json({
-      mensagem: "Usuário cadastrado com sucesso!",
-      login: novoUsuario.nome,
-      usuario: { id: novoUsuario._id, nome: novoUsuario.nome, email: novoUsuario.email },
+      mensagem: "Conta criada! Verifique seu e-mail.",
+      requer2FA: true, 
+      tokenTemporario: tokenTemporario
     });
+
   } catch (erro) {
     console.error("❌ Erro no cadastro:", erro);
     return res.status(500).json({ erro: "Erro ao tentar cadastrar usuário." });
